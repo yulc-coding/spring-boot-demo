@@ -1,0 +1,33 @@
+package org.ylc.frame.springbootdemo.base;
+
+/**
+ * 静态常量
+ *
+ * @author YuLc
+ * @version 1.0.0
+ * @date 2019/3/30 10:50
+ */
+public class CommonConstants {
+
+    /**
+     * 请求返回
+     */
+    public static class RETURN_RESULT {
+        /**
+         * 成功
+         */
+        public static final int RESULT_SUCCESS = 200;
+        /**
+         * 操作失败，统一返回代码编号，直接打印出msg信息
+         */
+        public static final int RESULT_OPERATION_FAILED = 500;
+        /**
+         * token验证失败,提示非法操作
+         */
+        public static final int RESULT_TOKEN_INVALID = 406;
+        /**
+         * token过期，引导到登录界面
+         */
+        public static final int RESULT_TOKEN_EXPIRED = 401;
+    }
+}
