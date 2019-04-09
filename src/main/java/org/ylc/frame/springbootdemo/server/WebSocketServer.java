@@ -104,8 +104,8 @@ public class WebSocketServer {
     /**
      * 群发自定义消息
      */
-    public static void batchSendInfo(String wsInfo, List<String> Users) {
-        for (String userId : Users) {
+    public static void batchSendInfo(String wsInfo, List<String> ids) {
+        for (String userId : ids) {
             sendInfo(wsInfo, userId);
         }
     }

@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import org.ylc.frame.springbootdemo.event.event.DemoEvent;
 
 /**
@@ -13,6 +14,7 @@ import org.ylc.frame.springbootdemo.event.event.DemoEvent;
  * @version 1.0.0
  * @date 2019/3/30 16:07
  */
+@Component
 public class DemoListener implements ApplicationListener<DemoEvent> {
 
     private static final Logger logger = LoggerFactory.getLogger(DemoListener.class);
