@@ -32,7 +32,7 @@ public class TestController {
     public HttpResult eventApi(@ApiParam(name = "message", value = "信息内容")
                                @RequestParam(value = "message") String message) {
         SpringContextUtil.publishEvent(new DemoEvent(message));
-        return HttpResult.success();
+        return HttpResult.success(message);
     }
 
     @ApiOperation(value = "wsPushApi")
@@ -41,9 +41,8 @@ public class TestController {
                                 @RequestParam(value = "wsInfo") String wsInfo,
                                 @ApiParam(name = "ids", value = "推送人员")
                                 @RequestParam(value = "ids") List<String> ids) {
-        System.out.println(WebSocketServer.getIds());
         WebSocketServer.batchSendInfo(wsInfo, ids);
-        return HttpResult.success();
+        return HttpResult.success(WebSocketServer.getIds());
     }
 
 

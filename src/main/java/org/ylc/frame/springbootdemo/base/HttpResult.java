@@ -11,7 +11,6 @@ import io.swagger.annotations.ApiModelProperty;
  */
 public class HttpResult<T> {
 
-
     @ApiModelProperty(value = "返回编码")
     private int code;
 
@@ -86,6 +85,18 @@ public class HttpResult<T> {
      */
     public static <T> HttpResult<T> fail(String msg) {
         return fail(CommonConstants.RETURN_RESULT.RESULT_OPERATION_FAILED, msg);
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public T getData() {
+        return data;
     }
 
 }
