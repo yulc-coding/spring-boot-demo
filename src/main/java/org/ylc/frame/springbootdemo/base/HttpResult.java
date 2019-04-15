@@ -2,6 +2,8 @@ package org.ylc.frame.springbootdemo.base;
 
 import io.swagger.annotations.ApiModelProperty;
 
+import java.io.Serializable;
+
 /**
  * 统一返回
  *
@@ -9,7 +11,9 @@ import io.swagger.annotations.ApiModelProperty;
  * @version 1.0.0
  * @date 2019/3/30 10:46
  */
-public class HttpResult<T> {
+public class HttpResult<T> implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "返回编码")
     private int code;

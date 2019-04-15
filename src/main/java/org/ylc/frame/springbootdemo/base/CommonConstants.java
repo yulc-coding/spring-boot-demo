@@ -30,4 +30,22 @@ public class CommonConstants {
          */
         public static final int RESULT_TOKEN_EXPIRED = 401;
     }
+
+
+    /**
+     * redis 相关key
+     */
+    public static class REDIS_KEY {
+
+        /**
+         * token 前缀
+         */
+        public static final String TOKEN_PREFIX = "TOKEN:";
+    }
+
+
+    /**
+     * token 过期时间
+     */
+    public static long DEFAULT_TOKEN_INVALID_TIME = 1000 * 60 * 30;
 }
