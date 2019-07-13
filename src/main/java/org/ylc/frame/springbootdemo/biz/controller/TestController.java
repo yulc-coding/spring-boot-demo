@@ -8,9 +8,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.ylc.frame.springbootdemo.base.HttpResult;
-import org.ylc.frame.springbootdemo.event.event.DemoEvent;
+import org.ylc.frame.springbootdemo.event.DemoEvent;
 import org.ylc.frame.springbootdemo.server.WebSocketServer;
 import org.ylc.frame.springbootdemo.util.SpringContextUtil;
+import org.ylc.frame.springbootdemo.util.ThreadUtil;
 
 import java.util.List;
 
@@ -43,6 +44,22 @@ public class TestController {
                                 @RequestParam(value = "ids") List<String> ids) {
         WebSocketServer.batchSendInfo(wsInfo, ids);
         return HttpResult.success(WebSocketServer.getIds());
+    }
+
+    @ApiOperation(value = "threadTest")
+    @GetMapping("/threadTest")
+    public HttpResult threadTest(String message) {
+        try {
+            ThreadUtil.executeAsync(() -> sysMethod(message));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return HttpResult.success();
+    }
+
+
+    private void sysMethod(String message) {
+        System.out.println(message);
     }
 
 

@@ -16,12 +16,24 @@ public class UserInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 用户ID
+     */
     private String userId;
 
+    /**
+     * 用户账号
+     */
     private String account;
 
+    /**
+     * 用户名称
+     */
     private String userName;
 
+    /**
+     * 部门ID
+     */
     private String depId;
 
     public UserInfo() {

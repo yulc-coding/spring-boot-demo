@@ -1,11 +1,10 @@
-package org.ylc.frame.springbootdemo.event.listener;
+package org.ylc.frame.springbootdemo.event;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.ylc.frame.springbootdemo.event.event.DemoEvent;
 
 /**
  * 监听demo

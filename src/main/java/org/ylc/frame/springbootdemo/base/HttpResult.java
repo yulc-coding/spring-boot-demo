@@ -1,6 +1,7 @@
 package org.ylc.frame.springbootdemo.base;
 
 import io.swagger.annotations.ApiModelProperty;
+import org.ylc.frame.springbootdemo.constant.ConfigConst;
 
 import java.io.Serializable;
 
@@ -31,7 +32,7 @@ public class HttpResult<T> implements Serializable {
     }
 
     public HttpResult() {
-        this.code = CommonConstants.RETURN_RESULT.RESULT_SUCCESS;
+        this.code = ConfigConst.RETURN_RESULT.RESULT_SUCCESS;
         this.msg = "SUCCESS";
     }
 
@@ -48,7 +49,7 @@ public class HttpResult<T> implements Serializable {
      * @return Result
      */
     public static <T> HttpResult<T> success(String msg, T body) {
-        return new HttpResult<>(CommonConstants.RETURN_RESULT.RESULT_SUCCESS, msg, body);
+        return new HttpResult<>(ConfigConst.RETURN_RESULT.RESULT_SUCCESS, msg, body);
     }
 
     /**
@@ -88,7 +89,7 @@ public class HttpResult<T> implements Serializable {
      * @return Result
      */
     public static <T> HttpResult<T> fail(String msg) {
-        return fail(CommonConstants.RETURN_RESULT.RESULT_OPERATION_FAILED, msg);
+        return fail(ConfigConst.RETURN_RESULT.RESULT_OPERATION_FAILED, msg);
     }
 
     public int getCode() {

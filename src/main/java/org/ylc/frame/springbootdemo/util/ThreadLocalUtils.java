@@ -1,5 +1,6 @@
 package org.ylc.frame.springbootdemo.util;
 
+import org.springframework.util.Assert;
 import org.ylc.frame.springbootdemo.base.UserInfo;
 
 /**
@@ -18,14 +19,25 @@ public class ThreadLocalUtils {
         threadLocal.set(userInfo);
     }
 
+    /**
+     * 获取用户信息
+     */
     public static UserInfo getUser() {
         return threadLocal.get();
     }
 
+    /**
+     * 获取用户ID
+     */
     public static String getUserId() {
+        UserInfo userInfo = getUser();
+        Assert.notNull(userInfo, "未登录");
         return getUser().getUserId();
     }
 
+    /**
+     * 清除所有数据
+     */
     public static void clearAll() {
         threadLocal.remove();
     }

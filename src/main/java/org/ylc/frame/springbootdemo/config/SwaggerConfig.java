@@ -1,6 +1,5 @@
 package org.ylc.frame.springbootdemo.config;
 
-import com.google.common.collect.Lists;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -15,6 +14,7 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,8 +30,9 @@ import java.util.List;
 public class SwaggerConfig {
     @Bean
     public Docket createRestApi() {
-        ParameterBuilder builder = new ParameterBuilder();
-        Parameter parameter = builder
+        List<Parameter> parameters = new ArrayList<>();
+
+        Parameter tokenPar = new ParameterBuilder()
                 // 参数类型支持header, cookie, body, query etc
                 .parameterType("header")
                 // 参数名
@@ -43,7 +44,11 @@ public class SwaggerConfig {
                 .modelRef(new ModelRef("string"))
                 // 非必需，这里是全局配置，然而在登陆的时候是不用验证的
                 .required(false).build();
-        List<Parameter> parameters = Lists.newArrayList(parameter);
+        
+        Parameter requestId = new ParameterBuilder().parameterType("header").name("requestId").defaultValue("")
+                .description("请求ID，预防重复提交").modelRef(new ModelRef("string")).required(false).build();
+        parameters.add(tokenPar);
+        parameters.add(requestId);
 
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())

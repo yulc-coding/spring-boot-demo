@@ -6,19 +6,21 @@ import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
+import org.ylc.frame.springbootdemo.annotation.NoRepeatSubmit;
 import org.ylc.frame.springbootdemo.annotation.Permission;
-import org.ylc.frame.springbootdemo.base.CommonConstants;
 import org.ylc.frame.springbootdemo.base.HttpResult;
-import org.ylc.frame.springbootdemo.base.SystemLog;
 import org.ylc.frame.springbootdemo.base.UserInfo;
-import org.ylc.frame.springbootdemo.util.JWTUtils;
-import org.ylc.frame.springbootdemo.util.RedisUtils;
-import org.ylc.frame.springbootdemo.util.ThreadLocalUtils;
+import org.ylc.frame.springbootdemo.constant.CacheConst;
+import org.ylc.frame.springbootdemo.constant.ConfigConst;
+import org.ylc.frame.springbootdemo.mongodb.bean.SystemLog;
+import org.ylc.frame.springbootdemo.mongodb.template.SystemLogMongo;
+import org.ylc.frame.springbootdemo.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -46,7 +48,15 @@ public class WebLogAspect {
 
     private final static Logger logger = LoggerFactory.getLogger(WebLogAspect.class);
 
-    private RedisUtils redisUtils;
+    private final SystemLogMongo systemLogMongo;
+
+    private final RedisUtils redisUtils;
+
+    @Autowired
+    public WebLogAspect(SystemLogMongo systemLogMongo, RedisUtils redisUtils) {
+        this.systemLogMongo = systemLogMongo;
+        this.redisUtils = redisUtils;
+    }
 
 
     @Pointcut("execution(public org.ylc.frame.springbootdemo.base.HttpResult org.ylc.frame.springbootdemo.biz.*.*controller..*(..))")
@@ -83,12 +93,22 @@ public class WebLogAspect {
     public Object doAround(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         long startTime = System.currentTimeMillis();
         String userId = null;
+        boolean checkRepeatRequest = false;
+        String requestId = null;
         // 请求信息
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
 
         // 查看是否有注解
         Method method = ((MethodSignature) proceedingJoinPoint.getSignature()).getMethod();
+        NoRepeatSubmit requestAnnotation = method.getAnnotation(NoRepeatSubmit.class);
+        if (requestAnnotation != null) {
+            checkRepeatRequest = true;
+            requestId = request.getHeader("requestId");
+            if (requestId == null) {
+                return HttpResult.fail("非法的请求ID");
+            }
+        }
         Permission employeePermission = method.getAnnotation(Permission.class);
         // 权限验证
         if (employeePermission != null && !StringUtils.isEmpty(employeePermission.value())) {
@@ -97,7 +117,7 @@ public class WebLogAspect {
                 return HttpResult.fail("非法操作");
             }
             Map<String, Object> authInfo = checkTokenAndPermission(token, employeePermission.value());
-            if (CommonConstants.RETURN_RESULT.RESULT_SUCCESS == ((int) authInfo.get("code"))) {
+            if (ConfigConst.RETURN_RESULT.RESULT_SUCCESS == ((int) authInfo.get("code"))) {
                 userId = String.valueOf(authInfo.get("msg"));
             } else {
                 return HttpResult.fail((int) authInfo.get("code"), String.valueOf(authInfo.get("msg")));
@@ -109,6 +129,10 @@ public class WebLogAspect {
         Object result = proceedingJoinPoint.proceed();
         long endTime = System.currentTimeMillis();
 
+        if (checkRepeatRequest) {
+            redisUtils.set(ConfigConst.REQUEST_INFO.REQUEST_ID_PREFIX + requestId, requestId);
+        }
+
         // MongoDB 保存请求信息
         SystemLog systemLog = new SystemLog();
         systemLog.setUserId(userId);
@@ -116,12 +140,12 @@ public class WebLogAspect {
         systemLog.setHttpMethod(request.getMethod());
         systemLog.setController(proceedingJoinPoint.getSignature().getDeclaringTypeName());
         systemLog.setMethod(proceedingJoinPoint.getSignature().getName());
-        // systemLog.setIp(IPUtil.getIpAddr(request));
+        systemLog.setIp(IPUtil.getIpAddr(request));
         systemLog.setArgs(filterArgs(proceedingJoinPoint.getArgs()));
         systemLog.setMethodTime(endTime - methodStart);
         systemLog.setAllTime(endTime - startTime);
         systemLog.setDate(new Date());
-        // ThreadUtil.excAsync(() -> systemLogMongo.save(systemLog));
+        ThreadUtil.executeAsync(() -> systemLogMongo.save(systemLog));
 
         if (logger.isDebugEnabled()) {
             // 打印请求 url
@@ -156,15 +180,9 @@ public class WebLogAspect {
         // 解密token
         String userId = JWTUtils.parseJWT(token);
         if (!StringUtils.isEmpty(userId)) {
-            Map<Object, Object> redisMap = redisUtils.hashGet(CommonConstants.REDIS_KEY.TOKEN_PREFIX + userId);
+            Map<Object, Object> redisMap = redisUtils.hashGet(CacheConst.TOKEN_PREFIX + userId);
             if (redisMap == null) {
-                checkResult.put("code", CommonConstants.RETURN_RESULT.RESULT_TOKEN_EXPIRED);
-                checkResult.put("msg", "长时间未使用，登录已过期，请重新登录");
-                return checkResult;
-            }
-            long lastTime = (long) redisMap.get("lastTime");
-            if (System.currentTimeMillis() > CommonConstants.DEFAULT_TOKEN_INVALID_TIME + lastTime) {
-                checkResult.put("code", CommonConstants.RETURN_RESULT.RESULT_TOKEN_EXPIRED);
+                checkResult.put("code", ConfigConst.RETURN_RESULT.RESULT_TOKEN_EXPIRED);
                 checkResult.put("msg", "长时间未使用，登录已过期，请重新登录");
                 return checkResult;
             }
@@ -182,11 +200,16 @@ public class WebLogAspect {
             UserInfo userInfo = new UserInfo(userId, account, userName, depId);
             ThreadLocalUtils.setUser(userInfo);
 
-            checkResult.put("code", CommonConstants.RETURN_RESULT.RESULT_SUCCESS);
+            // 更新token过期时间
+            redisUtils.expire(
+                    CacheConst.TOKEN_PREFIX + userId,
+                    System.currentTimeMillis() + ConfigConst.DEFAULT_TOKEN_INVALID_TIME
+            );
+            checkResult.put("code", ConfigConst.RETURN_RESULT.RESULT_SUCCESS);
             checkResult.put("msg", userId);
             return checkResult;
         }
-        checkResult.put("code", CommonConstants.RETURN_RESULT.RESULT_TOKEN_INVALID);
+        checkResult.put("code", ConfigConst.RETURN_RESULT.RESULT_TOKEN_INVALID);
         checkResult.put("msg", "非法操作");
         return checkResult;
     }

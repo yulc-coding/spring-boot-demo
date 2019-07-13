@@ -1,13 +1,20 @@
-package org.ylc.frame.springbootdemo.base;
+package org.ylc.frame.springbootdemo.constant;
 
 /**
- * 静态常量
+ * 系统配置常量
  *
  * @author YuLc
  * @version 1.0.0
- * @date 2019/3/30 10:50
+ * @date 2019/7/6 20:25
  */
-public class CommonConstants {
+public class ConfigConst {
+
+
+    /**
+     * token 过期时间
+     */
+    public static Long DEFAULT_TOKEN_INVALID_TIME = 1000 * 60 * 30L;
+
 
     /**
      * 请求返回
@@ -32,20 +39,17 @@ public class CommonConstants {
     }
 
 
-    /**
-     * redis 相关key
-     */
-    public static class REDIS_KEY {
+    public static class REQUEST_INFO {
 
         /**
-         * token 前缀
+         * 请求ID 前缀
          */
-        public static final String TOKEN_PREFIX = "TOKEN:";
+        public static final String REQUEST_ID_PREFIX = "REQUEST_ID";
+
+        /**
+         * 默认请求间隔
+         */
+        public static final Long REQUEST_INTERVAL = 1000L;
+
     }
-
-
-    /**
-     * token 过期时间
-     */
-    public static long DEFAULT_TOKEN_INVALID_TIME = 1000 * 60 * 30;
 }
