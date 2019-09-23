@@ -81,7 +81,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.56</version>
+            <version>1.2.60</version>
         </dependency>
 
         <!--减少冗余代码自动生成 get set -->
