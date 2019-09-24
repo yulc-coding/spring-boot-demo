@@ -7,7 +7,7 @@ mvnw
 mvnw.cmd
 
 /log/
-*.log
+/logs/
 
 ### STS ###
 .apt_generated

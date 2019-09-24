@@ -1,0 +1,61 @@
+spring:
+  # 数据库连接
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://localhost:3306/my-pro?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC
+    username: root
+    password: root2019!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    druid:
+      # 初始化时建立物理连接的个数
+      initial-size: 1
+      # 最小连接池数量
+      min-idle: 1
+      # 最大连接池数量
+      max-active: 4
+      # 获取连接时最大等待时间，单位毫秒
+      max-wait: 30000
+      # 销毁线程时检测当前连接的最后活动时间和当前时间差大于该值时，关闭当前连接
+      min-evictable-idle-time-millis: 30000
+      # 用来检测连接是否有效的sql 必须是一个查询语句 oracle中为 select 1 from dual
+      validation-query: select 1
+      filters: stat,wall,log4j2
+      filter:
+        slf4j:
+          enabled: true
+          statement-create-after-log-enabled: false
+          statement-close-after-log-enabled: false
+          result-set-open-after-log-enabled: false
+          result-set-close-after-log-enabled: false
+      # 设置访问druid监控页的账号和密码,默认没有
+      stat-view-servlet:
+        login-username: admin
+        login-password: admin
+  # redis
+  redis:
+    # Redis数据库索引（默认为0）
+    database: 0
+    # Redis服务器地址
+    host: 94.191.8.173
+    # Redis服务器连接端口
+    port: 6379
+    # Redis服务器连接密码（默认为空）
+    password: admin2019
+    # 连接超时时间（毫秒）
+    timeout: 3000ms
+    jedis:
+      pool:
+        # 连接池最大连接数（使用负值表示没有限制）
+        max-active: 8
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: 3000ms
+        # 连接池中的最大空闲连接（负数没有限制）
+        max-idle: 8
+        # 连接池中的最小空闲连接
+        min-idle: 0
+  # mongodb
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: my_pro
