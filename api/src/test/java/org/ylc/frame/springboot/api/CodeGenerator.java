@@ -29,7 +29,12 @@ public class CodeGenerator {
     /**
      * 需要生成或排除的表
      */
-    private static final String[] TABLES = {"t_dict"};
+    private static final String[] TABLES = {"sys_user"};
+
+    /**
+     * 对应表的前缀：t_name   前缀为 t_ ，实体会去掉前缀
+     */
+    private static final String TABLE_PREFIX = "sys_";
 
     /**
      * 自定义模板路径
@@ -46,7 +51,7 @@ public class CodeGenerator {
         GlobalConfig gc = new GlobalConfig();
 
         // String projectPath = System.getProperty("user.dir");
-        String projectPath = "D:/test/MpGen";
+        String projectPath = "D:/CodeGenerator";
         // 生成文件的输出目录
         gc.setOutputDir(projectPath + "/src/main/java");
         gc.setAuthor("CodeGenerator");
@@ -140,7 +145,7 @@ public class CodeGenerator {
         // 需要排除的表
         //strategy.setExclude(TABLES);
         // 对应表的前缀：t_name   前缀为 t_ ，实体会去掉前缀
-        strategy.setTablePrefix("t_");
+        strategy.setTablePrefix(TABLE_PREFIX);
         mpg.setStrategy(strategy);
 
         mpg.setTemplateEngine(new FreemarkerTemplateEngine());

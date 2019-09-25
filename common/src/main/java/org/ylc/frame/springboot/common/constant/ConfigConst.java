@@ -31,7 +31,7 @@ public class ConfigConst {
         /**
          * token验证失败,提示非法操作
          */
-        public static final int RESULT_TOKEN_INVALID = 406;
+        public static final int RESULT_TOKEN_INVALID = 403;
         /**
          * token过期，引导到登录界面
          */

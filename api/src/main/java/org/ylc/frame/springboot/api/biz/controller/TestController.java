@@ -3,10 +3,7 @@ package org.ylc.frame.springboot.api.biz.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.ylc.frame.springboot.api.setting.component.websocket.WebSocketServer;
 import org.ylc.frame.springboot.api.setting.event.DemoEvent;
 import org.ylc.frame.springboot.api.setting.component.SpringContextUtil;
@@ -21,16 +18,17 @@ import java.util.List;
  * @version 1.0.0
  * @date 2019/4/9 21:06
  */
-@Api(value = "TestController", description = "测试用接口")
+@Api(value = "TestController")
 @RestController
 @RequestMapping("/test")
 public class TestController {
 
 
     @ApiOperation(value = "事件测试API")
-    @GetMapping("/event")
+    @GetMapping("/event/{message}")
+    @PostMapping
     public HttpResult eventApi(@ApiParam(name = "message", value = "信息内容")
-                               @RequestParam(value = "message") String message) {
+                               @PathVariable String message) {
         SpringContextUtil.publishEvent(new DemoEvent(message));
         return HttpResult.success(message);
     }

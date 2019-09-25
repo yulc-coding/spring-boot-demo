@@ -1,5 +1,8 @@
 package ${package.Controller};
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import ${package.Entity}.${entity};
 import ${package.Service}.${table.serviceName};
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,12 +26,13 @@ import ${superControllerClassPackage};
  * @author ${author}
  * @since ${date}
  */
+@Api(value = "${table.controllerName}")
 <#if restControllerStyle>
 @RestController
 <#else>
 @Controller
 </#if>
-@RequestMapping("<#if package.ModuleName??>/${package.ModuleName}</#if>/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>")
+@RequestMapping("/${table.entityPath}s")
 <#if kotlin>
 class ${table.controllerName}<#if superControllerClass??> : ${superControllerClass}()</#if>
 <#else>
@@ -46,44 +50,46 @@ public class ${table.controllerName} {
     }
 
     @ApiOperation(value = "新增")
-    @PostMapping("/addInfo")
-    @EmployeePermission("agency:${table.entityPath}:addInfo")
+    @PostMapping
+    @Permission("${table.entityPath}:add")
     public HttpResult addInfo() {
+
         return HttpResult.success();
     }
 
-    @ApiOperation(value = "根据ID批量删除")
-    @GetMapping("/delInfo")
-    @EmployeePermission("agency:${table.entityPath}:delInfoById")
-    public HttpResult delInfo() {
+    @ApiOperation(value = "删除")
+    @DeleteMapping("/{id}}")
+    @Permission("${table.entityPath}:del")
+    public HttpResult delInfo(@ApiParam(name = "id", value = "id")
+                              @PathVariable("id") Long id) {
+
         return HttpResult.success();
     }
 
     @ApiOperation(value = "更新")
-    @PostMapping("/updateInfo")
-    @EmployeePermission("agency:${table.entityPath}:updateInfo")
+    @PutMapping
+    @Permission("${table.entityPath}:update")
     public HttpResult updateInfo() {
+
         return HttpResult.success();
     }
 
     @ApiOperation(value = "分页查询")
-    @PostMapping("/pageInfo")
-    public HttpResult pageInfo() {
-        return HttpResult.success();
-    }
+    @GetMapping("/page/{pageSize}/{curPage}")
+    @Permission("pc")
+    public HttpResult pageInfo(@ApiParam(name = "size", value = "每页显示", example = "10") @PathVariable Long size,
+                               @ApiParam(name = "current", value = "当前页", example = "1") @PathVariable Long current) {
 
-    @ApiOperation(value = "查询所有")
-    @GetMapping("/getAllInfo")
-    public HttpResult pageInfo(@ApiParam(name = "agencyId", value = "agencyId")
-                               @RequestParam(name = "agencyId") String agencyId) {
         return HttpResult.success();
     }
 
     @ApiOperation(value = "根据ID查询信息")
-    @GetMapping("/getInfoById")
+    @GetMapping("/{id}}")
+    @Permission("pc")
     public HttpResult getInfoById(@ApiParam(name = "id", value = "id")
-                                  @RequestParam(name = "id") String id) {
-        return Result.success();
+                                  @PathVariable(name = "id") Long id) {
+
+        return HttpResult.success();
     }
 
  }
