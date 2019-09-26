@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @EnableTransactionManagement
 @Configuration
-@MapperScan("org.ylc.frame.springboot.api.biz.dao")
+@MapperScan("org.ylc.frame.springboot.api.biz.mapper")
 public class MybatisPlusConfig {
     /**
      * 分页插件

@@ -45,10 +45,7 @@ public class SwaggerConfig {
                 // 非必需，这里是全局配置，然而在登陆的时候是不用验证的
                 .required(false).build();
 
-        Parameter requestId = new ParameterBuilder().parameterType("header").name("requestId").defaultValue("")
-                .description("请求ID，预防重复提交").modelRef(new ModelRef("string")).required(false).build();
         parameters.add(tokenPar);
-        parameters.add(requestId);
 
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())

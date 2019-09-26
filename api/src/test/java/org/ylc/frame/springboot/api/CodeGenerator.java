@@ -29,7 +29,7 @@ public class CodeGenerator {
     /**
      * 需要生成或排除的表
      */
-    private static final String[] TABLES = {"sys_user"};
+    private static final String[] TABLES = {"sys_department","sys_menu","sys_role","sys_role_menu","sys_user_role"};
 
     /**
      * 对应表的前缀：t_name   前缀为 t_ ，实体会去掉前缀

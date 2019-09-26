@@ -1,10 +1,9 @@
-package org.ylc.frame.springboot.api.setting.util;
+package org.ylc.frame.springboot.common.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.ylc.frame.springboot.common.base.UserInfo;
-import org.ylc.frame.springboot.common.util.ParamCheck;
 
 /**
  * 线程本地变量
@@ -20,10 +19,10 @@ public class ThreadLocalUtils {
 
     private static final String KEY_USER = "user";
 
-    private static final ThreadLocal<UserInfo> threadLocal = new ThreadLocal<>();
+    private static final ThreadLocal<UserInfo> THREAD_LOCAL = new ThreadLocal<>();
 
     public static void setUser(UserInfo userInfo) {
-        threadLocal.set(userInfo);
+        THREAD_LOCAL.set(userInfo);
         // 把用户信息放到log4j
         MDC.put(KEY_USER, userInfo.getUserId());
     }
@@ -32,23 +31,23 @@ public class ThreadLocalUtils {
      * 获取用户信息
      */
     public static UserInfo getUser() {
-        UserInfo userInfo = threadLocal.get();
-        ParamCheck.notNull(userInfo, "未登录");
-        return userInfo;
+        return THREAD_LOCAL.get();
     }
 
     /**
      * 获取用户ID
      */
     public static String getUserId() {
-        return getUser().getUserId();
+        UserInfo userInfo = getUser();
+        ParamCheck.notNull(userInfo, "未登录");
+        return userInfo.getUserId();
     }
 
     /**
      * 清除所有数据
      */
     public static void clearAll() {
-        threadLocal.remove();
+        THREAD_LOCAL.remove();
     }
 
 }

@@ -1,57 +1,37 @@
-package ${package.Controller};
+package org.ylc.frame.springboot.api.biz.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import ${package.Entity}.${entity};
-import ${package.Service}.${table.serviceName};
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 import org.ylc.frame.springboot.common.annotation.Permission;
 import org.ylc.frame.springboot.common.base.HttpResult;
-
-<#if restControllerStyle>
-import org.springframework.web.bind.annotation.RestController;
-<#else>
-import org.springframework.stereotype.Controller;
-</#if>
-<#if superControllerClassPackage??>
-import ${superControllerClassPackage};
-</#if>
+import org.ylc.frame.springboot.common.service.RoleService;
 
 /**
  * <p>
- * ${table.comment!} 前端控制器
+ * 角色表 前端控制器
  * </p>
  *
- * @author ${author}
- * @since ${date}
+ * @author CodeGenerator
+ * @since 2019-09-26
  */
-@Api(value = "${table.controllerName}")
-<#if restControllerStyle>
+@Api(value = "RoleController")
 @RestController
-<#else>
-@Controller
-</#if>
-@RequestMapping("/${table.entityPath}s")
-<#if kotlin>
-class ${table.controllerName}<#if superControllerClass??> : ${superControllerClass}()</#if>
-<#else>
-<#if superControllerClass??>
-public class ${table.controllerName} extends ${superControllerClass} {
-<#else>
-public class ${table.controllerName} {
-</#if>
+@RequestMapping("/roles")
+public class RoleController {
 
-    private final ${table.serviceName} ${table.entityPath}Service;
+    private final RoleService roleService;
 
     @Autowired
-    public ${table.controllerName}(${table.serviceName} ${table.entityPath}Service) {
-        this.${table.entityPath}Service = ${table.entityPath}Service;
+    public RoleController(RoleService roleService) {
+        this.roleService = roleService;
     }
 
     @ApiOperation(value = "新增")
     @PostMapping
-    @Permission("${table.entityPath}:add")
+    @Permission("role:add")
     public HttpResult addInfo() {
 
         return HttpResult.success();
@@ -59,7 +39,7 @@ public class ${table.controllerName} {
 
     @ApiOperation(value = "删除")
     @DeleteMapping("/{id}}")
-    @Permission("${table.entityPath}:del")
+    @Permission("role:del")
     public HttpResult delInfo(@ApiParam(name = "id", value = "id")
                               @PathVariable("id") Long id) {
 
@@ -68,7 +48,7 @@ public class ${table.controllerName} {
 
     @ApiOperation(value = "更新")
     @PutMapping
-    @Permission("${table.entityPath}:update")
+    @Permission("role:update")
     public HttpResult updateInfo() {
 
         return HttpResult.success();
@@ -92,5 +72,4 @@ public class ${table.controllerName} {
         return HttpResult.success();
     }
 
- }
-</#if>
+}

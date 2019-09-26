@@ -23,7 +23,7 @@ import org.ylc.frame.springboot.common.constant.CacheConst;
 import org.ylc.frame.springboot.common.constant.ConfigConst;
 import org.ylc.frame.springboot.common.util.JWTUtils;
 import org.ylc.frame.springboot.common.util.ParamCheck;
-import org.ylc.frame.springboot.api.setting.util.ThreadLocalUtils;
+import org.ylc.frame.springboot.common.util.ThreadLocalUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

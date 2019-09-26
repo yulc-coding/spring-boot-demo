@@ -15,6 +15,15 @@ public class ConfigConst {
      */
     public static Long DEFAULT_TOKEN_INVALID_TIME = 1000 * 60 * 30L;
 
+    /**
+     * 逻辑已删除
+     */
+    public static final Integer LOGIC_DEL = 0;
+    /**
+     * 逻辑未删除
+     */
+    public static final Integer LOGIC_NOT_DEL = 1;
+
 
     /**
      * 请求返回

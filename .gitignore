@@ -1,12 +1,11 @@
 HELP.md
-/target/
+target
 !**/src/main/**
 !**/src/test/**
 /.mvn
 mvnw
 mvnw.cmd
 
-/log/
 /logs/
 
 ### STS ###
