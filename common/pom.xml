@@ -35,6 +35,18 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- json -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
+
+        <!-- 工具类包 -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+        </dependency>
+
         <!-- Swagger2 begin -->
         <dependency>
             <groupId>io.springfox</groupId>

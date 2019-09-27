@@ -1,5 +1,9 @@
 package org.ylc.frame.springboot.common.util;
 
+import cn.hutool.crypto.SecureUtil;
+import cn.hutool.crypto.symmetric.AES;
+import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
+import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.impl.PublicClaims;
@@ -30,7 +34,7 @@ import java.util.UUID;
  *
  * @author YuLc
  * @version 1.0.0
- * @date 2019/4/10 22:33
+ * @date 2019/9/20 22:33
  */
 public class JWTUtils {
 
@@ -40,21 +44,28 @@ public class JWTUtils {
     private static final String SECRET = "!@#$%YLC*&^%()";
 
     /**
+     * token中的信息加密
+     * 其中秘钥随机生成
+     */
+    private static final AES aes = SecureUtil.aes(SecureUtil.generateKey(SymmetricAlgorithm.AES.getValue()).getEncoded());
+
+
+    /**
      * 生成token
      * 这里不设置token 过期时间，
      * 过期时间通过redis 去设置和更新过期时间
      * <p>
      *
-     * @param userId 用户ID
+     * @param json 存放的信息
      */
-    public static String createJWT(String userId) {
+    public static String createJWT(JSONObject json) {
         // 设置签名算法和签名秘钥
         Algorithm algorithm = Algorithm.HMAC256(SECRET);
         return JWT.create()
                 // JWT 唯一ID
                 .withJWTId(UUID.randomUUID().toString())
                 // 信息主体
-                .withClaim(PublicClaims.SUBJECT, userId)
+                .withClaim(PublicClaims.SUBJECT, aes.encryptHex(json.toJSONString()))
                 // 签发时间
                 .withIssuedAt(new Date())
                 .sign(algorithm);
@@ -66,12 +77,13 @@ public class JWTUtils {
      * @param token token
      * @return 用户基本信息
      */
-    public static String parseJWT(String token) {
+    public static JSONObject parseJWT(String token) {
         Claim subClaim = JWT.decode(token).getClaim(PublicClaims.SUBJECT);
         if (subClaim == null) {
             return null;
         }
-        return subClaim.asString();
+        String subject = aes.decryptStr(subClaim.asString());
+        return JSONObject.parseObject(subject);
     }
 
 }

@@ -166,8 +166,9 @@ public class WebLogAspect {
         Map<String, Object> checkResult = new HashMap<>();
 
         // 解密token
-        String userId = JWTUtils.parseJWT(token);
-        if (!StringUtils.isEmpty(userId)) {
+        JSONObject tokenJson = JWTUtils.parseJWT(token);
+        if (tokenJson != null) {
+            String userId = tokenJson.getString("userId");
             Map<Object, Object> redisMap = redisUtils.hashGet(CacheConst.TOKEN_PREFIX + userId);
             if (redisMap == null) {
                 checkResult.put("code", ConfigConst.RETURN_RESULT.RESULT_TOKEN_EXPIRED);
