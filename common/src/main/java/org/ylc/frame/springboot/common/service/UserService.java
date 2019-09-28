@@ -13,4 +13,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface UserService extends IService<User> {
 
+    /**
+     * 登出
+     *
+     * @param token token信息
+     */
+    void logout(String token);
+
 }
