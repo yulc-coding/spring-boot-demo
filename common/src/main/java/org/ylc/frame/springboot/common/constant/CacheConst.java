@@ -10,13 +10,13 @@ package org.ylc.frame.springboot.common.constant;
 public class CacheConst {
 
     /**
-     * token 前缀 -> 前缀:用户ID
+     * token 前缀 -> 前缀:用户ID:登入方式
      */
-    public static final String TOKEN_PREFIX = "TOKEN:";
+    public static final String USER_TOKEN_PREFIX = "USER_TOKEN:";
 
     /**
-     * 权限前缀 -> 前缀:员工ID:子系统ID:登录方式
+     * 权限前缀 -> 前缀:员工ID:登录方式
      */
-    public static final String PERMISSION_PREFIX = "PERMISSION:";
+    public static final String USER_PERMISSION_PREFIX = "USER_PERMISSION:";
 
 }

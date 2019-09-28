@@ -11,13 +11,21 @@ package org.ylc.frame.springboot.common.exception;
  * @date 2019/9/24
  */
 public class OperationException extends RuntimeException {
+
     private static final long serialVersionUID = 1L;
 
-    public OperationException() {
-    }
+    /**
+     * 错误code
+     */
+    private int errCode = 500;
 
     public OperationException(String message) {
         super(message);
+    }
+
+    public OperationException(String message, int code) {
+        super(message);
+        this.errCode = code;
     }
 
     public OperationException(Throwable cause) {
@@ -28,7 +36,8 @@ public class OperationException extends RuntimeException {
         super(message, cause);
     }
 
-    public OperationException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
+
+    public int getErrCode() {
+        return errCode;
     }
 }

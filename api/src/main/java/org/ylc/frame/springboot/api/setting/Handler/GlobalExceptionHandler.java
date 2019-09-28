@@ -40,18 +40,18 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     public HttpResult handler(OperationException e) {
-        String error = e.getLocalizedMessage();
+        String error = e.getMessage();
         log.info("自定义错误信息:{}", error);
-        return HttpResult.fail(error);
+        return HttpResult.fail(e.getErrCode(), error);
     }
 
     @ExceptionHandler(CheckException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     public HttpResult handler(CheckException e) {
-        String error = e.getLocalizedMessage();
+        String error = e.getMessage();
         log.info("自定义校验错误:{}", error);
-        return HttpResult.fail(error);
+        return HttpResult.fail(e.getErrCode(), error);
     }
 
     /**

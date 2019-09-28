@@ -1,15 +1,20 @@
 package org.ylc.frame.springboot.api.setting.component.redis;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
  * redisTemplate配置类
+ * 参考：https://www.cnblogs.com/zeng1994/p/03303c805731afc9aa9c60dbbd32a323.html
  *
  * @author YuLc
  * @version 1.0.0
@@ -17,6 +22,8 @@ import java.util.concurrent.TimeUnit;
  */
 @Component
 public class RedisUtils {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -41,7 +48,7 @@ public class RedisUtils {
             }
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             return false;
         }
     }
@@ -212,5 +219,125 @@ public class RedisUtils {
     public boolean hHasKey(String key, String item) {
         return redisTemplate.opsForHash().hasKey(key, item);
     }
+
+
+    // ============================set=============================
+
+    /**
+     * 根据key获取Set中的所有值
+     *
+     * @param key 键
+     * @return set
+     */
+    public Set<Object> sGet(String key) {
+        return redisTemplate.opsForSet().members(key);
+    }
+
+    /**
+     * 将数据放入set缓存
+     *
+     * @param key    键
+     * @param values 值 可以是多个
+     * @return 成功个数
+     */
+    public long sSet(String key, Object... values) {
+        try {
+            return redisTemplate.opsForSet().add(key, values);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return 0;
+        }
+    }
+
+    /**
+     * 将set数据放入缓存
+     *
+     * @param key    键
+     * @param time   时间(秒)
+     * @param values 值 可以是多个
+     * @return 成功个数
+     */
+    public long sSetAndTime(String key, long time, Object... values) {
+        try {
+            Long count = redisTemplate.opsForSet().add(key, values);
+            if (time > 0)
+                expire(key, time);
+            return count;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return 0;
+        }
+    }
+
+    /**
+     * 移除值为value的
+     *
+     * @param key    键
+     * @param values 值 可以是多个
+     * @return 移除的个数
+     */
+    public long setRemove(String key, Object... values) {
+        try {
+            Long count = redisTemplate.opsForSet().remove(key, values);
+            return count;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return 0;
+        }
+    }
+
+    // ===============================list=================================
+
+    /**
+     * 获取list缓存的内容
+     *
+     * @param key   键
+     * @param start 开始
+     * @param end   结束 0 到 -1代表所有值
+     */
+    public List<Object> lGet(String key, long start, long end) {
+        try {
+            return redisTemplate.opsForList().range(key, start, end);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * 将list放入缓存
+     *
+     * @param key   键
+     * @param value 值
+     */
+    public boolean lSet(String key, Object value) {
+        try {
+            redisTemplate.opsForList().rightPush(key, value);
+            return true;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * 将list放入缓存
+     *
+     * @param key   键
+     * @param value 值
+     * @param time  时间(毫秒)
+     */
+    public boolean lSet(String key, Object value, long time) {
+        try {
+            redisTemplate.opsForList().rightPush(key, value);
+            if (time > 0)
+                expire(key, time);
+            return true;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return false;
+        }
+    }
+
 
 }

@@ -9,11 +9,25 @@ package org.ylc.frame.springboot.common.constant;
  */
 public class ConfigConst {
 
+    /**
+     * PC登入
+     */
+    public static String LOGIN_PC = "PC";
+    /**
+     * app登入
+     */
+    public static String LOGIN_APP = "APP";
+
 
     /**
-     * token 过期时间
+     * PC token 过期时间 30分
      */
-    public static Long DEFAULT_TOKEN_INVALID_TIME = 1000 * 60 * 30L;
+    public static Long DEFAULT_PC_TOKEN_INVALID_TIME = 1000 * 60 * 30L;
+
+    /**
+     * APP token 过期时间 7天
+     */
+    public static Long DEFAULT_APP_TOKEN_INVALID_TIME = 1000 * 60 * 60 * 24 * 7L;
 
     /**
      * 逻辑已删除
@@ -32,19 +46,19 @@ public class ConfigConst {
         /**
          * 成功
          */
-        public static final int RESULT_SUCCESS = 200;
+        public static final int SUCCESS = 200;
         /**
          * 操作失败，统一返回代码编号，直接打印出msg信息
          */
-        public static final int RESULT_OPERATION_FAILED = 500;
+        public static final int OPERATION_FAILED = 500;
         /**
-         * token验证失败,提示非法操作
+         * 没有访问权限,提示非法操作
          */
-        public static final int RESULT_TOKEN_INVALID = 403;
+        public static final int ACCESS_RESTRICTED = 403;
         /**
          * token过期，引导到登录界面
          */
-        public static final int RESULT_TOKEN_EXPIRED = 401;
+        public static final int TOKEN_EXPIRED = 401;
     }
 
 }

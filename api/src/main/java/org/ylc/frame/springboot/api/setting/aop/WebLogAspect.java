@@ -6,21 +6,22 @@ import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
+import org.ylc.frame.springboot.api.biz.mapper.MenuMapper;
 import org.ylc.frame.springboot.api.setting.component.mongodb.dao.SystemLogDao;
 import org.ylc.frame.springboot.api.setting.component.mongodb.entity.SystemLog;
 import org.ylc.frame.springboot.api.setting.component.redis.RedisUtils;
 import org.ylc.frame.springboot.api.setting.util.IpUtil;
 import org.ylc.frame.springboot.common.annotation.Permission;
-import org.ylc.frame.springboot.common.base.HttpResult;
 import org.ylc.frame.springboot.common.base.UserInfo;
 import org.ylc.frame.springboot.common.constant.CacheConst;
 import org.ylc.frame.springboot.common.constant.ConfigConst;
+import org.ylc.frame.springboot.common.exception.CheckException;
 import org.ylc.frame.springboot.common.util.JWTUtils;
 import org.ylc.frame.springboot.common.util.ParamCheck;
 import org.ylc.frame.springboot.common.util.ThreadLocalUtils;
@@ -28,7 +29,10 @@ import org.ylc.frame.springboot.common.util.ThreadLocalUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -51,12 +55,14 @@ public class WebLogAspect {
 
     private final static Logger logger = LoggerFactory.getLogger(WebLogAspect.class);
 
+    private final MenuMapper menuMapper;
+
     private final SystemLogDao systemLogDao;
 
     private final RedisUtils redisUtils;
 
-    @Autowired
-    public WebLogAspect(SystemLogDao systemLogDao, RedisUtils redisUtils) {
+    public WebLogAspect(MenuMapper menuMapper, SystemLogDao systemLogDao, RedisUtils redisUtils) {
+        this.menuMapper = menuMapper;
         this.systemLogDao = systemLogDao;
         this.redisUtils = redisUtils;
     }
@@ -95,7 +101,6 @@ public class WebLogAspect {
     @Around("webLog()")
     public Object doAround(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         long startTime = System.currentTimeMillis();
-        String userId = null;
         // 请求信息
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         ParamCheck.notNull(attributes, "无效请求");
@@ -108,12 +113,7 @@ public class WebLogAspect {
         if (employeePermission != null && !StringUtils.isEmpty(employeePermission.value())) {
             String token = request.getHeader("token");
             ParamCheck.notEmptyStr(token, "非法操作");
-            Map<String, Object> authInfo = checkTokenAndPermission(token, employeePermission.value());
-            if (ConfigConst.RETURN_RESULT.RESULT_SUCCESS == ((int) authInfo.get("code"))) {
-                userId = String.valueOf(authInfo.get("msg"));
-            } else {
-                return HttpResult.fail((int) authInfo.get("code"), String.valueOf(authInfo.get("msg")));
-            }
+            checkTokenAndPermission(token, employeePermission.value());
         }
 
         long methodStart = System.currentTimeMillis();
@@ -123,7 +123,7 @@ public class WebLogAspect {
 
         // MongoDB 保存请求信息
         SystemLog systemLog = new SystemLog();
-        systemLog.setUserId(userId);
+        systemLog.setUserId(ThreadLocalUtils.getUserId());
         systemLog.setUrl(request.getRequestURL().toString());
         systemLog.setHttpMethod(request.getMethod());
         systemLog.setController(proceedingJoinPoint.getSignature().getDeclaringTypeName());
@@ -160,47 +160,68 @@ public class WebLogAspect {
      * 校验token 和权限
      *
      * @param token      token
-     * @param permission 权限
+     * @param permission 访问权限
      */
-    private Map<String, Object> checkTokenAndPermission(String token, String permission) {
-        Map<String, Object> checkResult = new HashMap<>();
-
+    private void checkTokenAndPermission(String token, String permission) {
         // 解密token
         JSONObject tokenJson = JWTUtils.parseJWT(token);
-        if (tokenJson != null) {
-            String userId = tokenJson.getString("userId");
-            Map<Object, Object> redisMap = redisUtils.hashGet(CacheConst.TOKEN_PREFIX + userId);
-            if (redisMap == null) {
-                checkResult.put("code", ConfigConst.RETURN_RESULT.RESULT_TOKEN_EXPIRED);
-                checkResult.put("msg", "长时间未使用，登录已过期，请重新登录");
-                return checkResult;
-            }
-            String account = String.valueOf(redisMap.get("account"));
-            String userName = String.valueOf(redisMap.get("userName"));
-            String depId = String.valueOf(redisMap.get("depId"));
-
-            /*
-             *  权限校验
-             *  从redis 中获取权限列表
-             *  没有查到，再从数据库查询权限列表
-             *  判断当前权限是否在权限列表中
-             */
-
-            UserInfo userInfo = new UserInfo(userId, account, userName, depId);
-            ThreadLocalUtils.setUser(userInfo);
-
-            // 更新token过期时间
-            redisUtils.expire(
-                    CacheConst.TOKEN_PREFIX + userId,
-                    System.currentTimeMillis() + ConfigConst.DEFAULT_TOKEN_INVALID_TIME
-            );
-            checkResult.put("code", ConfigConst.RETURN_RESULT.RESULT_SUCCESS);
-            checkResult.put("msg", userId);
-            return checkResult;
+        if (tokenJson == null) {
+            throw new CheckException("长时间未使用，登录已过期，请重新登录", ConfigConst.RETURN_RESULT.TOKEN_EXPIRED);
         }
-        checkResult.put("code", ConfigConst.RETURN_RESULT.RESULT_TOKEN_INVALID);
-        checkResult.put("msg", "非法操作");
-        return checkResult;
+        String userId = tokenJson.getString("userId");
+        String loginFrom = tokenJson.getString("loginFrom");
+        Map<Object, Object> redisMap = redisUtils.hashGet(CacheConst.USER_TOKEN_PREFIX + userId + ":" + loginFrom);
+
+        if (redisMap == null) {
+            throw new CheckException("长时间未使用，登录已过期，请重新登录", ConfigConst.RETURN_RESULT.TOKEN_EXPIRED);
+        }
+        /*
+         *  权限校验
+         *  从redis 中获取权限列表
+         *  没有查到，再从数据库查询权限列表
+         *  判断当前权限是否在权限列表中
+         */
+        List<Object> redisPermissions = redisUtils.lGet(CacheConst.USER_PERMISSION_PREFIX + userId + ":" + loginFrom, 0, -1);
+        List<String> permissions;
+        if (redisPermissions == null) {
+            logger.info("redis没有权限缓存，从数据库查询 >>>>>>");
+            permissions = menuMapper.getEmpPermissions(userId, loginFrom);
+            if (CollectionUtils.isEmpty(permissions) || !permissions.contains(permission)) {
+                throw new CheckException("非法操作", ConfigConst.RETURN_RESULT.ACCESS_RESTRICTED);
+            }
+        } else {
+            if (!redisPermissions.contains(permission)) {
+                throw new CheckException("非法操作", ConfigConst.RETURN_RESULT.ACCESS_RESTRICTED);
+            }
+        }
+
+        String account = String.valueOf(redisMap.get("account"));
+        String userName = String.valueOf(redisMap.get("userName"));
+        String depId = String.valueOf(redisMap.get("depId"));
+        UserInfo userInfo = new UserInfo(userId, account, userName, depId);
+        ThreadLocalUtils.setUser(userInfo);
+
+        // 更新token过期时间
+        updateTokenExpireTime(userId, loginFrom);
+    }
+
+    /**
+     * 更新token过期时间
+     *
+     * @param userId    用户ID
+     * @param loginFrom 登入方式
+     */
+    private void updateTokenExpireTime(String userId, String loginFrom) {
+        long expireTime = System.currentTimeMillis();
+        if (ConfigConst.LOGIN_PC.equals(loginFrom)) {
+            expireTime += ConfigConst.DEFAULT_PC_TOKEN_INVALID_TIME;
+        } else if (ConfigConst.LOGIN_APP.equals(loginFrom)) {
+            expireTime += ConfigConst.DEFAULT_APP_TOKEN_INVALID_TIME;
+        }
+        redisUtils.expire(
+                CacheConst.USER_TOKEN_PREFIX + userId + ":" + loginFrom,
+                expireTime
+        );
     }
 
 
@@ -219,4 +240,5 @@ public class WebLogAspect {
                 .collect(Collectors.toList());
         return JSONObject.toJSONString(logArgs);
     }
+
 }
