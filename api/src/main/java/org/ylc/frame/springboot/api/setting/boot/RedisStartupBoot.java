@@ -45,7 +45,7 @@ public class RedisStartupBoot implements CommandLineRunner {
             Map<String, Object> map = new HashMap<>(4);
             map.put("startup-time", DateUtil.today());
             map.put("startup-at", hostName);
-            redisUtils.hashSet("startup-info:" + hostName, map);
+            redisUtils.hashPut("startup-info:" + hostName, map);
 
             // 初始化redis中的数据
             cacheUtil.updateCache();

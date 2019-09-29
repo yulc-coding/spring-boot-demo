@@ -8,6 +8,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.Claim;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.UUID;
@@ -38,16 +40,19 @@ import java.util.UUID;
  */
 public class JWTUtils {
 
+    private static final Logger logger = LoggerFactory.getLogger(JWTUtils.class);
+
     /**
      * 签名秘钥
      */
     private static final String SECRET = "!@#$%YLC*&^%()";
 
     /**
+     * aes 加密
      * token中的信息加密
      * 其中秘钥随机生成
      */
-    private static final AES aes = SecureUtil.aes(SecureUtil.generateKey(SymmetricAlgorithm.AES.getValue()).getEncoded());
+    private static final AES AES_ALGORITHM = SecureUtil.aes(SecureUtil.generateKey(SymmetricAlgorithm.AES.getValue()).getEncoded());
 
 
     /**
@@ -65,7 +70,7 @@ public class JWTUtils {
                 // JWT 唯一ID
                 .withJWTId(UUID.randomUUID().toString())
                 // 信息主体
-                .withClaim(PublicClaims.SUBJECT, aes.encryptHex(json.toJSONString()))
+                .withClaim(PublicClaims.SUBJECT, AES_ALGORITHM.encryptHex(json.toJSONString()))
                 // 签发时间
                 .withIssuedAt(new Date())
                 .sign(algorithm);
@@ -78,12 +83,17 @@ public class JWTUtils {
      * @return 用户基本信息
      */
     public static JSONObject parseJWT(String token) {
-        Claim subClaim = JWT.decode(token).getClaim(PublicClaims.SUBJECT);
-        if (subClaim == null) {
+        try {
+            Claim subClaim = JWT.decode(token).getClaim(PublicClaims.SUBJECT);
+            if (subClaim == null) {
+                return null;
+            }
+            String subject = AES_ALGORITHM.decryptStr(subClaim.asString());
+            return JSONObject.parseObject(subject);
+        } catch (Exception e) {
+            logger.error("解析token失败，{}", e.getMessage());
             return null;
         }
-        String subject = aes.decryptStr(subClaim.asString());
-        return JSONObject.parseObject(subject);
     }
 
 }

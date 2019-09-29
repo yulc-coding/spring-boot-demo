@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +33,7 @@ public class RedisUtils {
     }
 
 
-//=============================common============================
+    //=============================common============================
 
     /**
      * 指定缓存失效时间
@@ -41,15 +41,9 @@ public class RedisUtils {
      * @param key  键
      * @param time 时间(毫秒)
      */
-    public boolean expire(String key, long time) {
-        try {
-            if (time > 0) {
-                redisTemplate.expire(key, time, TimeUnit.MILLISECONDS);
-            }
-            return true;
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return false;
+    public void expire(String key, long time) {
+        if (time > 0) {
+            redisTemplate.expire(key, time, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -78,13 +72,12 @@ public class RedisUtils {
      *
      * @param key 可以传一个值 或多个
      */
-    @SuppressWarnings("unchecked")
     public void del(String... key) {
         if (key != null && key.length > 0) {
             if (key.length == 1) {
                 redisTemplate.delete(key[0]);
             } else {
-                redisTemplate.delete(CollectionUtils.arrayToList(key));
+                redisTemplate.delete(Arrays.asList(key));
             }
         }
     }
@@ -145,7 +138,7 @@ public class RedisUtils {
      * @param key 键
      * @return 对应的多个键值
      */
-    public Map<Object, Object> hashGet(String key) {
+    public Map<Object, Object> hashEntries(String key) {
         return redisTemplate.opsForHash().entries(key);
     }
 
@@ -155,7 +148,7 @@ public class RedisUtils {
      * @param key 键
      * @param map 对应多个键值
      */
-    public void hashSet(String key, Map<String, Object> map) {
+    public void hashPut(String key, Map<String, Object> map) {
         redisTemplate.opsForHash().putAll(key, map);
     }
 
@@ -166,7 +159,7 @@ public class RedisUtils {
      * @param map  对应多个键值
      * @param time 时间(毫秒)
      */
-    public void hashSet(String key, Map<String, Object> map, long time) {
+    public void hashPut(String key, Map<String, Object> map, long time) {
         redisTemplate.opsForHash().putAll(key, map);
         if (time > 0) {
             expire(key, time);
@@ -180,7 +173,7 @@ public class RedisUtils {
      * @param item  项
      * @param value 值
      */
-    public void hashSet(String key, String item, Object value) {
+    public void hashPut(String key, String item, Object value) {
         redisTemplate.opsForHash().put(key, item, value);
     }
 
@@ -229,7 +222,7 @@ public class RedisUtils {
      * @param key 键
      * @return set
      */
-    public Set<Object> sGet(String key) {
+    public Set<Object> setMembers(String key) {
         return redisTemplate.opsForSet().members(key);
     }
 
@@ -238,14 +231,12 @@ public class RedisUtils {
      *
      * @param key    键
      * @param values 值 可以是多个
-     * @return 成功个数
      */
-    public long sSet(String key, Object... values) {
+    public void setAdd(String key, Object... values) {
         try {
-            return redisTemplate.opsForSet().add(key, values);
+            redisTemplate.opsForSet().add(key, values);
         } catch (Exception e) {
             logger.error(e.getMessage());
-            return 0;
         }
     }
 
@@ -257,11 +248,15 @@ public class RedisUtils {
      * @param values 值 可以是多个
      * @return 成功个数
      */
-    public long sSetAndTime(String key, long time, Object... values) {
+    public long setAdd(String key, long time, Object... values) {
         try {
             Long count = redisTemplate.opsForSet().add(key, values);
-            if (time > 0)
+            if (count == null) {
+                return 0;
+            }
+            if (time > 0) {
                 expire(key, time);
+            }
             return count;
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -276,13 +271,11 @@ public class RedisUtils {
      * @param values 值 可以是多个
      * @return 移除的个数
      */
-    public long setRemove(String key, Object... values) {
+    public void setRemove(String key, Object... values) {
         try {
-            Long count = redisTemplate.opsForSet().remove(key, values);
-            return count;
+            redisTemplate.opsForSet().remove(key, values);
         } catch (Exception e) {
             logger.error(e.getMessage());
-            return 0;
         }
     }
 
@@ -295,7 +288,7 @@ public class RedisUtils {
      * @param start 开始
      * @param end   结束 0 到 -1代表所有值
      */
-    public List<Object> lGet(String key, long start, long end) {
+    public List<Object> listGet(String key, long start, long end) {
         try {
             return redisTemplate.opsForList().range(key, start, end);
         } catch (Exception e) {
@@ -305,12 +298,12 @@ public class RedisUtils {
     }
 
     /**
-     * 将list放入缓存
+     * 在已有的list中加入单个信息
      *
      * @param key   键
      * @param value 值
      */
-    public boolean lSet(String key, Object value) {
+    public boolean listPushOne(String key, Object value) {
         try {
             redisTemplate.opsForList().rightPush(key, value);
             return true;
@@ -321,17 +314,28 @@ public class RedisUtils {
     }
 
     /**
-     * 将list放入缓存
+     * 将整个list存入缓存
+     *
+     * @param key  键
+     * @param list 值
+     */
+    public void listPushAll(String key, Object list) {
+        redisTemplate.opsForList().rightPushAll(key, list);
+    }
+
+    /**
+     * 将list放入缓存，设置过期时间
      *
      * @param key   键
      * @param value 值
      * @param time  时间(毫秒)
      */
-    public boolean lSet(String key, Object value, long time) {
+    public boolean listPush(String key, Object value, long time) {
         try {
             redisTemplate.opsForList().rightPush(key, value);
-            if (time > 0)
+            if (time > 0) {
                 expire(key, time);
+            }
             return true;
         } catch (Exception e) {
             logger.error(e.getMessage());

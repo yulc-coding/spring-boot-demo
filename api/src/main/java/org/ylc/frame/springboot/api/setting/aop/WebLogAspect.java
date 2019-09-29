@@ -112,7 +112,9 @@ public class WebLogAspect {
         // 权限验证
         if (employeePermission != null && !StringUtils.isEmpty(employeePermission.value())) {
             String token = request.getHeader("token");
-            ParamCheck.notEmptyStr(token, "非法操作");
+            if (token == null) {
+                throw new CheckException("非法操作", ConfigConst.RETURN_RESULT.ACCESS_RESTRICTED);
+            }
             checkTokenAndPermission(token, employeePermission.value());
         }
 
@@ -158,6 +160,15 @@ public class WebLogAspect {
 
     /**
      * 校验token 和权限
+     * 1、解析token:
+     * token是否合法；
+     * token是否还未过期；
+     * <p>
+     * 2、权限校验
+     * 从redis 中获取权限列表
+     * 没有查到，再从数据库查询权限列表，并放入缓存
+     * 判断当前权限是否在权限列表中
+     * 更新token过期时间
      *
      * @param token      token
      * @param permission 访问权限
@@ -166,38 +177,35 @@ public class WebLogAspect {
         // 解密token
         JSONObject tokenJson = JWTUtils.parseJWT(token);
         if (tokenJson == null) {
-            throw new CheckException("长时间未使用，登录已过期，请重新登录", ConfigConst.RETURN_RESULT.TOKEN_EXPIRED);
+            throw new CheckException("非法操作", ConfigConst.RETURN_RESULT.ACCESS_RESTRICTED);
         }
         String userId = tokenJson.getString("userId");
         String loginFrom = tokenJson.getString("loginFrom");
-        Map<Object, Object> redisMap = redisUtils.hashGet(CacheConst.USER_TOKEN_PREFIX + userId + ":" + loginFrom);
-
+        Map<Object, Object> redisMap = redisUtils.hashEntries(CacheConst.USER_TOKEN_PREFIX + userId + ":" + loginFrom);
         if (redisMap == null) {
             throw new CheckException("长时间未使用，登录已过期，请重新登录", ConfigConst.RETURN_RESULT.TOKEN_EXPIRED);
         }
-        /*
-         *  权限校验
-         *  从redis 中获取权限列表
-         *  没有查到，再从数据库查询权限列表
-         *  判断当前权限是否在权限列表中
-         */
-        List<Object> redisPermissions = redisUtils.lGet(CacheConst.USER_PERMISSION_PREFIX + userId + ":" + loginFrom, 0, -1);
+
+        // 权限校验
+        Object redisPermissions = redisUtils.get(CacheConst.USER_PERMISSION_PREFIX + userId + ":" + loginFrom);
         List<String> permissions;
         if (redisPermissions == null) {
-            logger.info("redis没有权限缓存，从数据库查询 >>>>>>");
+            logger.info("redis没有员工权限缓存，从数据库查询 >>>>>>");
             permissions = menuMapper.getEmpPermissions(userId, loginFrom);
-            if (CollectionUtils.isEmpty(permissions) || !permissions.contains(permission)) {
-                throw new CheckException("非法操作", ConfigConst.RETURN_RESULT.ACCESS_RESTRICTED);
-            }
+            // 加入缓存
+            redisUtils.set(CacheConst.USER_PERMISSION_PREFIX + userId + ":" + loginFrom, permissions);
         } else {
-            if (!redisPermissions.contains(permission)) {
-                throw new CheckException("非法操作", ConfigConst.RETURN_RESULT.ACCESS_RESTRICTED);
-            }
+            //noinspection unchecked
+            permissions = (List<String>) redisPermissions;
+        }
+        if (CollectionUtils.isEmpty(permissions) || !permissions.contains(permission)) {
+            throw new CheckException("非法操作", ConfigConst.RETURN_RESULT.ACCESS_RESTRICTED);
         }
 
-        String account = String.valueOf(redisMap.get("account"));
-        String userName = String.valueOf(redisMap.get("userName"));
-        String depId = String.valueOf(redisMap.get("depId"));
+        // 保存用户信息
+        String account = redisMap.get("account") == null ? null : String.valueOf(redisMap.get("account"));
+        String userName = redisMap.get("userName") == null ? null : String.valueOf(redisMap.get("userName"));
+        String depId = redisMap.get("depId") == null ? null : String.valueOf(redisMap.get("depId"));
         UserInfo userInfo = new UserInfo(userId, account, userName, depId);
         ThreadLocalUtils.setUser(userInfo);
 
@@ -218,10 +226,7 @@ public class WebLogAspect {
         } else if (ConfigConst.LOGIN_APP.equals(loginFrom)) {
             expireTime += ConfigConst.DEFAULT_APP_TOKEN_INVALID_TIME;
         }
-        redisUtils.expire(
-                CacheConst.USER_TOKEN_PREFIX + userId + ":" + loginFrom,
-                expireTime
-        );
+        redisUtils.expire(CacheConst.USER_TOKEN_PREFIX + userId + ":" + loginFrom, expireTime);
     }
 
 
