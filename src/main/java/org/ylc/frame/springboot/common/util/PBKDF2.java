@@ -1,13 +1,13 @@
 package org.ylc.frame.springboot.common.util;
 
-import org.ylc.frame.springboot.common.exception.OperationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 
 /**
@@ -21,6 +21,8 @@ import java.security.spec.KeySpec;
  * @date 2019/9/28
  */
 public class PBKDF2 {
+
+    private static final Logger logger = LoggerFactory.getLogger(PBKDF2.class);
 
     /**
      * 算法名称
@@ -49,12 +51,11 @@ public class PBKDF2 {
      * @param encryptedPassword 密文
      * @param salt              盐值
      */
-    public static boolean verify(String password, String encryptedPassword, String salt)
-            throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public static boolean verify(String password, String encryptedPassword, String salt) {
         // 用相同的盐值对用户输入的密码进行加密
         String result = getPBKDF2(password, salt);
         // 把加密后的密文和原密文进行比较，相同则验证成功，否则失败
-        return result.equals(encryptedPassword);
+        return result != null && result.equals(encryptedPassword);
     }
 
     /**
@@ -69,7 +70,8 @@ public class PBKDF2 {
             SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
             hash = secretKeyFactory.generateSecret(spec).getEncoded();
         } catch (Exception e) {
-            throw new OperationException("密码加密失败," + e.getMessage());
+            logger.error("密码加密失败,{}", e.getMessage());
+            return null;
         }
         //将byte数组转换为16进制的字符串
         return DatatypeConverter.printHexBinary(hash);

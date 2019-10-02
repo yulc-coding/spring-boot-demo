@@ -3,7 +3,6 @@ package org.ylc.frame.springboot.common.tree;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.ylc.frame.springboot.biz.entity.Menu;
 
 /**
  * 代码千万行，注释第一行，
@@ -17,7 +16,7 @@ import org.ylc.frame.springboot.biz.entity.Menu;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class MenuTree extends BaseTree<Menu> {
+public class MenuTree extends BaseTree<MenuTree> {
 
     private static final long serialVersionUID = 1L;
 

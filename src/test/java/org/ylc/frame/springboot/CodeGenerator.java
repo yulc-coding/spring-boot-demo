@@ -29,7 +29,7 @@ public class CodeGenerator {
     /**
      * 需要生成或排除的表
      */
-    private static final String[] TABLES = {"sys_department", "sys_menu", "sys_role", "sys_role_menu", "sys_user_role"};
+    private static final String[] TABLES = {"sys_user"};
 
     /**
      * 对应表的前缀：t_name   前缀为 t_ ，实体会去掉前缀
@@ -58,7 +58,7 @@ public class CodeGenerator {
         // XML 中的baseMapper
         gc.setBaseResultMap(true);
         // 实体属性 Swagger2 注解
-        gc.setSwagger2(true);
+        // gc.setSwagger2(true);
         // 自定义文件命名，注意 %s 会自动填充表实体属性！
         gc.setServiceName("%sService");
         // 主键的ID类型

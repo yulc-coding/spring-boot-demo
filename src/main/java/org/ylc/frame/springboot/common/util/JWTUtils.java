@@ -61,7 +61,7 @@ public class JWTUtils {
      * 过期时间通过redis 去设置和更新过期时间
      * <p>
      *
-     * @param json 存放的信息
+     * @param json 存放的信息  userId、loginFrom
      */
     public static String createJWT(JSONObject json) {
         // 设置签名算法和签名秘钥

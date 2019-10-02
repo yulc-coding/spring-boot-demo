@@ -24,7 +24,7 @@ public class Role implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     @ApiModelProperty(value = "角色名称")
     @TableField("name")
@@ -35,13 +35,13 @@ public class Role implements Serializable {
     private String remark;
 
     @TableField(value = "create_user", fill = FieldFill.INSERT)
-    private Integer createUser;
+    private Long createUser;
 
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
     @TableField(value = "update_user", fill = FieldFill.UPDATE)
-    private Integer updateUser;
+    private Long updateUser;
 
     @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private LocalDateTime updateTime;

@@ -21,7 +21,7 @@ public class BaseTree<T> implements Serializable {
     /**
      * id
      */
-    private String id;
+    private Long id;
 
     /**
      * 名称
@@ -31,7 +31,7 @@ public class BaseTree<T> implements Serializable {
     /**
      * 父id
      */
-    private String pid;
+    private Long pid;
 
     /**
      * 子类

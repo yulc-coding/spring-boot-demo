@@ -191,11 +191,11 @@ public class WebLogAspect {
         List<String> permissions;
         if (redisPermissions == null) {
             logger.info("redis没有员工权限缓存，从数据库查询 >>>>>>");
-            permissions = menuMapper.getEmpPermissions(userId, loginFrom);
+            permissions = menuMapper.getUserPermissions(userId, loginFrom);
             // 加入缓存
             redisUtils.set(CacheConst.USER_PERMISSION_PREFIX + userId + ":" + loginFrom, permissions);
         } else {
-            //noinspection unchecked
+            // noinspection unchecked
             permissions = (List<String>) redisPermissions;
         }
         if (CollectionUtils.isEmpty(permissions) || !permissions.contains(permission)) {
