@@ -5,9 +5,14 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.ylc.frame.springboot.biz.dto.DepartmentDTO;
 import org.ylc.frame.springboot.biz.service.DepartmentService;
+import org.ylc.frame.springboot.biz.vo.DepartmentVO;
 import org.ylc.frame.springboot.common.annotation.Permission;
 import org.ylc.frame.springboot.common.base.HttpResult;
+import org.ylc.frame.springboot.common.tree.DepartmentTree;
+
+import javax.validation.Valid;
 
 /**
  * <p>
@@ -32,8 +37,8 @@ public class DepartmentController {
     @ApiOperation(value = "新增")
     @PostMapping
     @Permission("department:add")
-    public HttpResult addInfo() {
-
+    public HttpResult addInfo(@RequestBody @Valid DepartmentDTO dto) {
+        departmentService.addInfo(dto);
         return HttpResult.success();
     }
 
@@ -42,34 +47,31 @@ public class DepartmentController {
     @Permission("department:del")
     public HttpResult delInfo(@ApiParam(name = "id", value = "id")
                               @PathVariable("id") Long id) {
-
+        departmentService.delInfo(id);
         return HttpResult.success();
     }
 
     @ApiOperation(value = "更新")
     @PutMapping
     @Permission("department:update")
-    public HttpResult updateInfo() {
-
-        return HttpResult.success();
-    }
-
-    @ApiOperation(value = "分页查询")
-    @GetMapping("/page/{size}/{current}")
-    @Permission("pc")
-    public HttpResult pageInfo(@ApiParam(name = "size", value = "每页显示", defaultValue = "10") @PathVariable Long size,
-                               @ApiParam(name = "current", value = "当前页", defaultValue = "1") @PathVariable Long current) {
-
+    public HttpResult updateInfo(@RequestBody @Valid DepartmentDTO dto) {
+        departmentService.updateInfo(dto);
         return HttpResult.success();
     }
 
     @ApiOperation(value = "根据ID查询信息")
     @GetMapping("/{id}}")
     @Permission("pc")
-    public HttpResult getInfoById(@ApiParam(name = "id", value = "id")
-                                  @PathVariable(name = "id") Long id) {
+    public HttpResult<DepartmentVO> getInfoById(@ApiParam(name = "id", value = "id")
+                                                @PathVariable(name = "id") Long id) {
+        return HttpResult.success(departmentService.getInfoById(id));
+    }
 
-        return HttpResult.success();
+    @ApiOperation(value = "获取部门树")
+    @GetMapping("/tree")
+    @Permission("pc")
+    public HttpResult<DepartmentTree> tree() {
+        return HttpResult.success(departmentService.getDepTree());
     }
 
 }

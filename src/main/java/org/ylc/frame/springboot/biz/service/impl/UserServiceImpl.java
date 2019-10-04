@@ -61,22 +61,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 获取权限列表
         List<MenuTree> menuTrees = menuMapper.getUserMenuList(user.getId(), args.getLoginFrom());
         ParamCheck.notEmptyCollection(menuTrees, "当前账号未授权");
-        MenuTree rootTree = null;
-        List<MenuTree> childList = new ArrayList<>();
-        for (MenuTree menus : menuTrees) {
-            if (0 == menus.getId()) {
-                rootTree = menus;
-            } else {
-                childList.add(menus);
-            }
-        }
-        ParamCheck.notNull(rootTree, "无效菜单列表");
-        TreeBuildUtil.build(rootTree, childList);
+
+        MenuTree menuTree = new MenuTree();
+        menuTree.setId(0L);
+        menuTree.setName("根目录");
+        menuTree.setChildren(new ArrayList<>());
+        TreeBuildUtil.build(menuTree, menuTrees);
 
         LoginResponseVO vo = new LoginResponseVO();
         vo.setName(user.getName());
         vo.setToken(token);
-        vo.setMenuTree(rootTree);
+        vo.setMenuTree(menuTree);
         return vo;
     }
 

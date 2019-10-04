@@ -2,6 +2,9 @@ package org.ylc.frame.springboot.biz.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.ylc.frame.springboot.biz.entity.Department;
+import org.ylc.frame.springboot.common.tree.DepartmentTree;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +15,7 @@ import org.ylc.frame.springboot.biz.entity.Department;
  * @since 2019-09-26
  */
 public interface DepartmentMapper extends BaseMapper<Department> {
+
+    List<DepartmentTree> depTreeList();
 
 }

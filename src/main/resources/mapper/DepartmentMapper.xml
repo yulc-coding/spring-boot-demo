@@ -15,4 +15,14 @@
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
+    <select id="depTreeList" resultType="org.ylc.frame.springboot.common.tree.DepartmentTree">
+        SELECT id,
+               `code`,
+               `name`,
+               pid,
+               remark
+        FROM sys_department
+        ORDER BY id
+    </select>
+
 </mapper>

@@ -1,5 +1,6 @@
 package org.ylc.frame.springboot.common.util;
 
+import org.springframework.util.CollectionUtils;
 import org.ylc.frame.springboot.common.tree.BaseTree;
 
 import java.util.ArrayList;
@@ -17,9 +18,20 @@ import java.util.List;
  */
 public class TreeBuildUtil {
 
-    public static void build(BaseTree rootTree, List<? extends BaseTree> childList) {
-        Long rootId = rootTree.getId();
+    /**
+     * 构建树形结构
+     *
+     * @param root      根目录
+     * @param childList 其他目录
+     */
+    public static void build(BaseTree root, List<? extends BaseTree> childList) {
+        if (root == null) {
+            return;
+        }
+        Long rootId = root.getId();
+        // 子类节点
         List<BaseTree> curChild = new ArrayList<>();
+        // 其他节点
         List<BaseTree> otherList = new ArrayList<>();
 
         for (BaseTree entity : childList) {
@@ -29,11 +41,14 @@ public class TreeBuildUtil {
                 otherList.add(entity);
             }
         }
-        for (BaseTree nextTree : curChild) {
-            build(nextTree, otherList);
+        // 子类不为空，递归
+        if (CollectionUtils.isEmpty(curChild)) {
+            for (BaseTree nextRoot : curChild) {
+                build(nextRoot, otherList);
+            }
+            // noinspection unchecked
+            root.setChildren(curChild);
         }
-        // noinspection unchecked
-        rootTree.setChildren(curChild);
     }
 
 }
