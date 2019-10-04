@@ -2,7 +2,6 @@ package org.ylc.frame.springboot.biz.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -26,11 +25,15 @@ public class Role implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "角色名称")
+    /**
+     * 角色名称
+     */
     @TableField("name")
     private String name;
 
-    @ApiModelProperty(value = "备注")
+    /**
+     * 备注
+     */
     @TableField("remark")
     private String remark;
 
@@ -45,6 +48,5 @@ public class Role implements Serializable {
 
     @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private LocalDateTime updateTime;
-
 
 }

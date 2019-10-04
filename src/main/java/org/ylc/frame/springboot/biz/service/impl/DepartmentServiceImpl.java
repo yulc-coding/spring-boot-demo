@@ -71,12 +71,13 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     @Override
     public DepartmentTree getDepTree() {
         List<DepartmentTree> depList = baseMapper.depTreeList();
-        DepartmentTree root = new DepartmentTree();
-        root.setId(0L);
-        root.setName("根目录");
-        root.setChildren(new ArrayList<>());
-        TreeBuildUtil.build(root, depList);
-        return root;
+        // 首层根目录
+        DepartmentTree depTree = new DepartmentTree();
+        depTree.setId(0L);
+        depTree.setName("根目录");
+        depTree.setChildren(new ArrayList<>());
+        TreeBuildUtil.build(depTree, depList);
+        return depTree;
     }
 
     /**

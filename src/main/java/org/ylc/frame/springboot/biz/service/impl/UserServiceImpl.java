@@ -62,6 +62,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         List<MenuTree> menuTrees = menuMapper.getUserMenuList(user.getId(), args.getLoginFrom());
         ParamCheck.notEmptyCollection(menuTrees, "当前账号未授权");
 
+        // 首层根目录
         MenuTree menuTree = new MenuTree();
         menuTree.setId(0L);
         menuTree.setName("根目录");

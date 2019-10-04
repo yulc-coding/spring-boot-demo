@@ -2,7 +2,6 @@ package org.ylc.frame.springboot.biz.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -26,47 +25,69 @@ public class Menu implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "上级ID")
+    /**
+     * 上级ID
+     */
     @TableField("pid")
-    private Long pid;
+    private Integer pid;
 
-    @ApiModelProperty(value = "名称")
+    /**
+     * 名称
+     */
     @TableField("name")
     private String name;
 
-    @ApiModelProperty(value = "需要的权限")
+    /**
+     * 需要的权限
+     */
     @TableField("permission")
     private String permission;
 
-    @ApiModelProperty(value = "权限类别：1文件、2页面、3按钮、4权限")
+    /**
+     * 权限类别：1文件、2页面、3按钮、4权限
+     */
     @TableField("type")
     private String type;
 
-    @ApiModelProperty(value = "匹配规则")
+    /**
+     * 匹配规则
+     */
     @TableField("url")
     private String url;
 
-    @ApiModelProperty(value = "路径")
+    /**
+     * 路径
+     */
     @TableField("path")
     private String path;
 
-    @ApiModelProperty(value = "组件")
+    /**
+     * 组件
+     */
     @TableField("component")
     private String component;
 
-    @ApiModelProperty(value = "按钮key")
+    /**
+     * 按钮key
+     */
     @TableField("btn_key")
     private String btnKey;
 
-    @ApiModelProperty(value = "图标")
+    /**
+     * 图标
+     */
     @TableField("icon")
     private String icon;
 
-    @ApiModelProperty(value = "排序")
+    /**
+     * 排序
+     */
     @TableField("seq")
     private Integer seq;
 
-    @ApiModelProperty(value = "备注")
+    /**
+     * 备注
+     */
     @TableField("remark")
     private String remark;
 

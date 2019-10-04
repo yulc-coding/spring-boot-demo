@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -28,13 +27,16 @@ public class RoleMenu implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "角色ID")
+    /**
+     * 角色ID
+     */
     @TableField("role_id")
-    private Long roleId;
+    private Integer roleId;
 
-    @ApiModelProperty(value = "菜单ID")
+    /**
+     * 菜单ID
+     */
     @TableField("menu_id")
-    private Long menuId;
-
+    private Integer menuId;
 
 }

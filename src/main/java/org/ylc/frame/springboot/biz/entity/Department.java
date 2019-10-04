@@ -2,7 +2,6 @@ package org.ylc.frame.springboot.biz.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -26,19 +25,27 @@ public class Department implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "部门编号")
+    /**
+     * 部门编号
+     */
     @TableField("code")
     private String code;
 
-    @ApiModelProperty(value = "部门名称")
+    /**
+     * 部门名称
+     */
     @TableField("name")
     private String name;
 
-    @ApiModelProperty(value = "上级部门ID")
+    /**
+     * 上级部门ID
+     */
     @TableField("pid")
-    private Long pid;
+    private Integer pid;
 
-    @ApiModelProperty(value = "备注")
+    /**
+     * 备注
+     */
     @TableField("remark")
     private String remark;
 
