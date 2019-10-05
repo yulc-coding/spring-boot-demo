@@ -3,22 +3,23 @@ package org.ylc.frame.springboot.biz.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.ylc.frame.springboot.biz.dto.UserDTO;
 import org.ylc.frame.springboot.biz.entity.User;
 import org.ylc.frame.springboot.biz.mapper.MenuMapper;
 import org.ylc.frame.springboot.biz.mapper.UserMapper;
 import org.ylc.frame.springboot.biz.params.LoginArg;
 import org.ylc.frame.springboot.biz.service.UserService;
 import org.ylc.frame.springboot.biz.vo.LoginResponseVO;
+import org.ylc.frame.springboot.biz.vo.UserVO;
 import org.ylc.frame.springboot.common.constant.CacheConst;
+import org.ylc.frame.springboot.common.constant.ConfigConst;
 import org.ylc.frame.springboot.common.tree.MenuTree;
-import org.ylc.frame.springboot.common.util.JWTUtils;
-import org.ylc.frame.springboot.common.util.PBKDF2;
-import org.ylc.frame.springboot.common.util.ParamCheck;
-import org.ylc.frame.springboot.common.util.TreeBuildUtil;
+import org.ylc.frame.springboot.common.util.*;
 import org.ylc.frame.springboot.setting.component.redis.RedisUtils;
 
 import java.util.ArrayList;
@@ -41,6 +42,39 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Autowired
     private RedisUtils redisUtils;
+
+    @Override
+    public void addInfo(UserDTO dto) {
+        User entity = new User();
+        BeanUtils.copyProperties(dto, entity);
+        String salt = PBKDF2.generateSalt();
+        entity.setSalt(salt);
+        entity.setPassword(PBKDF2.getPBKDF2(ConfigConst.DEFAULT_PWD, salt));
+        baseMapper.insert(entity);
+    }
+
+    @Override
+    public void delInfo(long id) {
+        OperationCheck.isExecute(baseMapper.deleteById(id), "无效数据");
+    }
+
+    @Override
+    public void updateInfo(UserDTO dto) {
+        User entity = new User();
+        BeanUtils.copyProperties(dto, entity);
+        entity.setPassword(null);
+        OperationCheck.isExecute(baseMapper.updateById(entity), "无效数据");
+    }
+
+    @Override
+    public UserVO getInfoById(long id) {
+        User entity = baseMapper.selectById(id);
+        UserVO vo = new UserVO();
+        if (entity != null) {
+            BeanUtils.copyProperties(entity, vo);
+        }
+        return vo;
+    }
 
     @Override
     public LoginResponseVO login(LoginArg args) {
@@ -101,5 +135,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         redisUtils.del(CacheConst.USER_TOKEN_PREFIX + userId + ":" + loginFrom);
         redisUtils.del(CacheConst.USER_PERMISSION_PREFIX + userId + ":" + loginFrom);
+    }
+
+    @Override
+    public void resetPwd() {
+        Long userId = ThreadLocalUtils.getUserId();
+        String salt = PBKDF2.generateSalt();
+        String newPwd = PBKDF2.getPBKDF2(ConfigConst.DEFAULT_PWD, salt);
+        User user = new User();
+        user.setId(userId);
+        user.setSalt(salt);
+        user.setPassword(newPwd);
+        baseMapper.updateById(user);
     }
 }

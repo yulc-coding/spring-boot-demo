@@ -15,16 +15,13 @@ import lombok.Data;
 public class UserDTO {
 
     @ApiModelProperty(value = "员工编号")
-    private Integer id;
+    private Long id;
 
     @ApiModelProperty(value = "姓名")
     private String name;
 
     @ApiModelProperty(value = "账号")
     private String username;
-
-    @ApiModelProperty(value = "密码")
-    private String password;
 
     @ApiModelProperty(value = "电话号码")
     private String phone;

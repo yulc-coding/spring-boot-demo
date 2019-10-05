@@ -31,7 +31,7 @@ public class SystemLog implements Serializable {
      * 用户ID
      */
     @Field("user_id")
-    private String userId;
+    private Long userId;
 
     /**
      * 访问路径

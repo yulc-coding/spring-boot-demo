@@ -14,12 +14,12 @@ import lombok.Data;
 @Data
 public class UserRoleDTO {
 
-    private Integer id;
+    private Long id;
 
     @ApiModelProperty(value = "员工ID")
-    private Integer userId;
+    private Long userId;
 
     @ApiModelProperty(value = "角色ID")
-    private Integer roleId;
+    private Long roleId;
 
 }

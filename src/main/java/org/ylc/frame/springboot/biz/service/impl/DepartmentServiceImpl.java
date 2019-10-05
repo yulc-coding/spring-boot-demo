@@ -64,7 +64,9 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     public DepartmentVO getInfoById(long id) {
         Department entity = baseMapper.selectById(id);
         DepartmentVO vo = new DepartmentVO();
-        BeanUtils.copyProperties(entity, vo);
+        if (entity != null) {
+            BeanUtils.copyProperties(entity, vo);
+        }
         return vo;
     }
 

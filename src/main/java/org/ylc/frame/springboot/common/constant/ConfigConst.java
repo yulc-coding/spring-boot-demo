@@ -10,6 +10,11 @@ package org.ylc.frame.springboot.common.constant;
 public class ConfigConst {
 
     /**
+     * 默认密码
+     */
+    public static String DEFAULT_PWD = "123456";
+
+    /**
      * PC登入
      */
     public static String LOGIN_PC = "PC";

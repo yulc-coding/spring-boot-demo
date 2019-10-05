@@ -14,12 +14,12 @@ import lombok.Data;
 @Data
 public class RoleMenuVO{
 
-    private Integer id;
+    private Long id;
 
     @ApiModelProperty(value = "角色ID")
-    private Integer roleId;
+    private Long roleId;
 
     @ApiModelProperty(value = "菜单ID")
-    private Integer menuId;
+    private Long menuId;
 
 }

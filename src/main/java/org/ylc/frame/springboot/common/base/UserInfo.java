@@ -19,7 +19,7 @@ public class UserInfo implements Serializable {
     /**
      * 用户ID
      */
-    private String userId;
+    private Long userId;
 
     /**
      * 用户账号
@@ -39,7 +39,7 @@ public class UserInfo implements Serializable {
     public UserInfo() {
     }
 
-    public UserInfo(String userId, String account, String userName, String depId) {
+    public UserInfo(Long userId, String account, String userName, String depId) {
         this.userId = userId;
         this.account = account;
         this.userName = userName;

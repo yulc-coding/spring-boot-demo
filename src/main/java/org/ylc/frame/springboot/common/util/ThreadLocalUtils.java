@@ -24,7 +24,7 @@ public class ThreadLocalUtils {
     public static void setUser(UserInfo userInfo) {
         THREAD_LOCAL.set(userInfo);
         // 把用户信息放到log4j
-        MDC.put(KEY_USER, userInfo.getUserId());
+        MDC.put(KEY_USER, userInfo.getUserId().toString());
     }
 
     /**
@@ -39,7 +39,7 @@ public class ThreadLocalUtils {
     /**
      * 获取用户ID
      */
-    public static String getUserId() {
+    public static Long getUserId() {
         return getUser().getUserId();
     }
 
@@ -48,7 +48,7 @@ public class ThreadLocalUtils {
      *
      * @return userId
      */
-    public static String getUserDefalutNull() {
+    public static Long getUserDefalutNull() {
         UserInfo userInfo = THREAD_LOCAL.get();
         return userInfo == null ? null : userInfo.getUserId();
     }

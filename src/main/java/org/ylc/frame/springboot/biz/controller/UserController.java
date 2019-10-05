@@ -6,9 +6,13 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.ylc.frame.springboot.biz.dto.UserDTO;
 import org.ylc.frame.springboot.biz.service.UserService;
+import org.ylc.frame.springboot.biz.vo.UserVO;
 import org.ylc.frame.springboot.common.annotation.Permission;
 import org.ylc.frame.springboot.common.base.HttpResult;
+
+import javax.validation.Valid;
 
 /**
  * <p>
@@ -33,8 +37,8 @@ public class UserController {
     @ApiOperation(value = "新增")
     @PostMapping
     @Permission("user:add")
-    public HttpResult addInfo() {
-
+    public HttpResult addInfo(@RequestBody @Valid UserDTO dto) {
+        userService.addInfo(dto);
         return HttpResult.success();
     }
 
@@ -43,15 +47,15 @@ public class UserController {
     @Permission("user:del")
     public HttpResult delInfo(@ApiParam(name = "id", value = "id")
                               @PathVariable("id") Long id) {
-
+        userService.delInfo(id);
         return HttpResult.success();
     }
 
     @ApiOperation(value = "更新")
     @PutMapping
     @Permission("user:update")
-    public HttpResult updateInfo() {
-
+    public HttpResult updateInfo(@RequestBody @Valid UserDTO dto) {
+        userService.updateInfo(dto);
         return HttpResult.success();
     }
 
@@ -66,14 +70,17 @@ public class UserController {
     @ApiOperation(value = "根据ID查询信息")
     @GetMapping("/{id}}")
     @Permission("pc")
-    public HttpResult getInfoById(@ApiParam(name = "id", value = "id")
-                                  @PathVariable(name = "id") Long id) {
-
-        return HttpResult.success(userService.getById(id));
+    public HttpResult<UserVO> getInfoById(@ApiParam(name = "id", value = "id")
+                                          @PathVariable(name = "id") Long id) {
+        return HttpResult.success(userService.getInfoById(id));
     }
 
-    public static void main(String[] args) {
-        System.out.println(1);
+    @ApiOperation(value = "重置密码")
+    @PutMapping
+    @Permission("user:resetPwd")
+    public HttpResult resetPwd() {
+        userService.resetPwd();
+        return HttpResult.success();
     }
 
 }

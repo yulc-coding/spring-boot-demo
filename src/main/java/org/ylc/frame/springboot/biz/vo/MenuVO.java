@@ -14,10 +14,10 @@ import lombok.Data;
 @Data
 public class MenuVO {
 
-    private Integer id;
+    private Long id;
 
     @ApiModelProperty(value = "上级ID")
-    private Integer pid;
+    private Long pid;
 
     @ApiModelProperty(value = "名称")
     private String name;

@@ -20,6 +20,11 @@ import java.util.List;
 public interface MenuMapper extends BaseMapper<Menu> {
 
     /**
+     * 获取菜单树形列表
+     */
+    List<MenuTree> getMenuList();
+
+    /**
      * 获取登录用户的菜单列表
      */
     List<MenuTree> getUserMenuList(@Param("userId") long userId, @Param("loginFrom") String loginFrom);
@@ -31,6 +36,6 @@ public interface MenuMapper extends BaseMapper<Menu> {
      * @param loginFrom 登录方式
      * @return list
      */
-    List<String> getUserPermissions(@Param("userId") String userId, @Param("loginFrom") String loginFrom);
+    List<String> getUserPermissions(@Param("userId") Long userId, @Param("loginFrom") String loginFrom);
 
 }

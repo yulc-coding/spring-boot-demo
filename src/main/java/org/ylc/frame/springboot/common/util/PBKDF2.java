@@ -2,11 +2,11 @@ package org.ylc.frame.springboot.common.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.ylc.frame.springboot.common.exception.OperationException;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.xml.bind.DatatypeConverter;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 
@@ -80,8 +80,14 @@ public class PBKDF2 {
     /**
      * 生成随机盐值
      */
-    public static String generateSalt() throws NoSuchAlgorithmException {
-        SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+    public static String generateSalt() {
+        SecureRandom random = null;
+        try {
+            random = SecureRandom.getInstance("SHA1PRNG");
+        } catch (Exception e) {
+            logger.error("生成随机盐失败,{}", e.getMessage());
+            throw new OperationException("生成随机盐失败," + e.getMessage());
+        }
         byte[] bytes = new byte[SALT_SIZE / 2];
         random.nextBytes(bytes);
         //将byte数组转换为16进制的字符串

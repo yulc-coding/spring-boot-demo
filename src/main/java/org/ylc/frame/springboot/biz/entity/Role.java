@@ -49,4 +49,12 @@ public class Role implements Serializable {
     @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private LocalDateTime updateTime;
 
+    public Role() {
+    }
+
+    public Role(Long id, String name, String remark) {
+        this.id = id;
+        this.name = name;
+        this.remark = remark;
+    }
 }

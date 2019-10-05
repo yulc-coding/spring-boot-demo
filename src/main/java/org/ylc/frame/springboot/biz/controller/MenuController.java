@@ -5,9 +5,14 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.ylc.frame.springboot.biz.dto.MenuDTO;
 import org.ylc.frame.springboot.biz.service.MenuService;
+import org.ylc.frame.springboot.biz.vo.MenuVO;
 import org.ylc.frame.springboot.common.annotation.Permission;
 import org.ylc.frame.springboot.common.base.HttpResult;
+import org.ylc.frame.springboot.common.tree.MenuTree;
+
+import javax.validation.Valid;
 
 /**
  * <p>
@@ -32,8 +37,8 @@ public class MenuController {
     @ApiOperation(value = "新增")
     @PostMapping
     @Permission("menu:add")
-    public HttpResult addInfo() {
-
+    public HttpResult addInfo(@RequestBody @Valid MenuDTO dto) {
+        menuService.addInfo(dto);
         return HttpResult.success();
     }
 
@@ -42,34 +47,31 @@ public class MenuController {
     @Permission("menu:del")
     public HttpResult delInfo(@ApiParam(name = "id", value = "id")
                               @PathVariable("id") Long id) {
-
+        menuService.delInfo(id);
         return HttpResult.success();
     }
 
     @ApiOperation(value = "更新")
     @PutMapping
     @Permission("menu:update")
-    public HttpResult updateInfo() {
-
+    public HttpResult updateInfo(@RequestBody @Valid MenuDTO dto) {
+        menuService.updateInfo(dto);
         return HttpResult.success();
     }
 
-    @ApiOperation(value = "分页查询")
-    @GetMapping("/page/{size}/{current}")
+    @ApiOperation(value = "获取树形结构")
+    @GetMapping("/tree")
     @Permission("pc")
-    public HttpResult pageInfo(@ApiParam(name = "size", value = "每页显示", defaultValue = "10") @PathVariable Long size,
-                               @ApiParam(name = "current", value = "当前页", defaultValue = "1") @PathVariable Long current) {
-
-        return HttpResult.success();
+    public HttpResult<MenuTree> tree() {
+        return HttpResult.success(menuService.getMenuTree());
     }
 
     @ApiOperation(value = "根据ID查询信息")
     @GetMapping("/{id}}")
     @Permission("pc")
-    public HttpResult getInfoById(@ApiParam(name = "id", value = "id")
-                                  @PathVariable(name = "id") Long id) {
-
-        return HttpResult.success();
+    public HttpResult<MenuVO> getInfoById(@ApiParam(name = "id", value = "id")
+                                          @PathVariable(name = "id") Long id) {
+        return HttpResult.success(menuService.getInfoById(id));
     }
 
 }

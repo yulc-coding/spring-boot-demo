@@ -14,7 +14,7 @@ import lombok.Data;
 @Data
 public class RoleVO {
 
-    private Integer id;
+    private Long id;
 
     @ApiModelProperty(value = "角色名称")
     private String name;
@@ -22,4 +22,12 @@ public class RoleVO {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    public RoleVO() {
+    }
+
+    public RoleVO(Long id, String name, String remark) {
+        this.id = id;
+        this.name = name;
+        this.remark = remark;
+    }
 }

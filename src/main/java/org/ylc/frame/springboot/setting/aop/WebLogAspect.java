@@ -125,7 +125,7 @@ public class WebLogAspect {
 
         // MongoDB 保存请求信息
         SystemLog systemLog = new SystemLog();
-        systemLog.setUserId("");
+        systemLog.setUserId(ThreadLocalUtils.getUserDefalutNull());
         systemLog.setUrl(request.getRequestURL().toString());
         systemLog.setHttpMethod(request.getMethod());
         systemLog.setController(proceedingJoinPoint.getSignature().getDeclaringTypeName());
@@ -179,7 +179,7 @@ public class WebLogAspect {
         if (tokenJson == null) {
             throw new CheckException("非法操作", ConfigConst.RETURN_RESULT.ACCESS_RESTRICTED);
         }
-        String userId = tokenJson.getString("userId");
+        Long userId = tokenJson.getLong("userId");
         String loginFrom = tokenJson.getString("loginFrom");
         Map<Object, Object> redisMap = redisUtils.hashEntries(CacheConst.USER_TOKEN_PREFIX + userId + ":" + loginFrom);
         if (redisMap == null) {
@@ -219,7 +219,7 @@ public class WebLogAspect {
      * @param userId    用户ID
      * @param loginFrom 登入方式
      */
-    private void updateTokenExpireTime(String userId, String loginFrom) {
+    private void updateTokenExpireTime(Long userId, String loginFrom) {
         long expireTime = System.currentTimeMillis();
         if (ConfigConst.LOGIN_PC.equals(loginFrom)) {
             expireTime += ConfigConst.DEFAULT_PC_TOKEN_INVALID_TIME;

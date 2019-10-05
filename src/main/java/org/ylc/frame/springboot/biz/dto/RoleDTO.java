@@ -3,6 +3,8 @@ package org.ylc.frame.springboot.biz.dto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * <p>
  * 角色表
@@ -14,8 +16,9 @@ import lombok.Data;
 @Data
 public class RoleDTO {
 
-    private Integer id;
+    private Long id;
 
+    @NotNull(message = "角色不能为空")
     @ApiModelProperty(value = "角色名称")
     private String name;
 
