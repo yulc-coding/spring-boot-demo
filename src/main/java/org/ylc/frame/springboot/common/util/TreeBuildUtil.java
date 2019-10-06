@@ -41,13 +41,26 @@ public class TreeBuildUtil {
                 otherList.add(entity);
             }
         }
-        // 子类不为空，递归
-        if (CollectionUtils.isEmpty(curChild)) {
-            for (BaseTree nextRoot : curChild) {
-                build(nextRoot, otherList);
-            }
-            // noinspection unchecked
-            root.setChildren(curChild);
+        // noinspection unchecked
+        root.setChildren(curChild);
+        for (BaseTree nextRoot : curChild) {
+            // 递归
+            build(nextRoot, otherList);
+        }
+    }
+
+    /**
+     * 多个根目录的生成树结构
+     *
+     * @param rootList   根目录
+     * @param branchList 分支目录
+     */
+    public static void multiRootTreeBuild(List<? extends BaseTree> rootList, List<? extends BaseTree> branchList) {
+        if (rootList == null || rootList.size() == 0 || branchList == null || branchList.size() == 0) {
+            return;
+        }
+        for (BaseTree root : rootList) {
+            build(root, branchList);
         }
     }
 
