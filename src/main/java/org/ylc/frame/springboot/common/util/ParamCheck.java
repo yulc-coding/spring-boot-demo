@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class ParamCheck {
 
-    public static void isTrue(boolean expression, String message) {
+    public static void assertTrue(boolean expression, String message) {
         if (!expression) {
             throw new CheckException(message);
         }
@@ -65,6 +65,12 @@ public class ParamCheck {
      */
     public static void notEmptyMap(Map<?, ?> map, String message) {
         if (map == null || map.isEmpty()) {
+            throw new CheckException(message);
+        }
+    }
+
+    public static void assertEquals(Object obj1, Object obj2, String message) {
+        if (!obj1.equals(obj2)) {
             throw new CheckException(message);
         }
     }

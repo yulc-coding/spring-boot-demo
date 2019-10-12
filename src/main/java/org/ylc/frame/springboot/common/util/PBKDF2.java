@@ -60,6 +60,10 @@ public class PBKDF2 {
 
     /**
      * 根据password和salt生成密文
+     *
+     * @param password 未加密密码
+     * @param salt     加密盐
+     * @return 加密后密码
      */
     public static String getPBKDF2(String password, String salt) {
         //将16进制字符串形式的salt转换成byte数组
@@ -81,7 +85,7 @@ public class PBKDF2 {
      * 生成随机盐值
      */
     public static String generateSalt() {
-        SecureRandom random = null;
+        SecureRandom random;
         try {
             random = SecureRandom.getInstance("SHA1PRNG");
         } catch (Exception e) {

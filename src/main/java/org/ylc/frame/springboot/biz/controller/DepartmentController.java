@@ -9,7 +9,7 @@ import org.ylc.frame.springboot.biz.dto.DepartmentDTO;
 import org.ylc.frame.springboot.biz.service.DepartmentService;
 import org.ylc.frame.springboot.biz.vo.DepartmentVO;
 import org.ylc.frame.springboot.common.annotation.Permission;
-import org.ylc.frame.springboot.common.base.HttpResult;
+import org.ylc.frame.springboot.common.entity.HttpResult;
 import org.ylc.frame.springboot.common.tree.DepartmentTree;
 
 import javax.validation.Valid;
@@ -24,7 +24,7 @@ import javax.validation.Valid;
  */
 @Api(value = "DepartmentController")
 @RestController
-@RequestMapping("/departments")
+@RequestMapping("/department")
 public class DepartmentController {
 
     private final DepartmentService departmentService;
@@ -35,7 +35,7 @@ public class DepartmentController {
     }
 
     @ApiOperation(value = "新增")
-    @PostMapping
+    @PostMapping("/add")
     @Permission("department:add")
     public HttpResult addInfo(@RequestBody @Valid DepartmentDTO dto) {
         departmentService.addInfo(dto);
@@ -43,8 +43,8 @@ public class DepartmentController {
     }
 
     @ApiOperation(value = "删除")
-    @DeleteMapping("/{id}}")
-    @Permission("department:del")
+    @GetMapping("/delete/{id}}")
+    @Permission("department:delete")
     public HttpResult delInfo(@ApiParam(name = "id", value = "id")
                               @PathVariable("id") Long id) {
         departmentService.delInfo(id);
@@ -52,7 +52,7 @@ public class DepartmentController {
     }
 
     @ApiOperation(value = "更新")
-    @PutMapping
+    @PostMapping("/update")
     @Permission("department:update")
     public HttpResult updateInfo(@RequestBody @Valid DepartmentDTO dto) {
         departmentService.updateInfo(dto);
@@ -60,7 +60,7 @@ public class DepartmentController {
     }
 
     @ApiOperation(value = "根据ID查询信息")
-    @GetMapping("/{id}}")
+    @GetMapping("/get/{id}}")
     @Permission("pc")
     public HttpResult<DepartmentVO> getInfoById(@ApiParam(name = "id", value = "id")
                                                 @PathVariable(name = "id") Long id) {

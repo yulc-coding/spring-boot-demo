@@ -1,11 +1,11 @@
-package org.ylc.frame.springboot.common.base;
+package org.ylc.frame.springboot.common.entity;
 
 import lombok.Data;
 
 import java.io.Serializable;
 
 /**
- * 本都用户信息
+ * 本地用户信息
  *
  * @author YuLc
  * @version 1.0.0

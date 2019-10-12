@@ -7,10 +7,12 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.ylc.frame.springboot.biz.dto.UserDTO;
+import org.ylc.frame.springboot.biz.params.ChangePwdArg;
 import org.ylc.frame.springboot.biz.service.UserService;
 import org.ylc.frame.springboot.biz.vo.UserVO;
 import org.ylc.frame.springboot.common.annotation.Permission;
-import org.ylc.frame.springboot.common.base.HttpResult;
+import org.ylc.frame.springboot.common.entity.HttpResult;
+import org.ylc.frame.springboot.common.entity.PageParam;
 
 import javax.validation.Valid;
 
@@ -24,7 +26,7 @@ import javax.validation.Valid;
  */
 @Api(value = "UserController")
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
@@ -35,7 +37,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "新增")
-    @PostMapping
+    @PostMapping("/add")
     @Permission("user:add")
     public HttpResult addInfo(@RequestBody @Valid UserDTO dto) {
         userService.addInfo(dto);
@@ -43,8 +45,8 @@ public class UserController {
     }
 
     @ApiOperation(value = "删除")
-    @DeleteMapping("/{id}}")
-    @Permission("user:del")
+    @GetMapping("/delete/{id}}")
+    @Permission("user:delete")
     public HttpResult delInfo(@ApiParam(name = "id", value = "id")
                               @PathVariable("id") Long id) {
         userService.delInfo(id);
@@ -52,7 +54,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "更新")
-    @PutMapping
+    @PostMapping("/update")
     @Permission("user:update")
     public HttpResult updateInfo(@RequestBody @Valid UserDTO dto) {
         userService.updateInfo(dto);
@@ -60,26 +62,25 @@ public class UserController {
     }
 
     @ApiOperation(value = "分页查询")
-    @GetMapping("/page/{size}/{current}")
+    @PostMapping("/page")
     @Permission("pc")
-    public HttpResult pageInfo(@ApiParam(name = "size", value = "每页显示", defaultValue = "10") @PathVariable Long size,
-                               @ApiParam(name = "current", value = "当前页", defaultValue = "1") @PathVariable Long current) {
-        return HttpResult.success(userService.page(new Page<>(current, size)));
+    public HttpResult pageInfo(@RequestBody @Valid PageParam page) {
+        return HttpResult.success(userService.page(new Page<>(page.getPage(), page.getSize())));
     }
 
     @ApiOperation(value = "根据ID查询信息")
-    @GetMapping("/{id}}")
+    @GetMapping("/get/{id}}")
     @Permission("pc")
     public HttpResult<UserVO> getInfoById(@ApiParam(name = "id", value = "id")
                                           @PathVariable(name = "id") Long id) {
         return HttpResult.success(userService.getInfoById(id));
     }
 
-    @ApiOperation(value = "重置密码")
-    @PutMapping
-    @Permission("user:resetPwd")
-    public HttpResult resetPwd() {
-        userService.resetPwd();
+    @ApiOperation(value = "修改密码")
+    @PostMapping("/changePwd")
+    @Permission("pc")
+    public HttpResult changePwd(@RequestBody @Valid ChangePwdArg pwdArg) {
+        userService.changePwd(pwdArg.getOldPwd(), pwdArg.getNewPwd(), pwdArg.getRepeatPwd());
         return HttpResult.success();
     }
 

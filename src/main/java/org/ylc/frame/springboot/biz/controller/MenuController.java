@@ -9,7 +9,7 @@ import org.ylc.frame.springboot.biz.dto.MenuDTO;
 import org.ylc.frame.springboot.biz.service.MenuService;
 import org.ylc.frame.springboot.biz.vo.MenuVO;
 import org.ylc.frame.springboot.common.annotation.Permission;
-import org.ylc.frame.springboot.common.base.HttpResult;
+import org.ylc.frame.springboot.common.entity.HttpResult;
 import org.ylc.frame.springboot.common.tree.MenuTree;
 
 import javax.validation.Valid;
@@ -24,7 +24,7 @@ import javax.validation.Valid;
  */
 @Api(value = "MenuController")
 @RestController
-@RequestMapping("/menus")
+@RequestMapping("/menu")
 public class MenuController {
 
     private final MenuService menuService;
@@ -35,7 +35,7 @@ public class MenuController {
     }
 
     @ApiOperation(value = "新增")
-    @PostMapping
+    @PostMapping("/add")
     @Permission("menu:add")
     public HttpResult addInfo(@RequestBody @Valid MenuDTO dto) {
         menuService.addInfo(dto);
@@ -43,8 +43,8 @@ public class MenuController {
     }
 
     @ApiOperation(value = "删除")
-    @DeleteMapping("/{id}}")
-    @Permission("menu:del")
+    @GetMapping("/delete/{id}}")
+    @Permission("menu:delete")
     public HttpResult delInfo(@ApiParam(name = "id", value = "id")
                               @PathVariable("id") Long id) {
         menuService.delInfo(id);
@@ -52,7 +52,7 @@ public class MenuController {
     }
 
     @ApiOperation(value = "更新")
-    @PutMapping
+    @PostMapping("/update")
     @Permission("menu:update")
     public HttpResult updateInfo(@RequestBody @Valid MenuDTO dto) {
         menuService.updateInfo(dto);
@@ -67,7 +67,7 @@ public class MenuController {
     }
 
     @ApiOperation(value = "根据ID查询信息")
-    @GetMapping("/{id}}")
+    @GetMapping("/get/{id}}")
     @Permission("pc")
     public HttpResult<MenuVO> getInfoById(@ApiParam(name = "id", value = "id")
                                           @PathVariable(name = "id") Long id) {

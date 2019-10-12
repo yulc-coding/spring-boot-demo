@@ -9,7 +9,7 @@ import org.ylc.frame.springboot.biz.dto.RoleDTO;
 import org.ylc.frame.springboot.biz.service.RoleService;
 import org.ylc.frame.springboot.biz.vo.RoleVO;
 import org.ylc.frame.springboot.common.annotation.Permission;
-import org.ylc.frame.springboot.common.base.HttpResult;
+import org.ylc.frame.springboot.common.entity.HttpResult;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -24,7 +24,7 @@ import java.util.List;
  */
 @Api(value = "RoleController")
 @RestController
-@RequestMapping("/roles")
+@RequestMapping("/role")
 public class RoleController {
 
     private final RoleService roleService;
@@ -35,7 +35,7 @@ public class RoleController {
     }
 
     @ApiOperation(value = "新增")
-    @PostMapping
+    @PostMapping("/add")
     @Permission("role:add")
     public HttpResult addInfo(@RequestBody @Valid RoleDTO dto) {
         roleService.addInfo(dto);
@@ -43,8 +43,8 @@ public class RoleController {
     }
 
     @ApiOperation(value = "删除")
-    @DeleteMapping("/{id}}")
-    @Permission("role:del")
+    @GetMapping("/delete/{id}}")
+    @Permission("role:delete")
     public HttpResult delInfo(@ApiParam(name = "id", value = "id")
                               @PathVariable("id") Long id) {
         roleService.delInfo(id);
@@ -52,7 +52,7 @@ public class RoleController {
     }
 
     @ApiOperation(value = "更新")
-    @PutMapping
+    @PostMapping("/update")
     @Permission("role:update")
     public HttpResult updateInfo(@RequestBody @Valid RoleDTO dto) {
         roleService.updateInfo(dto);

@@ -2,11 +2,13 @@ package org.ylc.frame.springboot.biz.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 import org.ylc.frame.springboot.biz.params.LoginArg;
 import org.ylc.frame.springboot.biz.service.UserService;
 import org.ylc.frame.springboot.biz.vo.LoginResponseVO;
-import org.ylc.frame.springboot.common.base.HttpResult;
+import org.ylc.frame.springboot.common.annotation.Permission;
+import org.ylc.frame.springboot.common.entity.HttpResult;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -38,11 +40,19 @@ public class SysController {
         return HttpResult.success(userService.login(args));
     }
 
-
     @ApiOperation("登出")
     @GetMapping("/logout")
     public HttpResult logout(HttpServletRequest request) {
         userService.logout(request.getHeader("token"));
+        return HttpResult.success();
+    }
+
+    @ApiOperation(value = "重置密码")
+    @PutMapping("/resetPwd/{userId}")
+    @Permission("sys:resetPwd")
+    public HttpResult resetPwd(@ApiParam(name = "userId", value = "userId")
+                               @PathVariable(name = "userId") Long userId) {
+        userService.resetPwd(userId);
         return HttpResult.success();
     }
 }

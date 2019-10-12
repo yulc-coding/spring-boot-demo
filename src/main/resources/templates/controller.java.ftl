@@ -7,7 +7,7 @@ import ${package.Entity}.${entity};
 import ${package.Service}.${table.serviceName};
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.ylc.frame.springboot.common.annotation.Permission;
-import org.ylc.frame.springboot.common.base.HttpResult;
+import org.ylc.frame.springboot.common.entity.HttpResult;
 
 <#if restControllerStyle>
 import org.springframework.web.bind.annotation.RestController;
@@ -32,7 +32,7 @@ import ${superControllerClassPackage};
 <#else>
 @Controller
 </#if>
-@RequestMapping("/${table.entityPath}s")
+@RequestMapping("/${table.entityPath}")
 <#if kotlin>
 class ${table.controllerName}<#if superControllerClass??> : ${superControllerClass}()</#if>
 <#else>
@@ -50,7 +50,7 @@ public class ${table.controllerName} {
     }
 
     @ApiOperation(value = "新增")
-    @PostMapping
+    @PostMapping("/add")
     @Permission("${table.entityPath}:add")
     public HttpResult addInfo() {
 
@@ -58,8 +58,8 @@ public class ${table.controllerName} {
     }
 
     @ApiOperation(value = "删除")
-    @DeleteMapping("/{id}}")
-    @Permission("${table.entityPath}:del")
+    @GetMapping("/delete/{id}}")
+    @Permission("${table.entityPath}:delete")
     public HttpResult delInfo(@ApiParam(name = "id", value = "id")
                               @PathVariable("id") Long id) {
 
@@ -67,7 +67,7 @@ public class ${table.controllerName} {
     }
 
     @ApiOperation(value = "更新")
-    @PutMapping
+    @PostMapping("/update")
     @Permission("${table.entityPath}:update")
     public HttpResult updateInfo() {
 
@@ -75,16 +75,15 @@ public class ${table.controllerName} {
     }
 
     @ApiOperation(value = "分页查询")
-    @GetMapping("/page/{size}/{current}")
+    @PostMapping("/page")
     @Permission("pc")
-    public HttpResult pageInfo(@ApiParam(name = "size", value = "每页显示", defaultValue = "10") @PathVariable Long size,
-                               @ApiParam(name = "current", value = "当前页", defaultValue = "1") @PathVariable Long current) {
+    public HttpResult pageInfo(@RequestBody @Valid PageParam page) {
 
         return HttpResult.success();
     }
 
     @ApiOperation(value = "根据ID查询信息")
-    @GetMapping("/{id}}")
+    @GetMapping("/get/{id}}")
     @Permission("pc")
     public HttpResult getInfoById(@ApiParam(name = "id", value = "id")
                                   @PathVariable(name = "id") Long id) {

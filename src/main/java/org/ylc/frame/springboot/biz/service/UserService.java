@@ -38,6 +38,15 @@ public interface UserService extends IService<User> {
     UserVO getInfoById(long id);
 
     /**
+     * 修改密码
+     *
+     * @param oldPwd    就密码
+     * @param newPwd    新密码
+     * @param repeatPwd 重复密码
+     */
+    void changePwd(String oldPwd, String newPwd, String repeatPwd);
+
+    /**
      * 登录
      *
      * @param args 参数
@@ -54,7 +63,9 @@ public interface UserService extends IService<User> {
 
     /**
      * 重置密码
+     *
+     * @param userId 用户ID
      */
-    void resetPwd();
+    void resetPwd(long userId);
 
 }

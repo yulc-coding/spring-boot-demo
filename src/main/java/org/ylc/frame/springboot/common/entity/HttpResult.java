@@ -1,4 +1,4 @@
-package org.ylc.frame.springboot.common.base;
+package org.ylc.frame.springboot.common.entity;
 
 import org.ylc.frame.springboot.common.constant.ConfigConst;
 

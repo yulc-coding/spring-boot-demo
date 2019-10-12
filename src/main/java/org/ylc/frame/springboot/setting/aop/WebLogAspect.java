@@ -14,7 +14,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import org.ylc.frame.springboot.biz.mapper.MenuMapper;
 import org.ylc.frame.springboot.common.annotation.Permission;
-import org.ylc.frame.springboot.common.base.UserInfo;
+import org.ylc.frame.springboot.common.entity.UserInfo;
 import org.ylc.frame.springboot.common.constant.CacheConst;
 import org.ylc.frame.springboot.common.constant.ConfigConst;
 import org.ylc.frame.springboot.common.exception.CheckException;
@@ -68,7 +68,7 @@ public class WebLogAspect {
     }
 
 
-    @Pointcut("execution(public org.ylc.frame.springboot.common.base.HttpResult org.ylc.frame.springboot.biz.*controller..*(..))")
+    @Pointcut("execution(public org.ylc.frame.springboot.common.entity.HttpResult org.ylc.frame.springboot.biz.*controller..*(..))")
     public void webLog() {
     }
 

@@ -3,7 +3,7 @@ package org.ylc.frame.springboot.common.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import org.ylc.frame.springboot.common.base.UserInfo;
+import org.ylc.frame.springboot.common.entity.UserInfo;
 
 /**
  * 线程本地变量

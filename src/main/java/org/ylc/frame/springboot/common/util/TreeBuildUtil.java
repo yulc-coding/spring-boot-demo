@@ -1,6 +1,5 @@
 package org.ylc.frame.springboot.common.util;
 
-import org.springframework.util.CollectionUtils;
 import org.ylc.frame.springboot.common.tree.BaseTree;
 
 import java.util.ArrayList;

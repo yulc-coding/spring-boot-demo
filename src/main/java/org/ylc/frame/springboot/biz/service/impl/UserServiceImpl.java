@@ -77,6 +77,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    public void changePwd(String oldPwd, String newPwd, String repeatPwd) {
+        ParamCheck.assertEquals(newPwd, repeatPwd, "新密码输入不一致");
+
+        User user = baseMapper.selectById(ThreadLocalUtils.getUserId());
+        ParamCheck.notNull(user, "无效用户");
+
+        ParamCheck.assertTrue(PBKDF2.verify(newPwd, user.getPassword(), user.getSalt()), "原密码错误");
+
+        String newSalt = PBKDF2.generateSalt();
+        User updateUser = new User();
+        updateUser.setId(user.getId());
+        updateUser.setSalt(newSalt);
+        updateUser.setPassword(PBKDF2.getPBKDF2(newPwd, newSalt));
+        baseMapper.updateById(updateUser);
+    }
+
+    @Override
     public LoginResponseVO login(LoginArg args) {
         User user = baseMapper.selectOne(
                 new QueryWrapper<User>()
@@ -84,7 +101,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                         .eq("username", args.getUsername())
         );
         ParamCheck.notNull(user, "账号或密码错误");
-        ParamCheck.isTrue(PBKDF2.verify(args.getPassword(), user.getPassword(), user.getSalt()), "账号或密码错误");
+        ParamCheck.assertTrue(PBKDF2.verify(args.getPassword(), user.getPassword(), user.getSalt()), "账号或密码错误");
 
         // 生成token
         JSONObject tokenJson = new JSONObject();
@@ -98,9 +115,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         // 首层根目录
         MenuTree menuTree = new MenuTree();
-        menuTree.setId(0L);
-        menuTree.setName("根目录");
         menuTree.setChildren(new ArrayList<>());
+        menuTree.setName("根目录");
+        menuTree.setId(0L);
         TreeBuildUtil.build(menuTree, menuTrees);
 
         LoginResponseVO vo = new LoginResponseVO();
@@ -138,8 +155,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public void resetPwd() {
-        Long userId = ThreadLocalUtils.getUserId();
+    public void resetPwd(long userId) {
         String salt = PBKDF2.generateSalt();
         String newPwd = PBKDF2.getPBKDF2(ConfigConst.DEFAULT_PWD, salt);
         User user = new User();
