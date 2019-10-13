@@ -7,6 +7,8 @@ import org.ylc.frame.springboot.biz.params.LoginArg;
 import org.ylc.frame.springboot.biz.vo.LoginResponseVO;
 import org.ylc.frame.springboot.biz.vo.UserVO;
 
+import java.util.List;
+
 /**
  * <p>
  * 用户表 服务类
@@ -36,6 +38,14 @@ public interface UserService extends IService<User> {
      * 根据ID查询
      */
     UserVO getInfoById(long id);
+
+    /**
+     * 绑定角色
+     *
+     * @param userId 用户ID
+     * @param roles  角色列表
+     */
+    void bindRole(long userId, List<Long> roles);
 
     /**
      * 修改密码

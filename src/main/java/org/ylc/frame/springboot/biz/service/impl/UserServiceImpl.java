@@ -4,15 +4,17 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.ylc.frame.springboot.biz.dto.UserDTO;
 import org.ylc.frame.springboot.biz.entity.User;
+import org.ylc.frame.springboot.biz.entity.UserRole;
 import org.ylc.frame.springboot.biz.mapper.MenuMapper;
 import org.ylc.frame.springboot.biz.mapper.UserMapper;
 import org.ylc.frame.springboot.biz.params.LoginArg;
+import org.ylc.frame.springboot.biz.service.UserRoleService;
 import org.ylc.frame.springboot.biz.service.UserService;
 import org.ylc.frame.springboot.biz.vo.LoginResponseVO;
 import org.ylc.frame.springboot.biz.vo.UserVO;
@@ -37,11 +39,17 @@ import java.util.List;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
 
-    @Autowired
-    private MenuMapper menuMapper;
+    private final MenuMapper menuMapper;
 
-    @Autowired
-    private RedisUtils redisUtils;
+    private final UserRoleService userRoleService;
+
+    private final RedisUtils redisUtils;
+
+    public UserServiceImpl(MenuMapper menuMapper, UserRoleService userRoleService, RedisUtils redisUtils) {
+        this.menuMapper = menuMapper;
+        this.userRoleService = userRoleService;
+        this.redisUtils = redisUtils;
+    }
 
     @Override
     public void addInfo(UserDTO dto) {
@@ -74,6 +82,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             BeanUtils.copyProperties(entity, vo);
         }
         return vo;
+    }
+
+    /**
+     * 先删除已有的，再批量新增
+     *
+     * @param userId 用户ID
+     * @param roles  角色列表
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void bindRole(long userId, List<Long> roles) {
+        List<UserRole> userRoles = new ArrayList<>();
+        UserRole userRole;
+        for (Long roleId : roles) {
+            userRole = new UserRole();
+            userRole.setUserId(userId);
+            userRole.setRoleId(roleId);
+            userRoles.add(userRole);
+        }
+        userRoleService.remove(new QueryWrapper<UserRole>().eq("user_id", userId));
+        OperationCheck.isExecute(userRoleService.saveBatch(userRoles), "绑定失败");
     }
 
     @Override

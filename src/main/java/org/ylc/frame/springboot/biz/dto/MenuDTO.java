@@ -46,6 +46,9 @@ public class MenuDTO{
     @ApiModelProperty(value = "排序")
     private Integer seq;
 
+    @ApiModelProperty(value = "登录方式，1PC，2APP")
+    private String loginFrom;
+
     @ApiModelProperty(value = "备注")
     private String remark;
 

@@ -29,7 +29,7 @@ public class Menu implements Serializable {
      * 上级ID
      */
     @TableField("pid")
-    private Integer pid;
+    private Long pid;
 
     /**
      * 名称
@@ -84,6 +84,12 @@ public class Menu implements Serializable {
      */
     @TableField("seq")
     private Integer seq;
+
+    /**
+     * 登录方式，1PC，2APP
+     */
+    @TableField("login_from")
+    private String loginFrom;
 
     /**
      * 备注

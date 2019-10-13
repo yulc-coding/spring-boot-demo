@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.ylc.frame.springboot.biz.dto.UserDTO;
+import org.ylc.frame.springboot.biz.params.BindRole;
 import org.ylc.frame.springboot.biz.params.ChangePwdArg;
 import org.ylc.frame.springboot.biz.service.UserService;
 import org.ylc.frame.springboot.biz.vo.UserVO;
@@ -75,6 +76,15 @@ public class UserController {
                                           @PathVariable(name = "id") Long id) {
         return HttpResult.success(userService.getInfoById(id));
     }
+
+    @ApiOperation(value = "绑定角色")
+    @PostMapping("/bindRole")
+    @Permission("user:bindRole")
+    public HttpResult bindRole(@RequestBody @Valid BindRole bindRole) {
+        userService.bindRole(bindRole.getUserId(), bindRole.getRoles());
+        return HttpResult.success();
+    }
+
 
     @ApiOperation(value = "修改密码")
     @PostMapping("/changePwd")

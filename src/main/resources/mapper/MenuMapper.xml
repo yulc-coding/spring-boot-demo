@@ -15,6 +15,7 @@
         <result column="btn_key" property="btnKey"/>
         <result column="icon" property="icon"/>
         <result column="seq" property="seq"/>
+        <result column="login_from" property="loginFrom"/>
         <result column="remark" property="remark"/>
         <result column="create_user" property="createUser"/>
         <result column="create_time" property="createTime"/>
@@ -23,16 +24,59 @@
     </resultMap>
 
     <select id="getMenuList" resultType="org.ylc.frame.springboot.common.tree.MenuTree">
-
+        SELECT
+            m.id,
+            m.`name`,
+            m.pid,
+            m.type,
+            m.url,
+            m.path,
+            m.component,
+            m.btn_key AS btnKey,
+            m.icon
+        FROM
+            sys_menu m
+        ORDER BY m.id
     </select>
 
     <select id="getUserMenuList" resultType="org.ylc.frame.springboot.common.tree.MenuTree">
-
+        SELECT
+            m.id,
+            m.`name`,
+            m.pid,
+            m.type,
+            m.url,
+            m.path,
+            m.component,
+            m.btn_key AS btnKey,
+            m.icon
+        FROM
+            sys_menu m
+        WHERE
+            m.id IN (
+            SELECT
+                menu_id
+            FROM
+                sys_role_menu rm
+            WHERE
+            rm.role_id IN ( SELECT role_id FROM sys_user_role ur WHERE ur.user_id = #{userId} ))
+            AND m.login_from = #{loginFrom}
     </select>
 
     <select id="getUserPermissions" resultType="java.lang.String">
-            SELECT permission FROM sys_menu
+        SELECT
+            m.permission
+        FROM
+            sys_menu m
+        WHERE
+            m.id IN (
+            SELECT
+                menu_id
+            FROM
+                sys_role_menu rm
+            WHERE
+            rm.role_id IN ( SELECT role_id FROM sys_user_role ur WHERE ur.user_id = #{userId} ))
+            AND m.login_from = #{loginFrom}
     </select>
-
 
 </mapper>

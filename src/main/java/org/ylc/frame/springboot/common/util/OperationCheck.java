@@ -34,11 +34,24 @@ public class OperationCheck {
 
     /**
      * 数据库是否执行成功
+     *
      * @param executeCount 执行成功条数
-     * @param message 异常信息
+     * @param message      异常信息
      */
     public static void isExecute(int executeCount, String message) {
         if (executeCount <= 0) {
+            throw new OperationException(message);
+        }
+    }
+
+    /**
+     * 数据库是否执行成功
+     *
+     * @param executeResult 执行结果
+     * @param message       异常信息
+     */
+    public static void isExecute(boolean executeResult, String message) {
+        if (!executeResult) {
             throw new OperationException(message);
         }
     }

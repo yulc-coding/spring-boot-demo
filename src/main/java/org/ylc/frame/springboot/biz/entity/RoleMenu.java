@@ -31,12 +31,12 @@ public class RoleMenu implements Serializable {
      * 角色ID
      */
     @TableField("role_id")
-    private Integer roleId;
+    private Long roleId;
 
     /**
      * 菜单ID
      */
     @TableField("menu_id")
-    private Integer menuId;
+    private Long menuId;
 
 }

@@ -41,7 +41,7 @@ public class Department implements Serializable {
      * 上级部门ID
      */
     @TableField("pid")
-    private Integer pid;
+    private Long pid;
 
     /**
      * 备注
