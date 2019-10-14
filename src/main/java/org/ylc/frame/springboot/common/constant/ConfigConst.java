@@ -10,6 +10,19 @@ package org.ylc.frame.springboot.common.constant;
 public class ConfigConst {
 
     /**
+     * 用户不可用
+     */
+    public static Integer USER_DISABLED = 0;
+    /**
+     * 用户启用
+     */
+    public static Integer USER_ENABLED = 1;
+    /**
+     * 用户冻结
+     */
+    public static Integer USER_FROZEN = 99;
+
+    /**
      * 默认密码
      */
     public static String DEFAULT_PWD = "123456";
@@ -28,7 +41,6 @@ public class ConfigConst {
      * PC token 过期时间 30分
      */
     public static Long DEFAULT_PC_TOKEN_INVALID_TIME = 1000 * 60 * 30L;
-
     /**
      * APP token 过期时间 7天
      */
@@ -47,7 +59,7 @@ public class ConfigConst {
     /**
      * 请求返回
      */
-    public static class RETURN_RESULT {
+    public static class Return {
         /**
          * 成功
          */

@@ -1,4 +1,4 @@
-package org.ylc.frame.springboot.biz.params;
+package org.ylc.frame.springboot.biz.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -17,7 +17,7 @@ import javax.validation.constraints.Size;
  * @date 2019/10/12
  */
 @Data
-public class ChangePwdArg {
+public class ChangePwdDTO {
 
     @ApiModelProperty(value = "原密码")
     @NotBlank(message = "原密码不能为空")

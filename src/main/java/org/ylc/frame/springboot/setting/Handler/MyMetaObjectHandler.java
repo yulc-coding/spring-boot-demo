@@ -24,13 +24,13 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
 
     @Override
     public void insertFill(MetaObject metaObject) {
-        this.setInsertFieldValByName("createUser", ThreadLocalUtils.getUserId(), metaObject);
+        this.setInsertFieldValByName("createUser", ThreadLocalUtils.getUserIdDefaultZero(), metaObject);
         this.setInsertFieldValByName("createTime", LocalDateTime.now(), metaObject);
     }
 
     @Override
     public void updateFill(MetaObject metaObject) {
-        this.setUpdateFieldValByName("updateUser", ThreadLocalUtils.getUserId(), metaObject);
+        this.setUpdateFieldValByName("updateUser", ThreadLocalUtils.getUserIdDefaultZero(), metaObject);
         this.setUpdateFieldValByName("updateTime", LocalDateTime.now(), metaObject);
     }
 

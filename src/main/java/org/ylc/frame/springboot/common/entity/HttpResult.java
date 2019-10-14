@@ -28,7 +28,7 @@ public class HttpResult<T> implements Serializable {
     }
 
     public HttpResult() {
-        this.code = ConfigConst.RETURN_RESULT.SUCCESS;
+        this.code = ConfigConst.Return.SUCCESS;
         this.msg = "SUCCESS";
     }
 
@@ -45,7 +45,7 @@ public class HttpResult<T> implements Serializable {
      * @return Result
      */
     public static <T> HttpResult<T> success(String msg, T body) {
-        return new HttpResult<>(ConfigConst.RETURN_RESULT.SUCCESS, msg, body);
+        return new HttpResult<>(ConfigConst.Return.SUCCESS, msg, body);
     }
 
     /**
@@ -85,7 +85,7 @@ public class HttpResult<T> implements Serializable {
      * @return Result
      */
     public static <T> HttpResult<T> fail(String msg) {
-        return fail(ConfigConst.RETURN_RESULT.OPERATION_FAILED, msg);
+        return fail(ConfigConst.Return.OPERATION_FAILED, msg);
     }
 
     public int getCode() {

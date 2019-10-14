@@ -44,11 +44,23 @@ public class ThreadLocalUtils {
     }
 
     /**
+     * 获取用户ID，如果没有则返回0
+     */
+    public static Long getUserIdDefaultZero() {
+        UserInfo userInfo = THREAD_LOCAL.get();
+        if (userInfo == null) {
+            return 0L;
+        }
+        return userInfo.getUserId();
+    }
+
+
+    /**
      * 获取用户ID，没有返回NULL
      *
      * @return userId
      */
-    public static Long getUserDefalutNull() {
+    public static Long getUserIdDefaultNull() {
         UserInfo userInfo = THREAD_LOCAL.get();
         return userInfo == null ? null : userInfo.getUserId();
     }

@@ -23,7 +23,6 @@ public class SpringBootDemoApplication {
     /**
      * 使用fastJson来转换对象和json。而不是使用默认的类
      */
-    @SuppressWarnings("Duplicates")
     @Bean
     public HttpMessageConverters fastJsonHttpMessageConverters() {
         FastJsonHttpMessageConverter fastConverter = new FastJsonHttpMessageConverter();

@@ -44,7 +44,7 @@ public class Menu implements Serializable {
     private String permission;
 
     /**
-     * 权限类别：1文件、2页面、3按钮、4权限
+     * 菜单类别：1文件、2页面、3按钮、4权限
      */
     @TableField("type")
     private String type;
@@ -86,10 +86,10 @@ public class Menu implements Serializable {
     private Integer seq;
 
     /**
-     * 登录方式，1PC，2APP
+     * 访问方式，1PC，2APP
      */
-    @TableField("login_from")
-    private String loginFrom;
+    @TableField("visit_type")
+    private String visitType;
 
     /**
      * 备注

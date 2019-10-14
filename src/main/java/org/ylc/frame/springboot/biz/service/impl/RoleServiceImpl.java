@@ -2,10 +2,14 @@ package org.ylc.frame.springboot.biz.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.ylc.frame.springboot.biz.dto.RoleDTO;
 import org.ylc.frame.springboot.biz.entity.Role;
+import org.ylc.frame.springboot.biz.entity.RoleMenu;
 import org.ylc.frame.springboot.biz.mapper.RoleMapper;
+import org.ylc.frame.springboot.biz.service.RoleMenuService;
 import org.ylc.frame.springboot.biz.service.RoleService;
 import org.ylc.frame.springboot.biz.vo.RoleVO;
 import org.ylc.frame.springboot.common.util.OperationCheck;
@@ -23,6 +27,13 @@ import java.util.List;
  */
 @Service
 public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements RoleService {
+
+    private final RoleMenuService roleMenuService;
+
+    @Autowired
+    public RoleServiceImpl(RoleMenuService roleMenuService) {
+        this.roleMenuService = roleMenuService;
+    }
 
     @Override
     public void addInfo(RoleDTO dto) {
@@ -49,5 +60,16 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
             voList.add(new RoleVO(role.getId(), role.getName(), role.getRemark()));
         }
         return voList;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void bindMenu(Long roleId, List<Long> menuIds) {
+        List<RoleMenu> roleMenus = new ArrayList<>();
+        for (Long menuId : menuIds) {
+            roleMenus.add(new RoleMenu(roleId, menuId));
+        }
+        roleMenuService.remove(new QueryWrapper<RoleMenu>().eq("role_id", roleId));
+        roleMenuService.saveBatch(roleMenus);
     }
 }

@@ -7,8 +7,8 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.ylc.frame.springboot.biz.dto.UserDTO;
-import org.ylc.frame.springboot.biz.params.BindRole;
-import org.ylc.frame.springboot.biz.params.ChangePwdArg;
+import org.ylc.frame.springboot.biz.dto.UserBindRoleDTO;
+import org.ylc.frame.springboot.biz.dto.ChangePwdDTO;
 import org.ylc.frame.springboot.biz.service.UserService;
 import org.ylc.frame.springboot.biz.vo.UserVO;
 import org.ylc.frame.springboot.common.annotation.Permission;
@@ -80,8 +80,8 @@ public class UserController {
     @ApiOperation(value = "绑定角色")
     @PostMapping("/bindRole")
     @Permission("user:bindRole")
-    public HttpResult bindRole(@RequestBody @Valid BindRole bindRole) {
-        userService.bindRole(bindRole.getUserId(), bindRole.getRoles());
+    public HttpResult bindRole(@RequestBody @Valid UserBindRoleDTO userBindRoleDTO) {
+        userService.bindRole(userBindRoleDTO.getUserId(), userBindRoleDTO.getRoles());
         return HttpResult.success();
     }
 
@@ -89,8 +89,8 @@ public class UserController {
     @ApiOperation(value = "修改密码")
     @PostMapping("/changePwd")
     @Permission("pc")
-    public HttpResult changePwd(@RequestBody @Valid ChangePwdArg pwdArg) {
-        userService.changePwd(pwdArg.getOldPwd(), pwdArg.getNewPwd(), pwdArg.getRepeatPwd());
+    public HttpResult changePwd(@RequestBody @Valid ChangePwdDTO pwd) {
+        userService.changePwd(pwd.getOldPwd(), pwd.getNewPwd(), pwd.getRepeatPwd());
         return HttpResult.success();
     }
 

@@ -39,4 +39,11 @@ public class RoleMenu implements Serializable {
     @TableField("menu_id")
     private Long menuId;
 
+    public RoleMenu() {
+    }
+
+    public RoleMenu(Long roleId, Long menuId) {
+        this.roleId = roleId;
+        this.menuId = menuId;
+    }
 }

@@ -14,9 +14,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import org.ylc.frame.springboot.biz.mapper.MenuMapper;
 import org.ylc.frame.springboot.common.annotation.Permission;
-import org.ylc.frame.springboot.common.entity.UserInfo;
 import org.ylc.frame.springboot.common.constant.CacheConst;
 import org.ylc.frame.springboot.common.constant.ConfigConst;
+import org.ylc.frame.springboot.common.entity.UserInfo;
 import org.ylc.frame.springboot.common.exception.CheckException;
 import org.ylc.frame.springboot.common.util.IpUtil;
 import org.ylc.frame.springboot.common.util.JWTUtils;
@@ -113,7 +113,7 @@ public class WebLogAspect {
         if (userPermission != null && !StringUtils.isEmpty(userPermission.value())) {
             String token = request.getHeader("token");
             if (token == null) {
-                throw new CheckException("非法操作", ConfigConst.RETURN_RESULT.ACCESS_RESTRICTED);
+                throw new CheckException("非法操作", ConfigConst.Return.ACCESS_RESTRICTED);
             }
             checkTokenAndPermission(token, userPermission.value());
         }
@@ -125,7 +125,7 @@ public class WebLogAspect {
 
         // MongoDB 保存请求信息
         SystemLog systemLog = new SystemLog();
-        systemLog.setUserId(ThreadLocalUtils.getUserDefalutNull());
+        systemLog.setUserId(ThreadLocalUtils.getUserIdDefaultNull());
         systemLog.setUrl(request.getRequestURL().toString());
         systemLog.setHttpMethod(request.getMethod());
         systemLog.setController(proceedingJoinPoint.getSignature().getDeclaringTypeName());
@@ -177,13 +177,13 @@ public class WebLogAspect {
         // 解密token
         JSONObject tokenJson = JWTUtils.parseJWT(token);
         if (tokenJson == null) {
-            throw new CheckException("非法操作", ConfigConst.RETURN_RESULT.ACCESS_RESTRICTED);
+            throw new CheckException("非法操作", ConfigConst.Return.ACCESS_RESTRICTED);
         }
         Long userId = tokenJson.getLong("userId");
         String loginFrom = tokenJson.getString("loginFrom");
         Map<Object, Object> redisMap = redisUtils.hashEntries(CacheConst.USER_TOKEN_PREFIX + userId + ":" + loginFrom);
         if (redisMap == null) {
-            throw new CheckException("长时间未使用，登录已过期，请重新登录", ConfigConst.RETURN_RESULT.TOKEN_EXPIRED);
+            throw new CheckException("长时间未使用，登录已过期，请重新登录", ConfigConst.Return.TOKEN_EXPIRED);
         }
 
         // 权限校验
@@ -199,7 +199,7 @@ public class WebLogAspect {
             permissions = (List<String>) redisPermissions;
         }
         if (CollectionUtils.isEmpty(permissions) || !permissions.contains(permission)) {
-            throw new CheckException("非法操作", ConfigConst.RETURN_RESULT.ACCESS_RESTRICTED);
+            throw new CheckException("非法操作", ConfigConst.Return.ACCESS_RESTRICTED);
         }
 
         // 保存用户信息

@@ -38,7 +38,6 @@ import java.util.List;
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
-
     private final MenuMapper menuMapper;
 
     private final UserRoleService userRoleService;
@@ -58,6 +57,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String salt = PBKDF2.generateSalt();
         entity.setSalt(salt);
         entity.setPassword(PBKDF2.getPBKDF2(ConfigConst.DEFAULT_PWD, salt));
+        entity.setEnabled(ConfigConst.USER_ENABLED);
         baseMapper.insert(entity);
     }
 
@@ -94,15 +94,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Transactional(rollbackFor = Exception.class)
     public void bindRole(long userId, List<Long> roles) {
         List<UserRole> userRoles = new ArrayList<>();
-        UserRole userRole;
         for (Long roleId : roles) {
-            userRole = new UserRole();
-            userRole.setUserId(userId);
-            userRole.setRoleId(roleId);
-            userRoles.add(userRole);
+            userRoles.add(new UserRole(userId, roleId));
         }
         userRoleService.remove(new QueryWrapper<UserRole>().eq("user_id", userId));
-        OperationCheck.isExecute(userRoleService.saveBatch(userRoles), "绑定失败");
+        userRoleService.saveBatch(userRoles);
     }
 
     @Override

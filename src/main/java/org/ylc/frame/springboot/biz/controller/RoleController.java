@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.ylc.frame.springboot.biz.dto.RoleBindMenuDTO;
 import org.ylc.frame.springboot.biz.dto.RoleDTO;
 import org.ylc.frame.springboot.biz.service.RoleService;
 import org.ylc.frame.springboot.biz.vo.RoleVO;
@@ -66,4 +67,11 @@ public class RoleController {
         return HttpResult.success(roleService.getList());
     }
 
+    @ApiOperation(value = "角色绑定菜单")
+    @PostMapping("/bindMenu")
+    @Permission("role:bindMenu")
+    public HttpResult bindMenu(@RequestBody @Valid RoleBindMenuDTO roleBindMenuDTO) {
+        roleService.bindMenu(roleBindMenuDTO.getRoleId(), roleBindMenuDTO.getMenuIds());
+        return HttpResult.success();
+    }
 }
