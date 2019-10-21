@@ -2,7 +2,6 @@ package org.ylc.frame.springboot.biz.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.ylc.frame.springboot.biz.dto.DepartmentDTO;
 import org.ylc.frame.springboot.biz.entity.Department;
@@ -36,8 +35,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
 
     @Override
     public void addInfo(DepartmentDTO dto) {
-        Department entity = new Department();
-        BeanUtils.copyProperties(dto, entity);
+        Department entity = dto.convertToEntity();
         entity.setCode(generateCode(dto.getPid()));
         baseMapper.insert(entity);
     }
@@ -51,8 +49,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     public void updateInfo(DepartmentDTO dto) {
         Department oldEntity = baseMapper.selectById(dto.getId());
         ParamCheck.notNull(oldEntity, "无效数据");
-        Department entity = new Department();
-        BeanUtils.copyProperties(dto, entity);
+        Department entity = dto.convertToEntity();
         // 上级部门不一致的，需要重新生成部门编码
         if (!oldEntity.getPid().equals(dto.getPid())) {
             entity.setCode(generateCode(dto.getPid()));
@@ -63,11 +60,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     @Override
     public DepartmentVO getInfoById(long id) {
         Department entity = baseMapper.selectById(id);
-        DepartmentVO vo = new DepartmentVO();
-        if (entity != null) {
-            BeanUtils.copyProperties(entity, vo);
-        }
-        return vo;
+        return DepartmentVO.entityConvertVo(entity);
     }
 
     @Override

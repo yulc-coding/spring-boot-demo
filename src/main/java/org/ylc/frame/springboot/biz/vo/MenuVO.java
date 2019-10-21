@@ -2,6 +2,8 @@ package org.ylc.frame.springboot.biz.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <p>
@@ -11,7 +13,8 @@ import lombok.Data;
  * @author CodeGenerator
  * @since 2019-10-04
  */
-@Data
+@Getter
+@Setter
 public class MenuVO {
 
     private Long id;

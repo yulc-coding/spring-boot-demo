@@ -2,6 +2,8 @@ package org.ylc.frame.springboot.biz.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.ylc.frame.springboot.common.tree.MenuTree;
 
 /**
@@ -14,7 +16,8 @@ import org.ylc.frame.springboot.common.tree.MenuTree;
  * @version 1.0.0
  * @date 2019/9/30
  */
-@Data
+@Getter
+@Setter
 public class LoginResponseVO {
 
     @ApiModelProperty(value = "生成的token")

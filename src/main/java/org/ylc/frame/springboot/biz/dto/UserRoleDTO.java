@@ -1,7 +1,8 @@
 package org.ylc.frame.springboot.biz.dto;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <p>
@@ -11,7 +12,8 @@ import lombok.Data;
  * @author CodeGenerator
  * @since 2019-10-04
  */
-@Data
+@Getter
+@Setter
 public class UserRoleDTO {
 
     private Long id;

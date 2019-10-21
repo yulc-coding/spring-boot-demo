@@ -1,7 +1,8 @@
 package org.ylc.frame.springboot.biz.dto;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 
@@ -13,7 +14,8 @@ import javax.validation.constraints.NotNull;
  * @author CodeGenerator
  * @since 2019-10-04
  */
-@Data
+@Getter
+@Setter
 public class RoleDTO {
 
     private Long id;

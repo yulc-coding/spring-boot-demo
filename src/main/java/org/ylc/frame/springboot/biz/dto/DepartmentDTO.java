@@ -1,7 +1,10 @@
 package org.ylc.frame.springboot.biz.dto;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.beans.BeanUtils;
+import org.ylc.frame.springboot.biz.entity.Department;
 
 import javax.validation.constraints.NotNull;
 
@@ -15,8 +18,9 @@ import javax.validation.constraints.NotNull;
  * @version 1.0.0
  * @date 2019/10/2 19:50
  */
-@Data
-public class DepartmentDTO {
+@Getter
+@Setter
+public class DepartmentDTO extends AbstractConverter<Department> {
 
     private Long id;
 
@@ -31,4 +35,10 @@ public class DepartmentDTO {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    @Override
+    public Department convertToEntity() {
+        Department dep = new Department();
+        BeanUtils.copyProperties(this, dep);
+        return dep;
+    }
 }

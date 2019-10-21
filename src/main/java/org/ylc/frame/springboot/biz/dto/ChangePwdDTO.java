@@ -1,7 +1,8 @@
 package org.ylc.frame.springboot.biz.dto;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -16,7 +17,8 @@ import javax.validation.constraints.Size;
  * @version 1.0.0
  * @date 2019/10/12
  */
-@Data
+@Getter
+@Setter
 public class ChangePwdDTO {
 
     @ApiModelProperty(value = "原密码")

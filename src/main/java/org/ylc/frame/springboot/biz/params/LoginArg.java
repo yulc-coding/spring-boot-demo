@@ -1,7 +1,8 @@
 package org.ylc.frame.springboot.biz.params;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 
@@ -15,7 +16,8 @@ import javax.validation.constraints.NotBlank;
  * @version 1.0.0
  * @date 2019/9/30
  */
-@Data
+@Getter
+@Setter
 public class LoginArg {
 
     @NotBlank(message = "账号不能为空")

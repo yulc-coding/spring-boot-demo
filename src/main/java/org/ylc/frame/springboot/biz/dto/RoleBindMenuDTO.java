@@ -2,6 +2,8 @@ package org.ylc.frame.springboot.biz.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -17,7 +19,8 @@ import java.util.List;
  * @version 1.0.0
  * @date 2019/10/14
  */
-@Data
+@Getter
+@Setter
 public class RoleBindMenuDTO {
 
     @NotBlank(message = "绑定角色不能为空")

@@ -1,7 +1,8 @@
 package org.ylc.frame.springboot.biz.dto;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -17,7 +18,8 @@ import java.util.List;
  * @version 1.0.0
  * @date 2019/10/13 22:51
  */
-@Data
+@Getter
+@Setter
 public class UserBindRoleDTO {
 
     @NotBlank(message = "绑定用户不能为空")
