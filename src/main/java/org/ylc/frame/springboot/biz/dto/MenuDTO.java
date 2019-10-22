@@ -1,9 +1,10 @@
 package org.ylc.frame.springboot.biz.dto;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.BeanUtils;
+import org.ylc.frame.springboot.biz.entity.Menu;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -18,7 +19,7 @@ import javax.validation.constraints.NotNull;
  */
 @Getter
 @Setter
-public class MenuDTO {
+public class MenuDTO extends AbstractConverter<Menu> {
 
     private Long id;
 
@@ -64,4 +65,10 @@ public class MenuDTO {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    @Override
+    public Menu convertToEntity() {
+        Menu menu = new Menu();
+        BeanUtils.copyProperties(this, menu);
+        return menu;
+    }
 }

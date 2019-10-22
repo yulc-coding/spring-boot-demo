@@ -15,6 +15,6 @@ public abstract class AbstractConverter<T> {
     /**
      * bean之间相互转化
      */
-    protected abstract T convertToEntity();
+    public abstract T convertToEntity();
 
 }

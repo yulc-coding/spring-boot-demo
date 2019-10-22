@@ -1,7 +1,6 @@
 package org.ylc.frame.springboot.biz.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.ylc.frame.springboot.biz.dto.MenuDTO;
 import org.ylc.frame.springboot.biz.entity.Menu;
@@ -28,8 +27,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
 
     @Override
     public void addInfo(MenuDTO dto) {
-        Menu entity = new Menu();
-        BeanUtils.copyProperties(dto, entity);
+        Menu entity = dto.convertToEntity();
         baseMapper.insert(entity);
     }
 
@@ -40,8 +38,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
 
     @Override
     public void updateInfo(MenuDTO dto) {
-        Menu entity = new Menu();
-        BeanUtils.copyProperties(dto, entity);
+        Menu entity = dto.convertToEntity();
         OperationCheck.isExecute(baseMapper.updateById(entity), "无效的数据");
 
     }
@@ -49,11 +46,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     @Override
     public MenuVO getInfoById(long id) {
         Menu entity = baseMapper.selectById(id);
-        MenuVO vo = new MenuVO();
-        if (entity != null) {
-            BeanUtils.copyProperties(entity, vo);
-        }
-        return vo;
+        return MenuVO.entityConvertToVo(entity);
     }
 
     @Override

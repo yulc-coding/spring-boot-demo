@@ -3,6 +3,8 @@ package org.ylc.frame.springboot.biz.dto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.BeanUtils;
+import org.ylc.frame.springboot.biz.entity.User;
 
 /**
  * <p>
@@ -14,7 +16,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class UserDTO {
+public class UserDTO extends AbstractConverter<User> {
 
     @ApiModelProperty(value = "员工编号")
     private Long id;
@@ -34,4 +36,10 @@ public class UserDTO {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    @Override
+    public User convertToEntity() {
+        User user = new User();
+        BeanUtils.copyProperties(this, user);
+        return user;
+    }
 }

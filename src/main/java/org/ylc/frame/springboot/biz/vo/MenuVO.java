@@ -1,9 +1,10 @@
 package org.ylc.frame.springboot.biz.vo;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.BeanUtils;
+import org.ylc.frame.springboot.biz.entity.Menu;
 
 /**
  * <p>
@@ -51,5 +52,16 @@ public class MenuVO {
 
     @ApiModelProperty(value = "备注")
     private String remark;
+
+    /**
+     * 实体转换为vo
+     */
+    public static MenuVO entityConvertToVo(Menu entity) {
+        MenuVO vo = new MenuVO();
+        if (entity != null) {
+            BeanUtils.copyProperties(entity, vo);
+        }
+        return vo;
+    }
 
 }

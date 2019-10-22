@@ -37,7 +37,7 @@ public class DepartmentVO {
     /**
      * 实体转换为vo
      */
-    public static DepartmentVO entityConvertVo(Department entity) {
+    public static DepartmentVO entityConvertToVo(Department entity) {
         DepartmentVO vo = new DepartmentVO();
         if (entity != null) {
             BeanUtils.copyProperties(entity, vo);

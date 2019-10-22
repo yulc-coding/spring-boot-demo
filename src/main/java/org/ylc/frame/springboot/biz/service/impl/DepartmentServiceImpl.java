@@ -60,7 +60,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     @Override
     public DepartmentVO getInfoById(long id) {
         Department entity = baseMapper.selectById(id);
-        return DepartmentVO.entityConvertVo(entity);
+        return DepartmentVO.entityConvertToVo(entity);
     }
 
     @Override

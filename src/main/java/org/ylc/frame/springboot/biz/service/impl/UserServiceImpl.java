@@ -3,7 +3,6 @@ package org.ylc.frame.springboot.biz.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,8 +51,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public void addInfo(UserDTO dto) {
-        User entity = new User();
-        BeanUtils.copyProperties(dto, entity);
+        User entity = dto.convertToEntity();
         String salt = PBKDF2.generateSalt();
         entity.setSalt(salt);
         entity.setPassword(PBKDF2.getPBKDF2(ConfigConst.DEFAULT_PWD, salt));
@@ -68,20 +66,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public void updateInfo(UserDTO dto) {
-        User entity = new User();
-        BeanUtils.copyProperties(dto, entity);
-        entity.setPassword(null);
+        User entity = dto.convertToEntity();
         OperationCheck.isExecute(baseMapper.updateById(entity), "无效数据");
     }
 
     @Override
     public UserVO getInfoById(long id) {
         User entity = baseMapper.selectById(id);
-        UserVO vo = new UserVO();
-        if (entity != null) {
-            BeanUtils.copyProperties(entity, vo);
-        }
-        return vo;
+        return UserVO.entityConvertToVo(entity);
     }
 
     /**
