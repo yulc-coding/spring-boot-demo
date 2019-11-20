@@ -1,4 +1,4 @@
-package org.ylc.frame.springboot.setting.Handler;
+package org.ylc.frame.springboot.setting.handler;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;

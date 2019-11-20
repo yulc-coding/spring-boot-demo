@@ -1,18 +1,16 @@
-package org.ylc.frame.springboot.setting.Handler;
+package org.ylc.frame.springboot.setting.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.ylc.frame.springboot.common.entity.HttpResult;
 import org.ylc.frame.springboot.common.exception.CheckException;
 import org.ylc.frame.springboot.common.exception.OperationException;
@@ -31,13 +29,12 @@ import javax.validation.ConstraintViolationException;
  * @date 2019/9/24
  */
 @Component
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @ExceptionHandler(OperationException.class)
-    @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     public HttpResult handler(OperationException e) {
         String error = e.getMessage();
@@ -46,7 +43,6 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CheckException.class)
-    @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     public HttpResult handler(CheckException e) {
         String error = e.getMessage();
@@ -61,7 +57,6 @@ public class GlobalExceptionHandler {
      * @return HttpResult.fail
      */
     @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseBody
     public HttpResult illegalArgumentExceptionHandler(IllegalArgumentException ex) {
         return HttpResult.fail(ex.getLocalizedMessage());
     }
@@ -73,7 +68,6 @@ public class GlobalExceptionHandler {
      * @return HttpResult.fail
      */
     @ExceptionHandler(TypeMismatchException.class)
-    @ResponseBody
     public HttpResult requestTypeMismatch(TypeMismatchException ex) {
         return HttpResult.fail("参数类型不匹配,参数" + ex.getPropertyName() + "类型应该为" + ex.getRequiredType()
                 + "，实际传入参数：" + ex.getValue());
@@ -84,13 +78,11 @@ public class GlobalExceptionHandler {
      * @return HttpResult.fail
      */
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    @ResponseBody
     public HttpResult requestParameterExceptionHandler(MissingServletRequestParameterException ex) {
         return HttpResult.fail("缺少必填参数：" + ex.getParameterName() + "，参数类型为：" + ex.getParameterType());
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    @ResponseBody
     public HttpResult handlerHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
         String error = e.getLocalizedMessage();
         log.error("不支持当前请求方法:{}", error);
@@ -98,7 +90,6 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    @ResponseBody
     public HttpResult handlerHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e) {
         String error = e.getLocalizedMessage();
         log.error("不支持当前媒体类型:{}", error);
@@ -106,7 +97,6 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    @ResponseBody
     public HttpResult handlerConstraintViolationException(ConstraintViolationException e) {
         String error = e.getLocalizedMessage();
         log.error("约束冲突异常:{}", error);
@@ -120,9 +110,8 @@ public class GlobalExceptionHandler {
      * @return HttpResult.fail
      */
     @ExceptionHandler(Exception.class)
-    @ResponseBody
-    public ResponseEntity exceptionHandler(Exception ex) {
-        log.debug(ex.getLocalizedMessage());
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    public HttpResult exceptionHandler(Exception ex) {
+        log.error("系统异常", ex.getLocalizedMessage());
+        return HttpResult.fail(ex.getLocalizedMessage());
     }
 }
