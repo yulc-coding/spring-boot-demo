@@ -27,7 +27,7 @@ public interface MenuMapper extends BaseMapper<Menu> {
     /**
      * 获取登录用户的菜单列表
      */
-    List<MenuTree> getUserMenuList(@Param("userId") long userId, @Param("loginFrom") String loginFrom);
+    List<Menu> getUserMenuList(@Param("userId") long userId, @Param("loginFrom") String loginFrom);
 
     /**
      * 获取用户的权限列表

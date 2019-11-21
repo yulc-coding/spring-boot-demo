@@ -3,11 +3,13 @@ package org.ylc.frame.springboot.biz.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.ylc.frame.springboot.biz.dto.UserDTO;
+import org.ylc.frame.springboot.biz.entity.Menu;
 import org.ylc.frame.springboot.biz.entity.User;
 import org.ylc.frame.springboot.biz.entity.UserRole;
 import org.ylc.frame.springboot.biz.mapper.MenuMapper;
@@ -110,6 +112,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         baseMapper.updateById(updateUser);
     }
 
+    /**
+     * 登录
+     * 1、校验账号密码
+     * 2、生成token
+     * 3、获取用户权限
+     * 4、生成权限树
+     * 5、缓存token和权限列表
+     */
     @Override
     public LoginResponseVO login(LoginArg args) {
         User user = baseMapper.selectOne(
@@ -127,20 +137,40 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String token = JWTUtils.createJWT(tokenJson);
 
         // 获取权限列表
-        List<MenuTree> menuTrees = menuMapper.getUserMenuList(user.getId(), args.getLoginFrom());
-        ParamCheck.notEmptyCollection(menuTrees, "当前账号未授权");
+        List<Menu> menuList = menuMapper.getUserMenuList(user.getId(), args.getLoginFrom());
+        ParamCheck.notEmptyCollection(menuList, "当前账号未授权");
+        // 树结构
+        List<MenuTree> menuTrees = new ArrayList<>();
+        // 权限值列表
+        List<String> permissions = new ArrayList<>();
+        MenuTree menuTree;
+        for (Menu menu : menuList) {
+            permissions.add(menu.getPermission());
+            menuTree = new MenuTree();
+            BeanUtils.copyProperties(menu, menuTree);
+            menuTrees.add(menuTree);
+        }
 
-        // 首层根目录
-        MenuTree menuTree = new MenuTree();
-        menuTree.setChildren(new ArrayList<>());
-        menuTree.setName("根目录");
-        menuTree.setId(0L);
-        TreeBuildUtil.build(menuTree, menuTrees);
+        // 生成树
+        MenuTree menuRootTree = new MenuTree();
+        menuRootTree.setChildren(new ArrayList<>());
+        menuRootTree.setName("根目录");
+        menuRootTree.setId(0L);
+        TreeBuildUtil.build(menuRootTree, menuTrees);
+
+        // 将token 和 权限列表 存入redis 缓存
+        if (ConfigConst.LOGIN_PC.equals(args.getLoginFrom())) {
+            redisUtils.set(CacheConst.USER_TOKEN_PREFIX + user.getId() + ":" + args.getLoginFrom(), token, ConfigConst.DEFAULT_PC_TOKEN_INVALID_TIME);
+        } else {
+            redisUtils.set(CacheConst.USER_TOKEN_PREFIX + user.getId() + ":" + args.getLoginFrom(), token, ConfigConst.DEFAULT_APP_TOKEN_INVALID_TIME);
+        }
+        redisUtils.del(CacheConst.USER_PERMISSION_PREFIX + user.getId() + ":" + args.getLoginFrom());
+        redisUtils.listPushAll(CacheConst.USER_PERMISSION_PREFIX + user.getId() + ":" + args.getLoginFrom(), permissions);
 
         LoginResponseVO vo = new LoginResponseVO();
         vo.setName(user.getName());
         vo.setToken(token);
-        vo.setMenuTree(menuTree);
+        vo.setMenuTree(menuRootTree);
         return vo;
     }
 
