@@ -113,7 +113,7 @@ public class RedisUtils {
      */
     public void set(String key, Object value, long time) {
         if (time > 0) {
-            redisTemplate.opsForValue().set(key, value, time);
+            redisTemplate.opsForValue().set(key, value, time, TimeUnit.MILLISECONDS);
         } else {
             set(key, value);
         }
@@ -227,6 +227,45 @@ public class RedisUtils {
     }
 
     /**
+     * 根据value从一个set中查询,是否存在
+     *
+     * @param key   键
+     * @param value 值
+     * @return true 存在 false不存在
+     */
+    public boolean setHasKey(String key, Object value) {
+        try {
+            Boolean hasKey = redisTemplate.opsForSet().isMember(key, value);
+            if (hasKey == null) {
+                return false;
+            }
+            return hasKey;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * 获取set缓存的长度
+     *
+     * @param key 键
+     * @return size
+     */
+    public long getSetSize(String key) {
+        try {
+            Long size = redisTemplate.opsForSet().size(key);
+            if (size == null) {
+                return 0;
+            }
+            return size;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return 0;
+        }
+    }
+
+    /**
      * 将数据放入set缓存
      *
      * @param key    键
@@ -298,6 +337,25 @@ public class RedisUtils {
     }
 
     /**
+     * 获取list缓存的长度
+     *
+     * @param key 键
+     * @return
+     */
+    public long getListSize(String key) {
+        try {
+            Long size = redisTemplate.opsForList().size(key);
+            if (size == null) {
+                return 0;
+            }
+            return size;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return 0;
+        }
+    }
+
+    /**
      * 在已有的list中加入单个信息
      *
      * @param key   键
@@ -306,6 +364,26 @@ public class RedisUtils {
     public boolean listPushOne(String key, Object value) {
         try {
             redisTemplate.opsForList().rightPush(key, value);
+            return true;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * 在已有的list中加入单个信息，并设置过期时间
+     *
+     * @param key   键
+     * @param value 值
+     * @param time  时间(毫秒)
+     */
+    public boolean listPushOne(String key, Object value, long time) {
+        try {
+            redisTemplate.opsForList().rightPush(key, value);
+            if (time > 0) {
+                expire(key, time);
+            }
             return true;
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -324,22 +402,15 @@ public class RedisUtils {
     }
 
     /**
-     * 将list放入缓存，设置过期时间
+     * 将整个list存入缓存
      *
-     * @param key   键
-     * @param value 值
-     * @param time  时间(毫秒)
+     * @param key  键
+     * @param list 值
      */
-    public boolean listPush(String key, Object value, long time) {
-        try {
-            redisTemplate.opsForList().rightPush(key, value);
-            if (time > 0) {
-                expire(key, time);
-            }
-            return true;
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return false;
+    public void listPushAll(String key, Object list, long time) {
+        redisTemplate.opsForList().rightPushAll(key, list);
+        if (time > 0) {
+            expire(key, time);
         }
     }
 
