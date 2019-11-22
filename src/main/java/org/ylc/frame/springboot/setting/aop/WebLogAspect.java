@@ -220,11 +220,11 @@ public class WebLogAspect {
      * @param loginFrom 登入方式
      */
     private void updateTokenExpireTime(Long userId, String loginFrom) {
-        long expireTime = System.currentTimeMillis();
+        long expireTime = 0;
         if (ConfigConst.LOGIN_PC.equals(loginFrom)) {
-            expireTime += ConfigConst.DEFAULT_PC_TOKEN_INVALID_TIME;
+            expireTime = ConfigConst.DEFAULT_PC_TOKEN_INVALID_TIME;
         } else if (ConfigConst.LOGIN_APP.equals(loginFrom)) {
-            expireTime += ConfigConst.DEFAULT_APP_TOKEN_INVALID_TIME;
+            expireTime = ConfigConst.DEFAULT_APP_TOKEN_INVALID_TIME;
         }
         redisUtils.expire(CacheConst.USER_TOKEN_PREFIX + userId + ":" + loginFrom, expireTime);
     }
