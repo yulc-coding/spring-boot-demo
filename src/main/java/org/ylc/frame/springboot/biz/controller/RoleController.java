@@ -25,7 +25,7 @@ import java.util.List;
  */
 @Api(value = "RoleController")
 @RestController
-@RequestMapping("/role")
+@RequestMapping("/sys/role")
 public class RoleController {
 
     private final RoleService roleService;
@@ -60,7 +60,7 @@ public class RoleController {
         return HttpResult.success();
     }
 
-    @ApiOperation(value = "根据ID查询信息")
+    @ApiOperation(value = "获取角色列表")
     @GetMapping("/list")
     @Permission("pc")
     public HttpResult<List<RoleVO>> list() {

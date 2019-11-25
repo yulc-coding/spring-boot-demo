@@ -24,7 +24,7 @@ import javax.validation.Valid;
  */
 @Api(value = "MenuController")
 @RestController
-@RequestMapping("/menu")
+@RequestMapping("/sys/menu")
 public class MenuController {
 
     private final MenuService menuService;
