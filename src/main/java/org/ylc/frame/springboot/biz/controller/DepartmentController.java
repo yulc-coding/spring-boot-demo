@@ -43,7 +43,7 @@ public class DepartmentController {
     }
 
     @ApiOperation(value = "删除")
-    @GetMapping("/delete/{id}}")
+    @GetMapping("/delete/{id}")
     @Permission("department:delete")
     public HttpResult delInfo(@ApiParam(name = "id", value = "id")
                               @PathVariable("id") Long id) {
@@ -60,7 +60,7 @@ public class DepartmentController {
     }
 
     @ApiOperation(value = "根据ID查询信息")
-    @GetMapping("/get/{id}}")
+    @GetMapping("/get/{id}")
     @Permission("pc")
     public HttpResult<DepartmentVO> getInfoById(@ApiParam(name = "id", value = "id")
                                                 @PathVariable(name = "id") Long id) {

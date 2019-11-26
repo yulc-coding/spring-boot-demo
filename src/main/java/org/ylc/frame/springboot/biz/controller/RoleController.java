@@ -44,7 +44,7 @@ public class RoleController {
     }
 
     @ApiOperation(value = "删除")
-    @GetMapping("/delete/{id}}")
+    @GetMapping("/delete/{id}")
     @Permission("role:delete")
     public HttpResult delInfo(@ApiParam(name = "id", value = "id")
                               @PathVariable("id") Long id) {

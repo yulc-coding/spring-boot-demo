@@ -9,4 +9,77 @@ package org.ylc.frame.springboot.common.constant;
  */
 public class EnumConst {
 
+    /**
+     * 性别
+     */
+    public enum UserGenderEnum {
+
+        MEN("1", "男"),
+        WOMEN("2", "女"),
+        OTHER("0", "男");
+
+        private String code;
+
+        private String value;
+
+        public static String getValueByCode(String code) {
+            for (UserGenderEnum userGenderEnum : UserGenderEnum.values()) {
+                if (userGenderEnum.code.equals(code)) {
+                    return userGenderEnum.value;
+                }
+            }
+            return null;
+        }
+
+        UserGenderEnum(String code, String value) {
+            this.code = code;
+            this.value = value;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
+    /**
+     * 员工状态
+     */
+    public enum UserStateEnum {
+
+        DISABLED(0, "未启用"),
+        ENABLED(1, "启用"),
+        FROZEN(99, "冻结");
+
+        private Integer code;
+
+        private String value;
+
+        public static String getValueByCode(Integer code) {
+            for (UserStateEnum userStateEnum : UserStateEnum.values()) {
+                if (userStateEnum.code.equals(code)) {
+                    return userStateEnum.value;
+                }
+            }
+            return null;
+        }
+
+        UserStateEnum(Integer code, String value) {
+            this.code = code;
+            this.value = value;
+        }
+
+        public Integer getCode() {
+            return code;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
+
 }

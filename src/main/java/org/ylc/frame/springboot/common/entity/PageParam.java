@@ -1,7 +1,8 @@
 package org.ylc.frame.springboot.common.entity;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 
@@ -15,7 +16,8 @@ import javax.validation.constraints.NotNull;
  * @version 1.0.0
  * @date 2019/10/12
  */
-@Data
+@Getter
+@Setter
 public class PageParam {
 
     @NotNull(message = "页码不能为空")

@@ -10,19 +10,6 @@ package org.ylc.frame.springboot.common.constant;
 public class ConfigConst {
 
     /**
-     * 用户不可用
-     */
-    public static Integer USER_DISABLED = 0;
-    /**
-     * 用户启用
-     */
-    public static Integer USER_ENABLED = 1;
-    /**
-     * 用户冻结
-     */
-    public static Integer USER_FROZEN = 99;
-
-    /**
      * 默认密码
      */
     public static String DEFAULT_PWD = "123456";

@@ -43,7 +43,7 @@ public class MenuController {
     }
 
     @ApiOperation(value = "删除")
-    @GetMapping("/delete/{id}}")
+    @GetMapping("/delete/{id}")
     @Permission("menu:delete")
     public HttpResult delInfo(@ApiParam(name = "id", value = "id")
                               @PathVariable("id") Long id) {
@@ -67,7 +67,7 @@ public class MenuController {
     }
 
     @ApiOperation(value = "根据ID查询信息")
-    @GetMapping("/get/{id}}")
+    @GetMapping("/get/{id}")
     @Permission("pc")
     public HttpResult<MenuVO> getInfoById(@ApiParam(name = "id", value = "id")
                                           @PathVariable(name = "id") Long id) {

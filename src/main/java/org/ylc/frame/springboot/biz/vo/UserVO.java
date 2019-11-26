@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.BeanUtils;
 import org.ylc.frame.springboot.biz.entity.User;
+import org.ylc.frame.springboot.common.constant.EnumConst;
 
 /**
  * <p>
@@ -27,11 +28,17 @@ public class UserVO {
     @ApiModelProperty(value = "账号")
     private String username;
 
+    @ApiModelProperty(value = "所属部门")
+    private String depName;
+
     @ApiModelProperty(value = "电话号码")
     private String phone;
 
-    @ApiModelProperty(value = "性别，0未知，1男，2女")
+    @ApiModelProperty(value = "性别")
     private String gender;
+
+    @ApiModelProperty(value = "状态")
+    private String state;
 
     @ApiModelProperty(value = "备注")
     private String remark;
@@ -43,6 +50,9 @@ public class UserVO {
         UserVO vo = new UserVO();
         if (entity != null) {
             BeanUtils.copyProperties(entity, vo);
+            // 性别
+            vo.setGender(EnumConst.UserGenderEnum.getValueByCode(entity.getGender()));
+            vo.setState(EnumConst.UserStateEnum.getValueByCode(entity.getState()));
         }
         return vo;
     }

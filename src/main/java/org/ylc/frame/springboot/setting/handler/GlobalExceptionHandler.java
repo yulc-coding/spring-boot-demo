@@ -3,13 +3,11 @@ package org.ylc.frame.springboot.setting.handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.ylc.frame.springboot.common.entity.HttpResult;
 import org.ylc.frame.springboot.common.exception.CheckException;
@@ -35,7 +33,6 @@ public class GlobalExceptionHandler {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @ExceptionHandler(OperationException.class)
-    @ResponseStatus(HttpStatus.OK)
     public HttpResult handler(OperationException e) {
         String error = e.getMessage();
         log.info("自定义错误信息:{}", error);
@@ -43,7 +40,6 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CheckException.class)
-    @ResponseStatus(HttpStatus.OK)
     public HttpResult handler(CheckException e) {
         String error = e.getMessage();
         log.info("自定义校验错误:{}", error);
@@ -112,6 +108,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public HttpResult exceptionHandler(Exception ex) {
         log.error("系统异常", ex.getLocalizedMessage());
+        ex.printStackTrace();
         return HttpResult.fail(ex.getLocalizedMessage());
     }
 }

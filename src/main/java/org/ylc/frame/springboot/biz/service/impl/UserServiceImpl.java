@@ -2,6 +2,8 @@ package org.ylc.frame.springboot.biz.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
@@ -15,12 +17,14 @@ import org.ylc.frame.springboot.biz.entity.UserRole;
 import org.ylc.frame.springboot.biz.mapper.MenuMapper;
 import org.ylc.frame.springboot.biz.mapper.UserMapper;
 import org.ylc.frame.springboot.biz.params.LoginArg;
+import org.ylc.frame.springboot.biz.params.UserPageParams;
 import org.ylc.frame.springboot.biz.service.UserRoleService;
 import org.ylc.frame.springboot.biz.service.UserService;
 import org.ylc.frame.springboot.biz.vo.LoginResponseVO;
 import org.ylc.frame.springboot.biz.vo.UserVO;
 import org.ylc.frame.springboot.common.constant.CacheConst;
 import org.ylc.frame.springboot.common.constant.ConfigConst;
+import org.ylc.frame.springboot.common.constant.EnumConst;
 import org.ylc.frame.springboot.common.tree.MenuTree;
 import org.ylc.frame.springboot.common.util.*;
 import org.ylc.frame.springboot.setting.component.redis.RedisUtils;
@@ -57,7 +61,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String salt = PBKDF2.generateSalt();
         entity.setSalt(salt);
         entity.setPassword(PBKDF2.getPBKDF2(ConfigConst.DEFAULT_PWD, salt));
-        entity.setEnabled(ConfigConst.USER_ENABLED);
+        entity.setState(EnumConst.UserStateEnum.ENABLED.getCode());
         baseMapper.insert(entity);
     }
 
@@ -70,6 +74,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public void updateInfo(UserDTO dto) {
         User entity = dto.convertToEntity();
         OperationCheck.isExecute(baseMapper.updateById(entity), "无效数据");
+    }
+
+    @Override
+    public IPage<UserVO> pageInfo(UserPageParams page) {
+        IPage<User> entityPage = super.page(
+                new Page<>(page.getPage(), page.getSize()),
+                new QueryWrapper<User>()
+                        .like(ParamUtils.notEmpty(page.getName()), "name", page.getName())
+                        .eq(ParamUtils.notEmpty(page.getUsername()), "username", page.getUsername())
+                        .eq(ParamUtils.notEmpty(page.getDepId()), "dep_id", page.getDepId())
+                        .eq(ParamUtils.notEmpty(page.getState()), "state", page.getState())
+        );
+        List<User> entityList = entityPage.getRecords();
+        if (ParamUtils.isEmpty(entityList)) {
+            return new Page<>(page.getPage(), page.getSize());
+        }
+        IPage<UserVO> voPage = new Page<>();
+        List<UserVO> voList = new ArrayList<>();
+        for (User entity : entityList) {
+            voList.add(UserVO.entityConvertToVo(entity));
+        }
+        BeanUtils.copyProperties(entityPage, voPage);
+        return voPage.setRecords(voList);
     }
 
     @Override

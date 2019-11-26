@@ -39,6 +39,12 @@ public class User implements Serializable {
     private String username;
 
     /**
+     * 所属部门ID
+     */
+    @TableField("dep_id")
+    private Long depId;
+
+    /**
      * 密码
      */
     @TableField("password")
@@ -71,8 +77,8 @@ public class User implements Serializable {
     /**
      * 是否启用，0未启用，1启用，99冻结
      */
-    @TableField("enabled")
-    private Integer enabled;
+    @TableField("state")
+    private Integer state;
 
     @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;

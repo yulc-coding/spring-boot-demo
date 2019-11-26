@@ -1,19 +1,19 @@
 package org.ylc.frame.springboot.biz.controller;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.ylc.frame.springboot.biz.dto.UserDTO;
-import org.ylc.frame.springboot.biz.dto.UserBindRoleDTO;
 import org.ylc.frame.springboot.biz.dto.ChangePwdDTO;
+import org.ylc.frame.springboot.biz.dto.UserBindRoleDTO;
+import org.ylc.frame.springboot.biz.dto.UserDTO;
+import org.ylc.frame.springboot.biz.params.UserPageParams;
 import org.ylc.frame.springboot.biz.service.UserService;
 import org.ylc.frame.springboot.biz.vo.UserVO;
 import org.ylc.frame.springboot.common.annotation.Permission;
 import org.ylc.frame.springboot.common.entity.HttpResult;
-import org.ylc.frame.springboot.common.entity.PageParam;
 
 import javax.validation.Valid;
 
@@ -46,7 +46,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "删除")
-    @GetMapping("/delete/{id}}")
+    @GetMapping("/delete/{id}")
     @Permission("user:delete")
     public HttpResult delInfo(@ApiParam(name = "id", value = "id")
                               @PathVariable("id") Long id) {
@@ -65,12 +65,12 @@ public class UserController {
     @ApiOperation(value = "分页查询")
     @PostMapping("/page")
     @Permission("pc")
-    public HttpResult pageInfo(@RequestBody @Valid PageParam page) {
-        return HttpResult.success(userService.page(new Page<>(page.getPage(), page.getSize())));
+    public HttpResult<IPage<UserVO>> pageInfo(@RequestBody @Valid UserPageParams page) {
+        return HttpResult.success(userService.pageInfo(page));
     }
 
     @ApiOperation(value = "根据ID查询信息")
-    @GetMapping("/get/{id}}")
+    @GetMapping("/get/{id}")
     @Permission("pc")
     public HttpResult<UserVO> getInfoById(@ApiParam(name = "id", value = "id")
                                           @PathVariable(name = "id") Long id) {

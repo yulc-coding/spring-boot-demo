@@ -1,9 +1,11 @@
 package org.ylc.frame.springboot.biz.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.ylc.frame.springboot.biz.dto.UserDTO;
 import org.ylc.frame.springboot.biz.entity.User;
 import org.ylc.frame.springboot.biz.params.LoginArg;
+import org.ylc.frame.springboot.biz.params.UserPageParams;
 import org.ylc.frame.springboot.biz.vo.LoginResponseVO;
 import org.ylc.frame.springboot.biz.vo.UserVO;
 
@@ -33,6 +35,14 @@ public interface UserService extends IService<User> {
      * 更新信息
      */
     void updateInfo(UserDTO dto);
+
+    /**
+     * 分页查询
+     *
+     * @param page 参数
+     * @return IPage
+     */
+    IPage<UserVO> pageInfo(UserPageParams page);
 
     /**
      * 根据ID查询

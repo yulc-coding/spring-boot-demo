@@ -7,12 +7,13 @@
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="username" property="username"/>
+        <result column="dep_id" property="depId"/>
         <result column="password" property="password"/>
         <result column="salt" property="salt"/>
         <result column="phone" property="phone"/>
         <result column="gender" property="gender"/>
         <result column="remark" property="remark"/>
-        <result column="enabled" property="enabled"/>
+        <result column="state" property="state"/>
         <result column="create_user" property="createUser"/>
         <result column="create_time" property="createTime"/>
         <result column="update_user" property="updateUser"/>

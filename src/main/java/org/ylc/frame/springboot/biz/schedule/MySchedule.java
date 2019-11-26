@@ -3,7 +3,6 @@ package org.ylc.frame.springboot.biz.schedule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 /**
  * 代码全万行，注释第一行
@@ -15,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @version 1.0.0
  * @date 2019/11/8 20:43
  */
-@Component
+// @Component
 public class MySchedule {
 
     private static final Logger logger = LoggerFactory.getLogger(MySchedule.class);
