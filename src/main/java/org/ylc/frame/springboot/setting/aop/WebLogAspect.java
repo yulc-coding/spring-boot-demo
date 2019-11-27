@@ -210,16 +210,16 @@ public class WebLogAspect {
         ThreadLocalUtils.setUser(userInfo);
 
         // 更新token过期时间
-        updateTokenExpireTime(userId, loginFrom);
+        updateTokenAndPermissionExpireTime(userId, loginFrom);
     }
 
     /**
-     * 更新token过期时间
+     * 更新token和权限的过期时间
      *
      * @param userId    用户ID
      * @param loginFrom 登入方式
      */
-    private void updateTokenExpireTime(Long userId, String loginFrom) {
+    private void updateTokenAndPermissionExpireTime(Long userId, String loginFrom) {
         long expireTime = 0;
         if (ConfigConst.LOGIN_PC.equals(loginFrom)) {
             expireTime = ConfigConst.DEFAULT_PC_TOKEN_INVALID_TIME;
@@ -227,6 +227,7 @@ public class WebLogAspect {
             expireTime = ConfigConst.DEFAULT_APP_TOKEN_INVALID_TIME;
         }
         redisUtils.expire(CacheConst.USER_TOKEN_PREFIX + userId + ":" + loginFrom, expireTime);
+        redisUtils.expire(CacheConst.USER_PERMISSION_PREFIX + userId + ":" + loginFrom, expireTime);
     }
 
 
