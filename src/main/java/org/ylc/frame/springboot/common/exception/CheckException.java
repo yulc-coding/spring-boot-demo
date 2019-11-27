@@ -1,6 +1,6 @@
 package org.ylc.frame.springboot.common.exception;
 
-import org.ylc.frame.springboot.common.constant.ConfigConst;
+import org.ylc.frame.springboot.common.constant.ConfigConstants;
 
 /**
  * 代码千万行，注释第一行，
@@ -19,7 +19,7 @@ public class CheckException extends RuntimeException {
     /**
      * 错误code
      */
-    private int errCode = ConfigConst.Return.OPERATION_FAILED;
+    private int errCode = ConfigConstants.Return.OPERATION_FAILED;
 
     public CheckException(String message) {
         super(message);

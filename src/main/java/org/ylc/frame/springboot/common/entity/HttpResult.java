@@ -1,6 +1,6 @@
 package org.ylc.frame.springboot.common.entity;
 
-import org.ylc.frame.springboot.common.constant.ConfigConst;
+import org.ylc.frame.springboot.common.constant.ConfigConstants;
 
 import java.io.Serializable;
 
@@ -28,7 +28,7 @@ public class HttpResult<T> implements Serializable {
     }
 
     public HttpResult() {
-        this.code = ConfigConst.Return.SUCCESS;
+        this.code = ConfigConstants.Return.SUCCESS;
         this.msg = "SUCCESS";
     }
 
@@ -45,7 +45,7 @@ public class HttpResult<T> implements Serializable {
      * @return Result
      */
     public static <T> HttpResult<T> success(String msg, T body) {
-        return new HttpResult<>(ConfigConst.Return.SUCCESS, msg, body);
+        return new HttpResult<>(ConfigConstants.Return.SUCCESS, msg, body);
     }
 
     /**
@@ -85,7 +85,7 @@ public class HttpResult<T> implements Serializable {
      * @return Result
      */
     public static <T> HttpResult<T> fail(String msg) {
-        return fail(ConfigConst.Return.OPERATION_FAILED, msg);
+        return fail(ConfigConstants.Return.OPERATION_FAILED, msg);
     }
 
     public int getCode() {

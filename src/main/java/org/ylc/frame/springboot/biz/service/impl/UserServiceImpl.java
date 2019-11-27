@@ -24,9 +24,9 @@ import org.ylc.frame.springboot.biz.service.UserRoleService;
 import org.ylc.frame.springboot.biz.service.UserService;
 import org.ylc.frame.springboot.biz.vo.LoginResponseVO;
 import org.ylc.frame.springboot.biz.vo.UserVO;
-import org.ylc.frame.springboot.common.constant.CacheConst;
-import org.ylc.frame.springboot.common.constant.ConfigConst;
-import org.ylc.frame.springboot.common.constant.EnumConsts;
+import org.ylc.frame.springboot.common.constant.CacheConstants;
+import org.ylc.frame.springboot.common.constant.ConfigConstants;
+import org.ylc.frame.springboot.common.constant.EnumConstants;
 import org.ylc.frame.springboot.common.tree.MenuTree;
 import org.ylc.frame.springboot.common.util.*;
 import org.ylc.frame.springboot.setting.component.redis.RedisUtils;
@@ -75,13 +75,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         User entity = dto.convertToEntity();
         String salt = PBKDF2.generateSalt();
         entity.setSalt(salt);
-        entity.setPassword(PBKDF2.getPBKDF2(ConfigConst.DEFAULT_PWD, salt));
-        entity.setState(EnumConsts.UserStateEnum.ENABLED.getCode());
+        entity.setPassword(PBKDF2.getPBKDF2(ConfigConstants.DEFAULT_PWD, salt));
+        entity.setState(EnumConstants.UserStateEnum.ENABLED.getCode());
         baseMapper.insert(entity);
 
-        redisUtils.set(CacheConst.USER_NAME_PREFIX + entity.getId(), entity.getName());
+        redisUtils.set(CacheConstants.USER_NAME_PREFIX + entity.getId(), entity.getName());
         if (ParamUtils.notEmpty(entity.getAvatar())) {
-            redisUtils.set(CacheConst.USER_AVATAR_PREFIX + entity.getId(), entity.getAvatar());
+            redisUtils.set(CacheConstants.USER_AVATAR_PREFIX + entity.getId(), entity.getAvatar());
         }
     }
 
@@ -107,10 +107,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         OperationCheck.isExecute(baseMapper.updateById(updateUser), "删除失败");
 
         if (!user.getName().equals(dto.getName())) {
-            redisUtils.set(CacheConst.USER_NAME_PREFIX + updateUser.getId(), updateUser.getName());
+            redisUtils.set(CacheConstants.USER_NAME_PREFIX + updateUser.getId(), updateUser.getName());
         }
         if (ParamUtils.notEmpty(dto.getAvatar()) && dto.getAvatar().equals(user.getAvatar())) {
-            redisUtils.set(CacheConst.USER_AVATAR_PREFIX + updateUser.getId(), updateUser.getAvatar());
+            redisUtils.set(CacheConstants.USER_AVATAR_PREFIX + updateUser.getId(), updateUser.getAvatar());
         }
     }
 
@@ -143,7 +143,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         UserDTO dto = new UserDTO();
         if (entity != null) {
             BeanUtils.copyProperties(entity, dto);
-            dto.setGenderDesc(EnumConsts.UserGenderEnum.getValueByCode(entity.getGender()));
+            dto.setGenderDesc(EnumConstants.UserGenderEnum.getValueByCode(entity.getGender()));
             dto.setDepName(cacheService.getDepNameByCode(entity.getDepCode()));
         }
         return dto;
@@ -231,14 +231,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         // 将token 和 权限列表 存入redis 缓存
         Long expireTime;
-        if (ConfigConst.LOGIN_PC.equals(args.getLoginFrom())) {
-            expireTime = ConfigConst.DEFAULT_PC_TOKEN_INVALID_TIME;
+        if (ConfigConstants.LOGIN_PC.equals(args.getLoginFrom())) {
+            expireTime = ConfigConstants.DEFAULT_PC_TOKEN_INVALID_TIME;
         } else {
-            expireTime = ConfigConst.DEFAULT_APP_TOKEN_INVALID_TIME;
+            expireTime = ConfigConstants.DEFAULT_APP_TOKEN_INVALID_TIME;
         }
-        redisUtils.set(CacheConst.USER_TOKEN_PREFIX + user.getId() + ":" + args.getLoginFrom(), token, expireTime);
-        redisUtils.delete(CacheConst.USER_PERMISSION_PREFIX + user.getId() + ":" + args.getLoginFrom());
-        redisUtils.listPushAll(CacheConst.USER_PERMISSION_PREFIX + user.getId() + ":" + args.getLoginFrom(), permissions, expireTime);
+        redisUtils.set(CacheConstants.USER_TOKEN_PREFIX + user.getId() + ":" + args.getLoginFrom(), token, expireTime);
+        redisUtils.delete(CacheConstants.USER_PERMISSION_PREFIX + user.getId() + ":" + args.getLoginFrom());
+        redisUtils.listPushAll(CacheConstants.USER_PERMISSION_PREFIX + user.getId() + ":" + args.getLoginFrom(), permissions, expireTime);
 
         LoginResponseVO vo = new LoginResponseVO();
         vo.setName(user.getName());
@@ -270,14 +270,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (StringUtils.isEmpty(userId) || StringUtils.isEmpty(loginFrom)) {
             return;
         }
-        redisUtils.delete(CacheConst.USER_TOKEN_PREFIX + userId + ":" + loginFrom);
-        redisUtils.delete(CacheConst.USER_PERMISSION_PREFIX + userId + ":" + loginFrom);
+        redisUtils.delete(CacheConstants.USER_TOKEN_PREFIX + userId + ":" + loginFrom);
+        redisUtils.delete(CacheConstants.USER_PERMISSION_PREFIX + userId + ":" + loginFrom);
     }
 
     @Override
     public void resetPwd(long userId) {
         String salt = PBKDF2.generateSalt();
-        String newPwd = PBKDF2.getPBKDF2(ConfigConst.DEFAULT_PWD, salt);
+        String newPwd = PBKDF2.getPBKDF2(ConfigConstants.DEFAULT_PWD, salt);
         User user = new User();
         user.setId(userId);
         user.setSalt(salt);
@@ -307,8 +307,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         UserVO vo = new UserVO();
         if (entity != null) {
             BeanUtils.copyProperties(entity, vo);
-            vo.setGender(EnumConsts.UserGenderEnum.getValueByCode(entity.getGender()));
-            vo.setState(EnumConsts.UserStateEnum.getValueByCode(entity.getState()));
+            vo.setGender(EnumConstants.UserGenderEnum.getValueByCode(entity.getGender()));
+            vo.setState(EnumConstants.UserStateEnum.getValueByCode(entity.getState()));
             vo.setDepName(cacheService.getDepNameByCode(entity.getDepCode()));
         }
         return vo;

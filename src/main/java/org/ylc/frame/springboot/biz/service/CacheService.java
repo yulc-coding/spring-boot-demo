@@ -9,7 +9,7 @@ import org.ylc.frame.springboot.biz.entity.Department;
 import org.ylc.frame.springboot.biz.entity.User;
 import org.ylc.frame.springboot.biz.mapper.DepartmentMapper;
 import org.ylc.frame.springboot.biz.mapper.UserMapper;
-import org.ylc.frame.springboot.common.constant.CacheConst;
+import org.ylc.frame.springboot.common.constant.CacheConstants;
 import org.ylc.frame.springboot.common.util.ParamUtils;
 import org.ylc.frame.springboot.setting.component.redis.RedisUtils;
 
@@ -55,7 +55,7 @@ public class CacheService {
 
 
     public String getDepNameByCode(String code) {
-        String key = CacheConst.DEP_NAME_CODE_PREFIX + code;
+        String key = CacheConstants.DEP_NAME_CODE_PREFIX + code;
         Object value = redisUtils.get(key);
         if (value == null) {
             return dataSourceReturn(key, departmentMapper.selectNameByCode(code));
@@ -74,7 +74,7 @@ public class CacheService {
         if (ParamUtils.isEmpty(userId)) {
             return null;
         }
-        String key = CacheConst.USER_NAME_PREFIX + userId;
+        String key = CacheConstants.USER_NAME_PREFIX + userId;
         Object value = redisUtils.get(key);
         if (value == null) {
             return dataSourceReturn(key, userMapper.selectNameById(userId));
@@ -93,7 +93,7 @@ public class CacheService {
         if (ParamUtils.isEmpty(userId)) {
             return null;
         }
-        String key = CacheConst.USER_AVATAR_PREFIX + userId;
+        String key = CacheConstants.USER_AVATAR_PREFIX + userId;
         Object value = redisUtils.get(key);
         if (value == null) {
             return dataSourceReturn(key, userMapper.selectAvatarById(userId));
@@ -132,7 +132,7 @@ public class CacheService {
      * 更新部门名称
      */
     private void updateDepName() {
-        String keyPrefix = CacheConst.DEP_NAME_CODE_PREFIX;
+        String keyPrefix = CacheConstants.DEP_NAME_CODE_PREFIX;
         commonDelRedis(keyPrefix);
         logger.info("==============================  开始更新部门名称  ==============================");
         List<Department> depList = departmentMapper.selectList(
@@ -151,9 +151,9 @@ public class CacheService {
      * 头像地址
      */
     private void updateUserInfo() {
-        String nameKeyPrefix = CacheConst.USER_NAME_PREFIX;
+        String nameKeyPrefix = CacheConstants.USER_NAME_PREFIX;
         commonDelRedis(nameKeyPrefix);
-        String avatarKeyPrefix = CacheConst.USER_AVATAR_PREFIX;
+        String avatarKeyPrefix = CacheConstants.USER_AVATAR_PREFIX;
         commonDelRedis(avatarKeyPrefix);
         logger.info("==============================  开始更新用户信息  ==============================");
         List<User> userList = userMapper.selectList(

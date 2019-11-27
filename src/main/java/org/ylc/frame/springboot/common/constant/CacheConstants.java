@@ -7,7 +7,7 @@ package org.ylc.frame.springboot.common.constant;
  * @version 1.0.0
  * @date 2019/7/6 20:23
  */
-public class CacheConst {
+public class CacheConstants {
 
     /**
      * redis 默认过期时间（1天）

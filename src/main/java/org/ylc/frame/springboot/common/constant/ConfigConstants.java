@@ -7,7 +7,7 @@ package org.ylc.frame.springboot.common.constant;
  * @version 1.0.0
  * @date 2019/7/6 20:25
  */
-public class ConfigConst {
+public class ConfigConstants {
 
     /**
      * 默认密码

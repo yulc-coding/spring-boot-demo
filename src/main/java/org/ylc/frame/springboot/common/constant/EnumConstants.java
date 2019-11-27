@@ -8,7 +8,7 @@ package org.ylc.frame.springboot.common.constant;
  * @version 1.0.0
  * @date 2019/7/13 20:12
  */
-public class EnumConsts {
+public class EnumConstants {
 
     /**
      * 性别
