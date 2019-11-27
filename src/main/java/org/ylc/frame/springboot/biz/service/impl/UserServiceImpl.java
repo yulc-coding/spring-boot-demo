@@ -26,7 +26,7 @@ import org.ylc.frame.springboot.biz.vo.LoginResponseVO;
 import org.ylc.frame.springboot.biz.vo.UserVO;
 import org.ylc.frame.springboot.common.constant.CacheConst;
 import org.ylc.frame.springboot.common.constant.ConfigConst;
-import org.ylc.frame.springboot.common.constant.EnumConst;
+import org.ylc.frame.springboot.common.constant.EnumConsts;
 import org.ylc.frame.springboot.common.tree.MenuTree;
 import org.ylc.frame.springboot.common.util.*;
 import org.ylc.frame.springboot.setting.component.redis.RedisUtils;
@@ -76,7 +76,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String salt = PBKDF2.generateSalt();
         entity.setSalt(salt);
         entity.setPassword(PBKDF2.getPBKDF2(ConfigConst.DEFAULT_PWD, salt));
-        entity.setState(EnumConst.UserStateEnum.ENABLED.getCode());
+        entity.setState(EnumConsts.UserStateEnum.ENABLED.getCode());
         baseMapper.insert(entity);
 
         redisUtils.set(CacheConst.USER_NAME_PREFIX + entity.getId(), entity.getName());
@@ -143,7 +143,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         UserDTO dto = new UserDTO();
         if (entity != null) {
             BeanUtils.copyProperties(entity, dto);
-            dto.setGenderDesc(EnumConst.UserGenderEnum.getValueByCode(entity.getGender()));
+            dto.setGenderDesc(EnumConsts.UserGenderEnum.getValueByCode(entity.getGender()));
             dto.setDepName(cacheService.getDepNameByCode(entity.getDepCode()));
         }
         return dto;
@@ -307,8 +307,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         UserVO vo = new UserVO();
         if (entity != null) {
             BeanUtils.copyProperties(entity, vo);
-            vo.setGender(EnumConst.UserGenderEnum.getValueByCode(entity.getGender()));
-            vo.setState(EnumConst.UserStateEnum.getValueByCode(entity.getState()));
+            vo.setGender(EnumConsts.UserGenderEnum.getValueByCode(entity.getGender()));
+            vo.setState(EnumConsts.UserStateEnum.getValueByCode(entity.getState()));
             vo.setDepName(cacheService.getDepNameByCode(entity.getDepCode()));
         }
         return vo;

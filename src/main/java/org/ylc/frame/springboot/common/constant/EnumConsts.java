@@ -1,13 +1,14 @@
 package org.ylc.frame.springboot.common.constant;
 
 /**
- * 枚举常量
+ * 代码全万行，注释第一行
+ * 注释不规范，同事泪两行
  *
  * @author YuLc
  * @version 1.0.0
  * @date 2019/7/13 20:12
  */
-public class EnumConst {
+public class EnumConsts {
 
     /**
      * 性别
