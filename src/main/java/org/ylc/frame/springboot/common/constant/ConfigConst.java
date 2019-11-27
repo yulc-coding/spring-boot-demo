@@ -17,11 +17,11 @@ public class ConfigConst {
     /**
      * PC登入
      */
-    public static String LOGIN_PC = "PC";
+    public static String LOGIN_PC = "1";
     /**
      * app登入
      */
-    public static String LOGIN_APP = "APP";
+    public static String LOGIN_APP = "2";
 
 
     /**

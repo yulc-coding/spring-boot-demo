@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,8 +17,9 @@ import org.ylc.frame.springboot.biz.entity.User;
 import org.ylc.frame.springboot.biz.entity.UserRole;
 import org.ylc.frame.springboot.biz.mapper.MenuMapper;
 import org.ylc.frame.springboot.biz.mapper.UserMapper;
-import org.ylc.frame.springboot.biz.params.LoginArg;
+import org.ylc.frame.springboot.biz.params.LoginParam;
 import org.ylc.frame.springboot.biz.params.UserPageParams;
+import org.ylc.frame.springboot.biz.service.CacheService;
 import org.ylc.frame.springboot.biz.service.UserRoleService;
 import org.ylc.frame.springboot.biz.service.UserService;
 import org.ylc.frame.springboot.biz.vo.LoginResponseVO;
@@ -49,31 +51,67 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     private final RedisUtils redisUtils;
 
-    public UserServiceImpl(MenuMapper menuMapper, UserRoleService userRoleService, RedisUtils redisUtils) {
+    private final CacheService cacheService;
+
+    @Autowired
+    public UserServiceImpl(MenuMapper menuMapper, UserRoleService userRoleService, RedisUtils redisUtils, CacheService cacheService) {
         this.menuMapper = menuMapper;
         this.userRoleService = userRoleService;
         this.redisUtils = redisUtils;
+        this.cacheService = cacheService;
     }
 
+    /**
+     * 新增用户
+     * 账号重复校验
+     * 密码加密
+     * 姓名缓存
+     * 头像缓存
+     */
     @Override
     public void addInfo(UserDTO dto) {
+        usernameRepeat(dto.getUsername(), null);
+
         User entity = dto.convertToEntity();
         String salt = PBKDF2.generateSalt();
         entity.setSalt(salt);
         entity.setPassword(PBKDF2.getPBKDF2(ConfigConst.DEFAULT_PWD, salt));
         entity.setState(EnumConst.UserStateEnum.ENABLED.getCode());
         baseMapper.insert(entity);
+
+        redisUtils.set(CacheConst.USER_NAME_PREFIX + entity.getId(), entity.getName());
+        if (ParamUtils.notEmpty(entity.getAvatar())) {
+            redisUtils.set(CacheConst.USER_AVATAR_PREFIX + entity.getId(), entity.getAvatar());
+        }
     }
 
     @Override
     public void delInfo(long id) {
-        OperationCheck.isExecute(baseMapper.deleteById(id), "无效数据");
+        OperationCheck.isExecute(baseMapper.deleteById(id), "删除失败");
     }
 
+    /**
+     * 更新
+     * 账号重复校验
+     * 姓名不一致，修改缓存
+     * 头像不一致，修改缓存
+     */
     @Override
     public void updateInfo(UserDTO dto) {
-        User entity = dto.convertToEntity();
-        OperationCheck.isExecute(baseMapper.updateById(entity), "无效数据");
+        usernameRepeat(dto.getUsername(), dto.getId());
+
+        User user = baseMapper.selectById(dto.getId());
+        ParamCheck.notNull(user, "无效数据");
+
+        User updateUser = dto.convertToEntity();
+        OperationCheck.isExecute(baseMapper.updateById(updateUser), "删除失败");
+
+        if (!user.getName().equals(dto.getName())) {
+            redisUtils.set(CacheConst.USER_NAME_PREFIX + updateUser.getId(), updateUser.getName());
+        }
+        if (ParamUtils.notEmpty(dto.getAvatar()) && dto.getAvatar().equals(user.getAvatar())) {
+            redisUtils.set(CacheConst.USER_AVATAR_PREFIX + updateUser.getId(), updateUser.getAvatar());
+        }
     }
 
     @Override
@@ -93,18 +131,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         IPage<UserVO> voPage = new Page<>();
         List<UserVO> voList = new ArrayList<>();
         for (User entity : entityList) {
-            voList.add(UserVO.entityConvertToVo(entity));
+            voList.add(entityConvertToVo(entity));
         }
         BeanUtils.copyProperties(entityPage, voPage);
         return voPage.setRecords(voList);
     }
 
     @Override
-    public UserVO getInfoById(long id) {
+    public UserDTO getInfoById(long id) {
         User entity = baseMapper.selectById(id);
-        UserVO vo = UserVO.entityConvertToVo(entity);
-        vo.setAvatar(entity.getAvatar());
-        return vo;
+        UserDTO dto = new UserDTO();
+        if (entity != null) {
+            BeanUtils.copyProperties(entity, dto);
+            dto.setGenderDesc(EnumConst.UserGenderEnum.getValueByCode(entity.getGender()));
+            dto.setDepName(cacheService.getDepNameByCode(entity.getDepCode()));
+        }
+        return dto;
     }
 
     /**
@@ -150,7 +192,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * 5、缓存token和权限列表
      */
     @Override
-    public LoginResponseVO login(LoginArg args) {
+    public LoginResponseVO login(LoginParam args) {
         User user = baseMapper.selectOne(
                 new QueryWrapper<User>()
                         .select("id,name,password,salt")
@@ -195,7 +237,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             expireTime = ConfigConst.DEFAULT_APP_TOKEN_INVALID_TIME;
         }
         redisUtils.set(CacheConst.USER_TOKEN_PREFIX + user.getId() + ":" + args.getLoginFrom(), token, expireTime);
-        redisUtils.del(CacheConst.USER_PERMISSION_PREFIX + user.getId() + ":" + args.getLoginFrom());
+        redisUtils.delete(CacheConst.USER_PERMISSION_PREFIX + user.getId() + ":" + args.getLoginFrom());
         redisUtils.listPushAll(CacheConst.USER_PERMISSION_PREFIX + user.getId() + ":" + args.getLoginFrom(), permissions, expireTime);
 
         LoginResponseVO vo = new LoginResponseVO();
@@ -228,8 +270,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (StringUtils.isEmpty(userId) || StringUtils.isEmpty(loginFrom)) {
             return;
         }
-        redisUtils.del(CacheConst.USER_TOKEN_PREFIX + userId + ":" + loginFrom);
-        redisUtils.del(CacheConst.USER_PERMISSION_PREFIX + userId + ":" + loginFrom);
+        redisUtils.delete(CacheConst.USER_TOKEN_PREFIX + userId + ":" + loginFrom);
+        redisUtils.delete(CacheConst.USER_PERMISSION_PREFIX + userId + ":" + loginFrom);
     }
 
     @Override
@@ -242,4 +284,35 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setPassword(newPwd);
         baseMapper.updateById(user);
     }
+
+    /**
+     * 校验账号是否重复
+     *
+     * @param username 账号
+     * @param id       如果修改需要传当前ID
+     */
+    private void usernameRepeat(String username, Long id) {
+        int count = baseMapper.selectCount(
+                new QueryWrapper<User>()
+                        .ne(ParamUtils.notEmpty(id), "id", id)
+                        .eq("username", username)
+        );
+        ParamCheck.assertTrue(count <= 0, "已存在相同的账号");
+    }
+
+    /**
+     * 实体转换为vo
+     */
+    private UserVO entityConvertToVo(User entity) {
+        UserVO vo = new UserVO();
+        if (entity != null) {
+            BeanUtils.copyProperties(entity, vo);
+            vo.setGender(EnumConst.UserGenderEnum.getValueByCode(entity.getGender()));
+            vo.setState(EnumConst.UserStateEnum.getValueByCode(entity.getState()));
+            vo.setDepName(cacheService.getDepNameByCode(entity.getDepCode()));
+        }
+        return vo;
+    }
+
+
 }

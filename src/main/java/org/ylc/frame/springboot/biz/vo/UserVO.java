@@ -3,9 +3,6 @@ package org.ylc.frame.springboot.biz.vo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.BeanUtils;
-import org.ylc.frame.springboot.biz.entity.User;
-import org.ylc.frame.springboot.common.constant.EnumConst;
 
 /**
  * <p>
@@ -42,22 +39,5 @@ public class UserVO {
 
     @ApiModelProperty(value = "备注")
     private String remark;
-
-    @ApiModelProperty(value = "用户头像")
-    private String avatar;
-
-    /**
-     * 实体转换为vo
-     */
-    public static UserVO entityConvertToVo(User entity) {
-        UserVO vo = new UserVO();
-        if (entity != null) {
-            BeanUtils.copyProperties(entity, vo, "avatar");
-            // 性别
-            vo.setGender(EnumConst.UserGenderEnum.getValueByCode(entity.getGender()));
-            vo.setState(EnumConst.UserStateEnum.getValueByCode(entity.getState()));
-        }
-        return vo;
-    }
 
 }

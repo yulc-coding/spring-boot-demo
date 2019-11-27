@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -68,11 +65,26 @@ public class RedisUtils {
     }
 
     /**
+     * 获取相同格式的KEY
+     *
+     * @param pattern 格式
+     * @return set
+     */
+    public Set<String> keys(String pattern) {
+        try {
+            return redisTemplate.keys(pattern);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
      * 删除缓存
      *
      * @param key 可以传一个值 或多个
      */
-    public void del(String... key) {
+    public void delete(String... key) {
         if (key != null && key.length > 0) {
             if (key.length == 1) {
                 redisTemplate.delete(key[0]);
@@ -80,6 +92,15 @@ public class RedisUtils {
                 redisTemplate.delete(Arrays.asList(key));
             }
         }
+    }
+
+    /**
+     * 删除
+     *
+     * @param keys 集合形式
+     */
+    public void delete(Collection<String> keys) {
+        redisTemplate.delete(keys);
     }
 
     //============================String=============================

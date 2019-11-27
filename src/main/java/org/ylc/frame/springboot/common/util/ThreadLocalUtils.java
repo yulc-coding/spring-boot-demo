@@ -1,7 +1,5 @@
 package org.ylc.frame.springboot.common.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.ylc.frame.springboot.common.entity.UserInfo;
 
@@ -14,8 +12,6 @@ import org.ylc.frame.springboot.common.entity.UserInfo;
  * @date 2019/4/15 21:52
  */
 public class ThreadLocalUtils {
-
-    private static final Logger logger = LoggerFactory.getLogger(ThreadLocalUtils.class);
 
     private static final String KEY_USER = "user";
 

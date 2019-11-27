@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.ylc.frame.springboot.biz.dto.UserDTO;
 import org.ylc.frame.springboot.biz.entity.User;
-import org.ylc.frame.springboot.biz.params.LoginArg;
+import org.ylc.frame.springboot.biz.params.LoginParam;
 import org.ylc.frame.springboot.biz.params.UserPageParams;
 import org.ylc.frame.springboot.biz.vo.LoginResponseVO;
 import org.ylc.frame.springboot.biz.vo.UserVO;
@@ -47,7 +47,7 @@ public interface UserService extends IService<User> {
     /**
      * 根据ID查询
      */
-    UserVO getInfoById(long id);
+    UserDTO getInfoById(long id);
 
     /**
      * 绑定角色
@@ -72,7 +72,7 @@ public interface UserService extends IService<User> {
      * @param args 参数
      * @return 用户信息
      */
-    LoginResponseVO login(LoginArg args);
+    LoginResponseVO login(LoginParam args);
 
     /**
      * 登出

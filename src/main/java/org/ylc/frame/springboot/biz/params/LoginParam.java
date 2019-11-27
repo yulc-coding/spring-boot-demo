@@ -18,7 +18,7 @@ import javax.validation.constraints.NotBlank;
  */
 @Getter
 @Setter
-public class LoginArg {
+public class LoginParam {
 
     @NotBlank(message = "账号不能为空")
     @ApiModelProperty(value = "账号")
@@ -28,7 +28,7 @@ public class LoginArg {
     @ApiModelProperty(value = "密码")
     private String password;
 
-    @NotBlank(message = "登入方式，PC,APP")
-    @ApiModelProperty(value = "登录来源")
+    @NotBlank(message = "登入方式不能为空")
+    @ApiModelProperty(value = "登入方式，1.PC, 2.APP")
     private String loginFrom;
 }

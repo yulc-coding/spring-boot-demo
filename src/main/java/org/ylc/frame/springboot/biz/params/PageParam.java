@@ -1,4 +1,4 @@
-package org.ylc.frame.springboot.common.entity;
+package org.ylc.frame.springboot.biz.params;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;

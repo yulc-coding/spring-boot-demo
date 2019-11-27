@@ -17,12 +17,16 @@
 
     <select id="depTreeList" resultType="org.ylc.frame.springboot.common.tree.DepartmentTree">
         SELECT id,
-               `code`,
-               `name`,
+               code,
+               name,
                pid,
                remark
         FROM sys_department
         ORDER BY id
+    </select>
+
+    <select id="selectNameByCode" resultType="java.lang.String">
+        SELECT name FROM sys_department WHERE code = #{code}
     </select>
 
 </mapper>

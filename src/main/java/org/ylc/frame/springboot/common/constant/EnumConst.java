@@ -23,7 +23,7 @@ public class EnumConst {
         private String value;
 
         public static String getValueByCode(String code) {
-            for (UserGenderEnum userGenderEnum : UserGenderEnum.values()) {
+            for (UserGenderEnum userGenderEnum : values()) {
                 if (userGenderEnum.code.equals(code)) {
                     return userGenderEnum.value;
                 }
@@ -59,7 +59,7 @@ public class EnumConst {
         private String value;
 
         public static String getValueByCode(Integer code) {
-            for (UserStateEnum userStateEnum : UserStateEnum.values()) {
+            for (UserStateEnum userStateEnum : values()) {
                 if (userStateEnum.code.equals(code)) {
                     return userStateEnum.value;
                 }

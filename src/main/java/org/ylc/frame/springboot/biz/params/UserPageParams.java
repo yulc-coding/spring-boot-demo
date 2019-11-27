@@ -3,7 +3,6 @@ package org.ylc.frame.springboot.biz.params;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
-import org.ylc.frame.springboot.common.entity.PageParam;
 
 /**
  * 代码千万行，注释第一行，

@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
-import org.ylc.frame.springboot.biz.params.LoginArg;
+import org.ylc.frame.springboot.biz.params.LoginParam;
 import org.ylc.frame.springboot.biz.service.UserService;
 import org.ylc.frame.springboot.biz.vo.LoginResponseVO;
 import org.ylc.frame.springboot.common.annotation.Permission;
@@ -36,7 +36,7 @@ public class SysController {
 
     @ApiOperation("登录")
     @PostMapping("/login")
-    public HttpResult<LoginResponseVO> login(@RequestBody @Valid LoginArg args) {
+    public HttpResult<LoginResponseVO> login(@RequestBody @Valid LoginParam args) {
         return HttpResult.success(userService.login(args));
     }
 
@@ -48,7 +48,7 @@ public class SysController {
     }
 
     @ApiOperation(value = "重置密码")
-    @PutMapping("/resetPwd/{userId}")
+    @GetMapping("/resetPwd/{userId}")
     @Permission("sys:resetPwd")
     public HttpResult resetPwd(@ApiParam(name = "userId", value = "userId")
                                @PathVariable(name = "userId") Long userId) {

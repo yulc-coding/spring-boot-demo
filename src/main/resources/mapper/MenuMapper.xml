@@ -15,7 +15,7 @@
         <result column="btn_key" property="btnKey"/>
         <result column="icon" property="icon"/>
         <result column="seq" property="seq"/>
-        <result column="visit_type" property="visitType"/>
+        <result column="login_from" property="loginFrom"/>
         <result column="remark" property="remark"/>
         <result column="create_user" property="createUser"/>
         <result column="create_time" property="createTime"/>

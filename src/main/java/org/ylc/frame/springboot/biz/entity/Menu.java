@@ -88,8 +88,8 @@ public class Menu implements Serializable {
     /**
      * 访问方式，1PC，2APP
      */
-    @TableField("visit_type")
-    private String visitType;
+    @TableField("login_from")
+    private String loginFrom;
 
     /**
      * 备注

@@ -69,11 +69,11 @@ public class UserController {
         return HttpResult.success(userService.pageInfo(page));
     }
 
-    @ApiOperation(value = "根据ID查询信息")
+    @ApiOperation(value = "根据ID查询信息，用于编辑")
     @GetMapping("/get/{id}")
     @Permission("pc")
-    public HttpResult<UserVO> getInfoById(@ApiParam(name = "id", value = "id")
-                                          @PathVariable(name = "id") Long id) {
+    public HttpResult<UserDTO> getInfoById(@ApiParam(name = "id", value = "id")
+                                           @PathVariable(name = "id") Long id) {
         return HttpResult.success(userService.getInfoById(id));
     }
 

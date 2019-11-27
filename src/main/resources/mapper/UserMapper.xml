@@ -7,7 +7,7 @@
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="username" property="username"/>
-        <result column="dep_id" property="depId"/>
+        <result column="dep_code" property="depCode"/>
         <result column="password" property="password"/>
         <result column="salt" property="salt"/>
         <result column="phone" property="phone"/>
@@ -20,5 +20,13 @@
         <result column="update_user" property="updateUser"/>
         <result column="update_time" property="updateTime"/>
     </resultMap>
+
+    <select id="selectNameById" resultType="java.lang.String">
+        SELECT name FROM sys_user WHERE id = #{id}
+    </select>
+
+    <select id="selectAvatarById" resultType="java.lang.String">
+        SELECT avatar FROM sys_user WHERE id = #{id}
+    </select>
 
 </mapper>

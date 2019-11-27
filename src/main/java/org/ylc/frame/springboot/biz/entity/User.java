@@ -43,8 +43,8 @@ public class User implements Serializable {
     /**
      * 所属部门ID
      */
-    @TableField("dep_id")
-    private Long depId;
+    @TableField("dep_code")
+    private String depCode;
 
     /**
      * 密码

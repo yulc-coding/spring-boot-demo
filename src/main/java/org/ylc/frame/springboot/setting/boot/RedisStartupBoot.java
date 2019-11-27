@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.ylc.frame.springboot.setting.component.CacheUtil;
+import org.ylc.frame.springboot.biz.service.CacheService;
 import org.ylc.frame.springboot.setting.component.redis.RedisUtils;
 
 import java.net.InetAddress;
@@ -29,12 +29,12 @@ public class RedisStartupBoot implements CommandLineRunner {
 
     private final RedisUtils redisUtils;
 
-    private final CacheUtil cacheUtil;
+    private final CacheService cacheService;
 
     @Autowired
-    public RedisStartupBoot(RedisUtils redisUtils, CacheUtil cacheUtil) {
+    public RedisStartupBoot(RedisUtils redisUtils, CacheService cacheService) {
         this.redisUtils = redisUtils;
-        this.cacheUtil = cacheUtil;
+        this.cacheService = cacheService;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class RedisStartupBoot implements CommandLineRunner {
             redisUtils.hashPut("startup-info:" + hostName, map);
 
             // 初始化redis中的数据
-            cacheUtil.updateCache();
+            cacheService.updateCache();
 
         } catch (Exception e) {
             logger.error("redis服务器连接设置参数错误{}", e.getLocalizedMessage());
