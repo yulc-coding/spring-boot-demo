@@ -1,6 +1,7 @@
 package org.ylc.frame.springboot.biz.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @TableName("sys_user")
+@ApiModel(value = "User对象", description = "用户")
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -79,6 +81,12 @@ public class User implements Serializable {
      */
     @TableField("state")
     private Integer state;
+
+    /**
+     * 用户头像
+     */
+    @TableField("avatar")
+    private String avatar;
 
     @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;

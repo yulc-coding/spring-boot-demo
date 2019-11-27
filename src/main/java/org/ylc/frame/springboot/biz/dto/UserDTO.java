@@ -36,6 +36,9 @@ public class UserDTO extends AbstractConverter<User> {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    @ApiModelProperty(value = "用户头像")
+    private String avatar;
+
     @Override
     public User convertToEntity() {
         User user = new User();

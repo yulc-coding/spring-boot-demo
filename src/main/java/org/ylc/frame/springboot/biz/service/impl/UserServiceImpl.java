@@ -102,7 +102,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public UserVO getInfoById(long id) {
         User entity = baseMapper.selectById(id);
-        return UserVO.entityConvertToVo(entity);
+        UserVO vo = UserVO.entityConvertToVo(entity);
+        vo.setAvatar(entity.getAvatar());
+        return vo;
     }
 
     /**
@@ -186,13 +188,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         TreeBuildUtil.build(menuRootTree, menuTrees);
 
         // 将token 和 权限列表 存入redis 缓存
+        Long expireTime;
         if (ConfigConst.LOGIN_PC.equals(args.getLoginFrom())) {
-            redisUtils.set(CacheConst.USER_TOKEN_PREFIX + user.getId() + ":" + args.getLoginFrom(), token, ConfigConst.DEFAULT_PC_TOKEN_INVALID_TIME);
+            expireTime = ConfigConst.DEFAULT_PC_TOKEN_INVALID_TIME;
         } else {
-            redisUtils.set(CacheConst.USER_TOKEN_PREFIX + user.getId() + ":" + args.getLoginFrom(), token, ConfigConst.DEFAULT_APP_TOKEN_INVALID_TIME);
+            expireTime = ConfigConst.DEFAULT_APP_TOKEN_INVALID_TIME;
         }
+        redisUtils.set(CacheConst.USER_TOKEN_PREFIX + user.getId() + ":" + args.getLoginFrom(), token, expireTime);
         redisUtils.del(CacheConst.USER_PERMISSION_PREFIX + user.getId() + ":" + args.getLoginFrom());
-        redisUtils.listPushAll(CacheConst.USER_PERMISSION_PREFIX + user.getId() + ":" + args.getLoginFrom(), permissions);
+        redisUtils.listPushAll(CacheConst.USER_PERMISSION_PREFIX + user.getId() + ":" + args.getLoginFrom(), permissions, expireTime);
 
         LoginResponseVO vo = new LoginResponseVO();
         vo.setName(user.getName());
