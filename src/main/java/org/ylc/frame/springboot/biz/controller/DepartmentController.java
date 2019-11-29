@@ -37,7 +37,7 @@ public class DepartmentController {
     @ApiOperation(value = "新增")
     @PostMapping("/add")
     @Permission("department:add")
-    public HttpResult addInfo(@RequestBody @Valid DepartmentDTO dto) {
+    public HttpResult<Object> addInfo(@RequestBody @Valid DepartmentDTO dto) {
         departmentService.addInfo(dto);
         return HttpResult.success();
     }
@@ -45,8 +45,8 @@ public class DepartmentController {
     @ApiOperation(value = "删除")
     @GetMapping("/delete/{id}")
     @Permission("department:delete")
-    public HttpResult delInfo(@ApiParam(name = "id", value = "id")
-                              @PathVariable("id") Long id) {
+    public HttpResult<Object> delInfo(@ApiParam(name = "id", value = "id")
+                                      @PathVariable("id") Long id) {
         departmentService.delInfo(id);
         return HttpResult.success();
     }
@@ -54,7 +54,7 @@ public class DepartmentController {
     @ApiOperation(value = "更新")
     @PostMapping("/update")
     @Permission("department:update")
-    public HttpResult updateInfo(@RequestBody @Valid DepartmentDTO dto) {
+    public HttpResult<Object> updateInfo(@RequestBody @Valid DepartmentDTO dto) {
         departmentService.updateInfo(dto);
         return HttpResult.success();
     }

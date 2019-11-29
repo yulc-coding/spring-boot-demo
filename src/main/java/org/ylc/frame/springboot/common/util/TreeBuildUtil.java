@@ -18,7 +18,7 @@ import java.util.List;
 public class TreeBuildUtil {
 
     /**
-     * 构建树形结构
+     * 构建单个根目录的树形结构
      *
      * @param root      根目录
      * @param childList 其他目录
@@ -49,7 +49,7 @@ public class TreeBuildUtil {
     }
 
     /**
-     * 多个根目录的生成树结构
+     * 构建多个根目录的树结构
      *
      * @param rootList   根目录
      * @param branchList 分支目录

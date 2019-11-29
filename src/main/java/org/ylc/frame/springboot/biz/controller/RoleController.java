@@ -38,7 +38,7 @@ public class RoleController {
     @ApiOperation(value = "新增")
     @PostMapping("/add")
     @Permission("role:add")
-    public HttpResult addInfo(@RequestBody @Valid RoleDTO dto) {
+    public HttpResult<Object> addInfo(@RequestBody @Valid RoleDTO dto) {
         roleService.addInfo(dto);
         return HttpResult.success();
     }
@@ -46,8 +46,8 @@ public class RoleController {
     @ApiOperation(value = "删除")
     @GetMapping("/delete/{id}")
     @Permission("role:delete")
-    public HttpResult delInfo(@ApiParam(name = "id", value = "id")
-                              @PathVariable("id") Long id) {
+    public HttpResult<Object> delInfo(@ApiParam(name = "id", value = "id")
+                                      @PathVariable("id") Long id) {
         roleService.delInfo(id);
         return HttpResult.success();
     }
@@ -55,7 +55,7 @@ public class RoleController {
     @ApiOperation(value = "更新")
     @PostMapping("/update")
     @Permission("role:update")
-    public HttpResult updateInfo(@RequestBody @Valid RoleDTO dto) {
+    public HttpResult<Object> updateInfo(@RequestBody @Valid RoleDTO dto) {
         roleService.updateInfo(dto);
         return HttpResult.success();
     }
@@ -70,7 +70,7 @@ public class RoleController {
     @ApiOperation(value = "角色绑定菜单")
     @PostMapping("/bindMenu")
     @Permission("role:bindMenu")
-    public HttpResult bindMenu(@RequestBody @Valid RoleBindMenuDTO roleBindMenuDTO) {
+    public HttpResult<Object> bindMenu(@RequestBody @Valid RoleBindMenuDTO roleBindMenuDTO) {
         roleService.bindMenu(roleBindMenuDTO.getRoleId(), roleBindMenuDTO.getMenuIds());
         return HttpResult.success();
     }

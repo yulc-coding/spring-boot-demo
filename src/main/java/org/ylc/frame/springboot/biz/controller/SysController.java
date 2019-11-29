@@ -42,7 +42,7 @@ public class SysController {
 
     @ApiOperation("登出")
     @GetMapping("/logout")
-    public HttpResult logout(HttpServletRequest request) {
+    public HttpResult<Object> logout(HttpServletRequest request) {
         userService.logout(request.getHeader("token"));
         return HttpResult.success();
     }
@@ -50,8 +50,8 @@ public class SysController {
     @ApiOperation(value = "重置密码")
     @GetMapping("/resetPwd/{userId}")
     @Permission("sys:resetPwd")
-    public HttpResult resetPwd(@ApiParam(name = "userId", value = "userId")
-                               @PathVariable(name = "userId") Long userId) {
+    public HttpResult<Object> resetPwd(@ApiParam(name = "userId", value = "userId")
+                                       @PathVariable(name = "userId") Long userId) {
         userService.resetPwd(userId);
         return HttpResult.success();
     }

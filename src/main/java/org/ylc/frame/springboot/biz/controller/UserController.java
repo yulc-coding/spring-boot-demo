@@ -40,7 +40,7 @@ public class UserController {
     @ApiOperation(value = "新增")
     @PostMapping("/add")
     @Permission("user:add")
-    public HttpResult addInfo(@RequestBody @Valid UserDTO dto) {
+    public HttpResult<Object> addInfo(@RequestBody @Valid UserDTO dto) {
         userService.addInfo(dto);
         return HttpResult.success();
     }
@@ -48,8 +48,8 @@ public class UserController {
     @ApiOperation(value = "删除")
     @GetMapping("/delete/{id}")
     @Permission("user:delete")
-    public HttpResult delInfo(@ApiParam(name = "id", value = "id")
-                              @PathVariable("id") Long id) {
+    public HttpResult<Object> delInfo(@ApiParam(name = "id", value = "id")
+                                      @PathVariable("id") Long id) {
         userService.delInfo(id);
         return HttpResult.success();
     }
@@ -57,7 +57,7 @@ public class UserController {
     @ApiOperation(value = "更新")
     @PostMapping("/update")
     @Permission("user:update")
-    public HttpResult updateInfo(@RequestBody @Valid UserDTO dto) {
+    public HttpResult<Object> updateInfo(@RequestBody @Valid UserDTO dto) {
         userService.updateInfo(dto);
         return HttpResult.success();
     }
@@ -80,7 +80,7 @@ public class UserController {
     @ApiOperation(value = "绑定角色")
     @PostMapping("/bindRole")
     @Permission("user:bindRole")
-    public HttpResult bindRole(@RequestBody @Valid UserBindRoleDTO userBindRoleDTO) {
+    public HttpResult<Object> bindRole(@RequestBody @Valid UserBindRoleDTO userBindRoleDTO) {
         userService.bindRole(userBindRoleDTO.getUserId(), userBindRoleDTO.getRoles());
         return HttpResult.success();
     }
@@ -89,7 +89,7 @@ public class UserController {
     @ApiOperation(value = "修改密码")
     @PostMapping("/changePwd")
     @Permission("pc")
-    public HttpResult changePwd(@RequestBody @Valid ChangePwdDTO pwd) {
+    public HttpResult<Object> changePwd(@RequestBody @Valid ChangePwdDTO pwd) {
         userService.changePwd(pwd.getOldPwd(), pwd.getNewPwd(), pwd.getRepeatPwd());
         return HttpResult.success();
     }
