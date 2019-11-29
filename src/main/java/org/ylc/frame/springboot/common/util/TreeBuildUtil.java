@@ -40,11 +40,13 @@ public class TreeBuildUtil {
                 otherList.add(entity);
             }
         }
-        // noinspection unchecked
-        root.setChildren(curChild);
-        for (BaseTree nextRoot : curChild) {
-            // 递归
-            build(nextRoot, otherList);
+        if (ParamUtils.notEmpty(curChild)) {
+            // noinspection unchecked
+            root.setChildren(curChild);
+            for (BaseTree nextRoot : curChild) {
+                // 递归
+                build(nextRoot, otherList);
+            }
         }
     }
 

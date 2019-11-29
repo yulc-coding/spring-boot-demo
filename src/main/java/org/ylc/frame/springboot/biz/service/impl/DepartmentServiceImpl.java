@@ -14,7 +14,6 @@ import org.ylc.frame.springboot.common.util.OperationCheck;
 import org.ylc.frame.springboot.common.util.ParamCheck;
 import org.ylc.frame.springboot.common.util.TreeBuildUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,10 +33,11 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     private static final String DEFAULT_CODE = "001";
 
     @Override
-    public void addInfo(DepartmentDTO dto) {
+    public Long addInfo(DepartmentDTO dto) {
         Department entity = dto.convertToEntity();
         entity.setCode(generateCode(dto.getPid()));
         baseMapper.insert(entity);
+        return entity.getId();
     }
 
     @Override
@@ -70,7 +70,6 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         DepartmentTree depTree = new DepartmentTree();
         depTree.setId(0L);
         depTree.setName("根目录");
-        depTree.setChildren(new ArrayList<>());
         TreeBuildUtil.build(depTree, depList);
         return depTree;
     }

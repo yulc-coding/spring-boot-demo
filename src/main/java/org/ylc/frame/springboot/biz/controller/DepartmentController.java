@@ -34,12 +34,11 @@ public class DepartmentController {
         this.departmentService = departmentService;
     }
 
-    @ApiOperation(value = "新增")
+    @ApiOperation(value = "新增，返回ID")
     @PostMapping("/add")
     @Permission("department:add")
-    public HttpResult<Object> addInfo(@RequestBody @Valid DepartmentDTO dto) {
-        departmentService.addInfo(dto);
-        return HttpResult.success();
+    public HttpResult<Long> addInfo(@RequestBody @Valid DepartmentDTO dto) {
+        return HttpResult.success(departmentService.addInfo(dto));
     }
 
     @ApiOperation(value = "删除")
