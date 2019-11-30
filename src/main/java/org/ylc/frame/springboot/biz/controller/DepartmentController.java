@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.ylc.frame.springboot.biz.dto.DepartmentDTO;
 import org.ylc.frame.springboot.biz.service.DepartmentService;
@@ -11,8 +12,8 @@ import org.ylc.frame.springboot.biz.vo.DepartmentVO;
 import org.ylc.frame.springboot.common.annotation.Permission;
 import org.ylc.frame.springboot.common.entity.HttpResult;
 import org.ylc.frame.springboot.common.tree.DepartmentTree;
-
-import javax.validation.Valid;
+import org.ylc.frame.springboot.common.validated.InsertGroup;
+import org.ylc.frame.springboot.common.validated.UpdateGroup;
 
 /**
  * <p>
@@ -37,7 +38,7 @@ public class DepartmentController {
     @ApiOperation(value = "新增，返回ID")
     @PostMapping("/add")
     @Permission("department:add")
-    public HttpResult<Long> addInfo(@RequestBody @Valid DepartmentDTO dto) {
+    public HttpResult<Long> addInfo(@RequestBody @Validated({InsertGroup.class}) DepartmentDTO dto) {
         return HttpResult.success(departmentService.addInfo(dto));
     }
 
@@ -53,7 +54,7 @@ public class DepartmentController {
     @ApiOperation(value = "更新")
     @PostMapping("/update")
     @Permission("department:update")
-    public HttpResult<Object> updateInfo(@RequestBody @Valid DepartmentDTO dto) {
+    public HttpResult<Object> updateInfo(@RequestBody @Validated({UpdateGroup.class}) DepartmentDTO dto) {
         departmentService.updateInfo(dto);
         return HttpResult.success();
     }

@@ -6,6 +6,7 @@ import org.springframework.beans.TypeMismatchException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -33,17 +34,24 @@ public class GlobalExceptionHandler {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @ExceptionHandler(OperationException.class)
-    public HttpResult handler(OperationException e) {
+    public HttpResult<String> handler(OperationException e) {
         String error = e.getMessage();
-        log.info("自定义错误信息:{}", error);
+        log.error("自定义错误信息:{}", error);
         return HttpResult.fail(e.getErrCode(), error);
     }
 
     @ExceptionHandler(CheckException.class)
-    public HttpResult handler(CheckException e) {
+    public HttpResult<String> handler(CheckException e) {
         String error = e.getMessage();
-        log.info("自定义校验错误:{}", error);
+        log.error("自定义校验错误:{}", error);
         return HttpResult.fail(e.getErrCode(), error);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public HttpResult<String> handle(MethodArgumentNotValidException e) {
+        String error = e.getBindingResult().getFieldError().getDefaultMessage();
+        log.error("方法参数校验异常:{}", error);
+        return HttpResult.fail(error);
     }
 
     /**
@@ -53,8 +61,8 @@ public class GlobalExceptionHandler {
      * @return HttpResult.fail
      */
     @ExceptionHandler(IllegalArgumentException.class)
-    public HttpResult illegalArgumentExceptionHandler(IllegalArgumentException ex) {
-        return HttpResult.fail(ex.getLocalizedMessage());
+    public HttpResult<String> illegalArgumentExceptionHandler(IllegalArgumentException ex) {
+        return HttpResult.fail(ex.getMessage());
     }
 
     /**
@@ -64,7 +72,7 @@ public class GlobalExceptionHandler {
      * @return HttpResult.fail
      */
     @ExceptionHandler(TypeMismatchException.class)
-    public HttpResult requestTypeMismatch(TypeMismatchException ex) {
+    public HttpResult<String> requestTypeMismatch(TypeMismatchException ex) {
         return HttpResult.fail("参数类型不匹配,参数" + ex.getPropertyName() + "类型应该为" + ex.getRequiredType()
                 + "，实际传入参数：" + ex.getValue());
     }
@@ -74,27 +82,27 @@ public class GlobalExceptionHandler {
      * @return HttpResult.fail
      */
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public HttpResult requestParameterExceptionHandler(MissingServletRequestParameterException ex) {
+    public HttpResult<String> requestParameterExceptionHandler(MissingServletRequestParameterException ex) {
         return HttpResult.fail("缺少必填参数：" + ex.getParameterName() + "，参数类型为：" + ex.getParameterType());
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public HttpResult handlerHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
-        String error = e.getLocalizedMessage();
+    public HttpResult<String> handlerHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        String error = e.getMessage();
         log.error("不支持当前请求方法:{}", error);
         return HttpResult.fail("不支持当前请求方法");
     }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    public HttpResult handlerHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e) {
-        String error = e.getLocalizedMessage();
+    public HttpResult<String> handlerHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e) {
+        String error = e.getMessage();
         log.error("不支持当前媒体类型:{}", error);
         return HttpResult.fail("不支持当前媒体类型");
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public HttpResult handlerConstraintViolationException(ConstraintViolationException e) {
-        String error = e.getLocalizedMessage();
+    public HttpResult<String> handlerConstraintViolationException(ConstraintViolationException e) {
+        String error = e.getMessage();
         log.error("约束冲突异常:{}", error);
         return HttpResult.fail("约束冲突异常");
     }
@@ -106,9 +114,9 @@ public class GlobalExceptionHandler {
      * @return HttpResult.fail
      */
     @ExceptionHandler(Exception.class)
-    public HttpResult exceptionHandler(Exception ex) {
-        log.error("系统异常", ex.getLocalizedMessage());
+    public HttpResult<String> exceptionHandler(Exception ex) {
+        log.error("系统异常", ex.getMessage());
         ex.printStackTrace();
-        return HttpResult.fail(ex.getLocalizedMessage());
+        return HttpResult.fail(ex.getMessage());
     }
 }

@@ -34,6 +34,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
 
     @Override
     public Long addInfo(DepartmentDTO dto) {
+        nameRepeatCheck(dto.getName(), null);
         Department entity = dto.convertToEntity();
         entity.setCode(generateCode(dto.getPid()));
         baseMapper.insert(entity);
@@ -48,12 +49,9 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     @Override
     public void updateInfo(DepartmentDTO dto) {
         Department oldEntity = baseMapper.selectById(dto.getId());
+        nameRepeatCheck(dto.getName(), dto.getId());
         ParamCheck.notNull(oldEntity, "无效数据");
         Department entity = dto.convertToEntity();
-        // 上级部门不一致的，需要重新生成部门编码
-        if (!oldEntity.getPid().equals(dto.getPid())) {
-            entity.setCode(generateCode(dto.getPid()));
-        }
         baseMapper.updateById(entity);
     }
 
@@ -72,6 +70,21 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         depTree.setName("根目录");
         TreeBuildUtil.build(depTree, depList);
         return depTree;
+    }
+
+    /**
+     * 重名校验
+     *
+     * @param name 部门名称
+     * @param id   主键，更新时需要排除自己
+     */
+    private void nameRepeatCheck(String name, Long id) {
+        int count = baseMapper.selectCount(
+                new QueryWrapper<Department>()
+                        .eq("name", name)
+                        .ne(id != null, "id", id)
+        );
+        ParamCheck.assertTrue(count <= 0, "已存在相同名称的部门");
     }
 
     /**
