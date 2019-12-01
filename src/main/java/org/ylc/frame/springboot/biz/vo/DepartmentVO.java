@@ -3,8 +3,6 @@ package org.ylc.frame.springboot.biz.vo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.BeanUtils;
-import org.ylc.frame.springboot.biz.entity.Department;
 
 /**
  * 代码全万行，注释第一行
@@ -34,14 +32,4 @@ public class DepartmentVO {
     @ApiModelProperty(value = "备注")
     private String remark;
 
-    /**
-     * 实体转换为vo
-     */
-    public static DepartmentVO entityConvertToVo(Department entity) {
-        DepartmentVO vo = new DepartmentVO();
-        if (entity != null) {
-            BeanUtils.copyProperties(entity, vo);
-        }
-        return vo;
-    }
 }

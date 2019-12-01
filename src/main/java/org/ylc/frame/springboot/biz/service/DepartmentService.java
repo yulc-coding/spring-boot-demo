@@ -19,7 +19,7 @@ public interface DepartmentService extends IService<Department> {
     /**
      * 新增
      */
-    Long addInfo(DepartmentDTO dto);
+    DepartmentVO addInfo(DepartmentDTO dto);
 
     /**
      * 根据ID删除

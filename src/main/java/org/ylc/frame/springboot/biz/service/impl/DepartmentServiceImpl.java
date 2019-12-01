@@ -2,6 +2,7 @@ package org.ylc.frame.springboot.biz.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.ylc.frame.springboot.biz.dto.DepartmentDTO;
 import org.ylc.frame.springboot.biz.entity.Department;
@@ -32,20 +33,42 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
      */
     private static final String DEFAULT_CODE = "001";
 
+    /**
+     * 新增
+     * 重名校验
+     * 部门编码生成
+     *
+     * @return vo
+     */
     @Override
-    public Long addInfo(DepartmentDTO dto) {
+    public DepartmentVO addInfo(DepartmentDTO dto) {
         nameRepeatCheck(dto.getName(), null);
         Department entity = dto.convertToEntity();
         entity.setCode(generateCode(dto.getPid()));
         baseMapper.insert(entity);
-        return entity.getId();
+        DepartmentVO vo = new DepartmentVO();
+        BeanUtils.copyProperties(entity, vo);
+        return vo;
     }
 
+    /**
+     * 删除
+     * 是否存在子菜单校验
+     */
     @Override
     public void delInfo(long id) {
+        int count = super.count(
+                new QueryWrapper<Department>()
+                        .eq("pid", id)
+        );
+        ParamCheck.assertTrue(count <= 0, "存在子部门，请先删除子部门");
         OperationCheck.isExecute(baseMapper.deleteById(id), "无效数据");
     }
 
+    /**
+     * 更新
+     * 重名校验
+     */
     @Override
     public void updateInfo(DepartmentDTO dto) {
         Department oldEntity = baseMapper.selectById(dto.getId());
@@ -58,7 +81,11 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     @Override
     public DepartmentVO getInfoById(long id) {
         Department entity = baseMapper.selectById(id);
-        return DepartmentVO.entityConvertToVo(entity);
+        DepartmentVO vo = new DepartmentVO();
+        if (entity != null) {
+            BeanUtils.copyProperties(entity, vo);
+        }
+        return vo;
     }
 
     @Override
@@ -95,20 +122,25 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
      */
     private String generateCode(long pid) {
         // 获取相同父节点下的最大部门编号
-        Object maxObj = super.getOne(new QueryWrapper<Department>().select("max(code)").eq("pid", pid));
-        if (maxObj == null) {
+        String maxCode = super.getObj(
+                new QueryWrapper<Department>().select("max(code)").eq("pid", pid),
+                Object::toString
+        );
+        if (maxCode == null) {
             // 根目录下，001
             if (0 == pid) {
                 return DEFAULT_CODE;
             }
             // 非根目录，父类编码+001
-            Object pCode = super.getOne(new QueryWrapper<Department>().select("code").eq("id", pid));
-            if (pCode.toString().length() >= 12) {
+            String pCode = super.getObj(
+                    new QueryWrapper<Department>().select("code").eq("id", pid),
+                    Object::toString
+            );
+            if (pCode.length() >= 12) {
                 throw new CheckException("部门层级最多4层");
             }
             return String.format("%s%s", pCode, DEFAULT_CODE);
         }
-        String maxCode = maxObj.toString();
         // 获取编码前几位
         String prefix = maxCode.substring(0, maxCode.length() - 3);
         // 最新的排序

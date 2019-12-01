@@ -38,7 +38,7 @@ public class DepartmentController {
     @ApiOperation(value = "新增，返回ID")
     @PostMapping("/add")
     @Permission("department:add")
-    public HttpResult<Long> addInfo(@RequestBody @Validated({InsertGroup.class}) DepartmentDTO dto) {
+    public HttpResult<DepartmentVO> addInfo(@RequestBody @Validated({InsertGroup.class}) DepartmentDTO dto) {
         return HttpResult.success(departmentService.addInfo(dto));
     }
 
