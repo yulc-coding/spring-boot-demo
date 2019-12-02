@@ -1,6 +1,7 @@
 package org.ylc.frame.springboot.common.tree;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.List;
@@ -15,8 +16,11 @@ import java.util.List;
  * @version 1.0.0
  * @date 2019/9/30
  */
-@Data
-public class BaseTree<T> implements Serializable {
+@Getter
+@Setter
+public class BaseTree implements Serializable {
+
+    private static final long serialVersionUID = -86906757902585741L;
 
     /**
      * id
@@ -36,7 +40,6 @@ public class BaseTree<T> implements Serializable {
     /**
      * 子类
      */
-    private List<T> children;
-
+    private List<BaseTree> children;
 
 }

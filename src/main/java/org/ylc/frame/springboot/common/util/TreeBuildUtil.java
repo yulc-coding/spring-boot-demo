@@ -40,8 +40,7 @@ public class TreeBuildUtil {
                 otherList.add(entity);
             }
         }
-        if (ParamUtils.notEmpty(curChild)) {
-            // noinspection unchecked
+        if (curChild.size() > 0) {
             root.setChildren(curChild);
             for (BaseTree nextRoot : curChild) {
                 // 递归

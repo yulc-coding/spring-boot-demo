@@ -35,7 +35,7 @@ public class DepartmentController {
         this.departmentService = departmentService;
     }
 
-    @ApiOperation(value = "新增，返回ID")
+    @ApiOperation(value = "新增，返回新增信息")
     @PostMapping("/add")
     @Permission("department:add")
     public HttpResult<DepartmentVO> addInfo(@RequestBody @Validated({InsertGroup.class}) DepartmentDTO dto) {

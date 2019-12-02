@@ -18,26 +18,38 @@ public interface DepartmentService extends IService<Department> {
 
     /**
      * 新增
+     *
+     * @param dto 参数
+     * @return VO
      */
     DepartmentVO addInfo(DepartmentDTO dto);
 
     /**
      * 根据ID删除
+     *
+     * @param id 主键
      */
     void delInfo(long id);
 
     /**
      * 更新信息
+     *
+     * @param dto 参数
      */
     void updateInfo(DepartmentDTO dto);
 
     /**
      * 根据ID查询
+     *
+     * @param id 主键
+     * @return VO
      */
     DepartmentVO getInfoById(long id);
 
     /**
-     * 获取部门树
+     * 返回带有根节点的部门树，需要具体数列表可以只取 children字段
+     *
+     * @return tree
      */
     DepartmentTree getDepTree();
 }

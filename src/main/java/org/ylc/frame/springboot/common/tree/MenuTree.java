@@ -1,8 +1,8 @@
 package org.ylc.frame.springboot.common.tree;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 代码千万行，注释第一行，
@@ -14,11 +14,11 @@ import lombok.EqualsAndHashCode;
  * @version 1.0.0
  * @date 2019/9/30
  */
-@EqualsAndHashCode(callSuper = true)
-@Data
-public class MenuTree extends BaseTree<MenuTree> {
+@Getter
+@Setter
+public class MenuTree extends BaseTree {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 5742943846696025578L;
 
     @ApiModelProperty(value = "权限类别：1文件、2页面、3按钮、4权限")
     private String type;

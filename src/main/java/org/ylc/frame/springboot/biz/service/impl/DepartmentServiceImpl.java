@@ -34,6 +34,11 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     private static final String DEFAULT_CODE = "001";
 
     /**
+     * 部门编码最大长度，用于显示部门树的层数
+     */
+    private static final int MAX_DEP_CODE_LENGTH = 12;
+
+    /**
      * 新增
      * 重名校验
      * 部门编码生成
@@ -68,6 +73,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     /**
      * 更新
      * 重名校验
+     * !！!这里默认不可以调整上级部门，如果可以调整，调整上级部门后，需要重置当前的部门编码
      */
     @Override
     public void updateInfo(DepartmentDTO dto) {
@@ -136,7 +142,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
                     new QueryWrapper<Department>().select("code").eq("id", pid),
                     Object::toString
             );
-            if (pCode.length() >= 12) {
+            if (pCode.length() >= MAX_DEP_CODE_LENGTH) {
                 throw new CheckException("部门层级最多4层");
             }
             return String.format("%s%s", pCode, DEFAULT_CODE);
