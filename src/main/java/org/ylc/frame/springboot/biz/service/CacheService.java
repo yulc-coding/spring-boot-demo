@@ -54,7 +54,16 @@ public class CacheService {
     }
 
 
+    /**
+     * 根据部门code获取部门名称
+     *
+     * @param code 部门code
+     * @return name
+     */
     public String getDepNameByCode(String code) {
+        if (ParamUtils.isEmpty(code)) {
+            return null;
+        }
         String key = CacheConstants.DEP_NAME_CODE_PREFIX + code;
         Object value = redisUtils.get(key);
         if (value == null) {
