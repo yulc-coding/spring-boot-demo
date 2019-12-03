@@ -13,6 +13,7 @@ import java.util.concurrent.Executor;
 
 /**
  * 配置异步线程池
+ * 在需要异步的方法加上@Async注解可以实现异步
  *
  * @author YuLc
  * @version 1.0.0

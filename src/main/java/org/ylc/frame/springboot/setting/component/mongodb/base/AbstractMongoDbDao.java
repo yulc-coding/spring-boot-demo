@@ -154,12 +154,10 @@ public abstract class AbstractMongoDbDao<T> {
      */
     public void deleteById(String id) {
         Criteria criteria = Criteria.where("_id").is(id);
-        if (null != criteria) {
-            Query query = new Query(criteria);
-            T obj = this.mongoTemplate.findOne(query, this.getEntityClass());
-            if (obj != null) {
-                this.delete(obj);
-            }
+        Query query = new Query(criteria);
+        T obj = this.mongoTemplate.findOne(query, this.getEntityClass());
+        if (obj != null) {
+            this.delete(obj);
         }
     }
 

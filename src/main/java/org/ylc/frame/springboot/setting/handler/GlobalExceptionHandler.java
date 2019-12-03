@@ -47,6 +47,9 @@ public class GlobalExceptionHandler {
         return HttpResult.fail(e.getErrCode(), error);
     }
 
+    /**
+     * 参数校验 @Validated 异常处理
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public HttpResult<String> handle(MethodArgumentNotValidException e) {
         String error = e.getBindingResult().getFieldError().getDefaultMessage();
@@ -115,8 +118,9 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public HttpResult<String> exceptionHandler(Exception ex) {
-        log.error("系统异常", ex.getMessage());
+        String error = ex.getMessage();
+        log.error("系统异常:{}", error);
         ex.printStackTrace();
-        return HttpResult.fail(ex.getMessage());
+        return HttpResult.fail(error);
     }
 }

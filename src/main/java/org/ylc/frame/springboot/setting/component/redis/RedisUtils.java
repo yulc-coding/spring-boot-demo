@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -122,6 +123,17 @@ public class RedisUtils {
      * @param value 值
      */
     public void set(String key, Object value) {
+        redisTemplate.opsForValue().set(key, value);
+    }
+
+    /**
+     * 异步缓存放入
+     *
+     * @param key   键
+     * @param value 值
+     */
+    @Async
+    public void setAsync(String key, Object value) {
         redisTemplate.opsForValue().set(key, value);
     }
 

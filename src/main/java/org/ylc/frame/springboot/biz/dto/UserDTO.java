@@ -30,7 +30,7 @@ public class UserDTO extends AbstractConverter<User> {
     @ApiModelProperty(value = "部门CODE")
     private String depCode;
 
-    @ApiModelProperty(value = "部门名称", readOnly = true)
+    @ApiModelProperty(value = "部门名称", accessMode = ApiModelProperty.AccessMode.READ_ONLY)
     private String depName;
 
     @ApiModelProperty(value = "电话号码")
@@ -39,7 +39,7 @@ public class UserDTO extends AbstractConverter<User> {
     @ApiModelProperty(value = "性别，0未知，1男，2女")
     private String gender;
 
-    @ApiModelProperty(value = "性别描述", readOnly = true)
+    @ApiModelProperty(value = "性别描述", accessMode = ApiModelProperty.AccessMode.READ_ONLY)
     private String genderDesc;
 
     @ApiModelProperty(value = "备注")

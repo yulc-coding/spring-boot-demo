@@ -23,16 +23,22 @@ public interface UserService extends IService<User> {
 
     /**
      * 新增
+     *
+     * @param dto DTO实体
      */
     void addInfo(UserDTO dto);
 
     /**
      * 根据ID删除
+     *
+     * @param id 主键
      */
     void delInfo(long id);
 
     /**
      * 更新信息
+     *
+     * @param dto DTO实体
      */
     void updateInfo(UserDTO dto);
 
@@ -46,6 +52,9 @@ public interface UserService extends IService<User> {
 
     /**
      * 根据ID查询
+     *
+     * @param id 主键
+     * @return DTO实体
      */
     UserDTO getInfoById(long id);
 

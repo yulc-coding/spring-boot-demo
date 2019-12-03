@@ -79,9 +79,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         entity.setState(EnumConstants.UserStateEnum.ENABLED.getCode());
         baseMapper.insert(entity);
 
-        redisUtils.set(CacheConstants.USER_NAME_PREFIX + entity.getId(), entity.getName());
+        redisUtils.setAsync(CacheConstants.USER_NAME_PREFIX + entity.getId(), entity.getName());
         if (ParamUtils.notEmpty(entity.getAvatar())) {
-            redisUtils.set(CacheConstants.USER_AVATAR_PREFIX + entity.getId(), entity.getAvatar());
+            redisUtils.setAsync(CacheConstants.USER_AVATAR_PREFIX + entity.getId(), entity.getAvatar());
         }
     }
 
@@ -104,7 +104,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         ParamCheck.notNull(user, "无效数据");
 
         User updateUser = dto.convertToEntity();
-        OperationCheck.isExecute(baseMapper.updateById(updateUser), "删除失败");
+        OperationCheck.isExecute(baseMapper.updateById(updateUser), "更新失败");
 
         if (!user.getName().equals(dto.getName())) {
             redisUtils.set(CacheConstants.USER_NAME_PREFIX + updateUser.getId(), updateUser.getName());
@@ -173,7 +173,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         User user = baseMapper.selectById(ThreadLocalUtils.getUserId());
         ParamCheck.notNull(user, "无效用户");
 
-        ParamCheck.assertTrue(PBKDF2.verify(newPwd, user.getPassword(), user.getSalt()), "原密码错误");
+        ParamCheck.assertTrue(PBKDF2.verify(oldPwd, user.getPassword(), user.getSalt()), "原密码错误");
 
         String newSalt = PBKDF2.generateSalt();
         User updateUser = new User();
