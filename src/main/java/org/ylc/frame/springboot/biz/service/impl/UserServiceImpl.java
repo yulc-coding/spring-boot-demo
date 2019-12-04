@@ -1,5 +1,6 @@
 package org.ylc.frame.springboot.biz.service.impl;
 
+import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -11,6 +12,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 import org.ylc.frame.springboot.biz.dto.UserDTO;
 import org.ylc.frame.springboot.biz.entity.Menu;
 import org.ylc.frame.springboot.biz.entity.User;
@@ -27,10 +29,13 @@ import org.ylc.frame.springboot.biz.vo.UserVO;
 import org.ylc.frame.springboot.common.constant.CacheConstants;
 import org.ylc.frame.springboot.common.constant.ConfigConstants;
 import org.ylc.frame.springboot.common.constant.EnumConstants;
+import org.ylc.frame.springboot.common.exception.OperationException;
 import org.ylc.frame.springboot.common.tree.MenuTree;
 import org.ylc.frame.springboot.common.util.*;
 import org.ylc.frame.springboot.setting.component.redis.RedisUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +64,34 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         this.userRoleService = userRoleService;
         this.redisUtils = redisUtils;
         this.cacheService = cacheService;
+    }
+
+
+    /**
+     * 上传用户头像，当用户id存在是，更新对应用户的头像信息
+     *
+     * @param request 请求
+     * @param avatar  头像图片
+     * @param id      用户ID（可以为空）
+     * @return 头像地址
+     */
+    @Override
+    public String uploadAvatar(HttpServletRequest request, MultipartFile avatar, Long id) {
+        String fileName = avatar.getOriginalFilename();
+        ParamCheck.notEmptyStr(fileName, "无效文件");
+        // 文件后缀
+        String suffix = fileName.substring(fileName.lastIndexOf("."));
+        // 上传后的文件名称
+        String newFileName = IdUtil.simpleUUID() + suffix;
+        // 对应本地磁盘路径
+        String filePath = request.getServletContext().getRealPath(ConfigConstants.UPLOAD_AVATAR_DIR);
+        try {
+            FileUtil.uploadFile(avatar.getBytes(), filePath, newFileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new OperationException("上传失败");
+        }
+        return ConfigConstants.UPLOAD_AVATAR_DIR + newFileName;
     }
 
     /**

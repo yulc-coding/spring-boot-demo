@@ -2,6 +2,7 @@ package org.ylc.frame.springboot.biz.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.web.multipart.MultipartFile;
 import org.ylc.frame.springboot.biz.dto.UserDTO;
 import org.ylc.frame.springboot.biz.entity.User;
 import org.ylc.frame.springboot.biz.params.LoginParam;
@@ -9,6 +10,7 @@ import org.ylc.frame.springboot.biz.params.UserPageParams;
 import org.ylc.frame.springboot.biz.vo.LoginResponseVO;
 import org.ylc.frame.springboot.biz.vo.UserVO;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -20,6 +22,16 @@ import java.util.List;
  * @since 2019-09-26
  */
 public interface UserService extends IService<User> {
+
+    /**
+     * 上传用户头像
+     *
+     * @param request 请求
+     * @param avatar  头像图片
+     * @param id      用户ID（可以为空）
+     * @return 头像地址
+     */
+    String uploadAvatar(HttpServletRequest request, MultipartFile avatar, Long id);
 
     /**
      * 新增

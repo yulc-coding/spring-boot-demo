@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.ylc.frame.springboot.biz.dto.ChangePwdDTO;
 import org.ylc.frame.springboot.biz.dto.UserBindRoleDTO;
 import org.ylc.frame.springboot.biz.dto.UserDTO;
@@ -15,6 +16,7 @@ import org.ylc.frame.springboot.biz.vo.UserVO;
 import org.ylc.frame.springboot.common.annotation.Permission;
 import org.ylc.frame.springboot.common.entity.HttpResult;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 /**
@@ -35,6 +37,19 @@ public class UserController {
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+
+    @ApiOperation(value = "上传头像")
+    @PostMapping("/uploadAvatar")
+    @Permission("user:avatar")
+    public HttpResult<String> submitAvatar(HttpServletRequest request,
+                                           @ApiParam(name = "avatar", value = "头像")
+                                           @RequestParam(name = "avatar") MultipartFile avatar,
+                                           @ApiParam(name = "id", value = "用户ID")
+                                           @RequestParam(name = "id", required = false) Long id) {
+
+        return null;
     }
 
     @ApiOperation(value = "新增")

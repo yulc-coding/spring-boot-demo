@@ -65,4 +65,9 @@ public class ConfigConstants {
         public static final int TOKEN_EXPIRED = 401;
     }
 
+
+    /**
+     * 用户头像上传路径
+     */
+    public static final String UPLOAD_AVATAR_DIR = "/upload/avatar/";
 }
