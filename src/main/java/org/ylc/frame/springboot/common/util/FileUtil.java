@@ -32,9 +32,9 @@ public class FileUtil {
      * @param fileName 文件名称
      */
     public static void uploadFile(byte[] file, String filePath, String fileName) {
-        if (!isValidFile(fileName)) {
-            throw new OperationException(fileName + "该文件类型不允许上传.");
-        }
+
+        isValidFile(fileName);
+
         File targetFile = new File(filePath);
         if (!targetFile.exists()) {
             if (!targetFile.mkdirs()) {
@@ -49,6 +49,13 @@ public class FileUtil {
         }
     }
 
+    /**
+     * 下载文件
+     *
+     * @param fileName 文件名称
+     * @param filePath 本次磁盘路径
+     * @param response response
+     */
     public static void downLoadFile(String fileName, String filePath, HttpServletResponse response) {
         File file = new File(filePath);
         if (file.exists()) {
@@ -72,8 +79,15 @@ public class FileUtil {
         }
     }
 
-    private static boolean isValidFile(String fileName) {
+    /**
+     * 文件类型校验
+     *
+     * @param fileName 文件名
+     */
+    private static void isValidFile(String fileName) {
         String extension = fileName.substring(fileName.lastIndexOf("."));
-        return Arrays.asList(validFileExtension).contains(extension.toLowerCase());
+        if (!Arrays.asList(validFileExtension).contains(extension.toLowerCase())) {
+            throw new OperationException("【" + extension + "】该文件类型不允许上传。");
+        }
     }
 }

@@ -59,6 +59,16 @@ spring:
       host: localhost
       port: 27017
       database: my_pro
+  # 文件上传临时目录
+  servlet:
+    multipart:
+      location: F:/project/temp
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+# 文件上传路径
+doc-base:
+  path: F:\\project\\
 
 logging:
   level:

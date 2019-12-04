@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -50,6 +52,8 @@ import java.util.List;
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+
     private final MenuMapper menuMapper;
 
     private final UserRoleService userRoleService;
@@ -66,15 +70,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         this.cacheService = cacheService;
     }
 
-
     /**
-     * 上传用户头像，当用户id存在是，更新对应用户的头像信息
+     * 上传用户头像，返回头像路劲
+     * 当用户id存在时，
+     * 更新对应用户的头像地址
+     * 更新头像缓存
      *
      * @param request 请求
      * @param avatar  头像图片
      * @param id      用户ID（可以为空）
      * @return 头像地址
      */
+    @Transactional
     @Override
     public String uploadAvatar(HttpServletRequest request, MultipartFile avatar, Long id) {
         String fileName = avatar.getOriginalFilename();
@@ -83,15 +90,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String suffix = fileName.substring(fileName.lastIndexOf("."));
         // 上传后的文件名称
         String newFileName = IdUtil.simpleUUID() + suffix;
+        // 上传后的相对路径
+        String uploadPath = ConfigConstants.UPLOAD_AVATAR_DIR + newFileName;
+        // 修改操作
+        if (id != null) {
+            User user = baseMapper.selectById(id);
+            ParamCheck.notNull(user, "无效用户");
+            User updateUser = new User();
+            updateUser.setId(id);
+            updateUser.setAvatar(uploadPath);
+            redisUtils.set(CacheConstants.USER_AVATAR_PREFIX + id, uploadPath);
+        }
         // 对应本地磁盘路径
         String filePath = request.getServletContext().getRealPath(ConfigConstants.UPLOAD_AVATAR_DIR);
         try {
             FileUtil.uploadFile(avatar.getBytes(), filePath, newFileName);
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new OperationException("上传失败");
+            logger.error("[{}]上传头像失败,{}", id, e.getMessage());
+            throw new OperationException("上传失败" + e.getMessage());
         }
-        return ConfigConstants.UPLOAD_AVATAR_DIR + newFileName;
+        return uploadPath;
     }
 
     /**
