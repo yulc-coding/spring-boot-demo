@@ -16,8 +16,7 @@ public class EnumConstants {
     public enum UserGenderEnum {
 
         MEN("1", "男"),
-        WOMEN("2", "女"),
-        OTHER("0", "男");
+        WOMEN("2", "女");
 
         private String code;
 

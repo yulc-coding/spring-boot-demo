@@ -81,7 +81,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * @param id      用户ID（可以为空）
      * @return 头像地址
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public String uploadAvatar(HttpServletRequest request, MultipartFile avatar, Long id) {
         String fileName = avatar.getOriginalFilename();

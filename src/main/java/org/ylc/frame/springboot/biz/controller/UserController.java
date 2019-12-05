@@ -5,6 +5,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.ylc.frame.springboot.biz.dto.ChangePwdDTO;
@@ -15,6 +16,8 @@ import org.ylc.frame.springboot.biz.service.UserService;
 import org.ylc.frame.springboot.biz.vo.UserVO;
 import org.ylc.frame.springboot.common.annotation.Permission;
 import org.ylc.frame.springboot.common.entity.HttpResult;
+import org.ylc.frame.springboot.common.validated.InsertGroup;
+import org.ylc.frame.springboot.common.validated.UpdateGroup;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -54,7 +57,7 @@ public class UserController {
     @ApiOperation(value = "新增")
     @PostMapping("/add")
     @Permission("user:add")
-    public HttpResult<Object> addInfo(@RequestBody @Valid UserDTO dto) {
+    public HttpResult<Object> addInfo(@RequestBody @Validated({InsertGroup.class}) UserDTO dto) {
         userService.addInfo(dto);
         return HttpResult.success();
     }
@@ -71,7 +74,7 @@ public class UserController {
     @ApiOperation(value = "更新")
     @PostMapping("/update")
     @Permission("user:update")
-    public HttpResult<Object> updateInfo(@RequestBody @Valid UserDTO dto) {
+    public HttpResult<Object> updateInfo(@RequestBody @Validated({UpdateGroup.class}) UserDTO dto) {
         userService.updateInfo(dto);
         return HttpResult.success();
     }
@@ -79,7 +82,7 @@ public class UserController {
     @ApiOperation(value = "分页查询")
     @PostMapping("/page")
     @Permission("pc")
-    public HttpResult<IPage<UserVO>> pageInfo(@RequestBody @Valid UserPageParams page) {
+    public HttpResult<IPage<UserVO>> pageInfo(@RequestBody @Validated UserPageParams page) {
         return HttpResult.success(userService.pageInfo(page));
     }
 
@@ -103,7 +106,7 @@ public class UserController {
     @ApiOperation(value = "修改密码")
     @PostMapping("/changePwd")
     @Permission("pc")
-    public HttpResult<Object> changePwd(@RequestBody @Valid ChangePwdDTO pwd) {
+    public HttpResult<Object> changePwd(@RequestBody @Validated ChangePwdDTO pwd) {
         userService.changePwd(pwd.getOldPwd(), pwd.getNewPwd(), pwd.getRepeatPwd());
         return HttpResult.success();
     }

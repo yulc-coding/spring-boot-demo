@@ -6,6 +6,8 @@ target
 mvnw
 mvnw.cmd
 
+application-pro.yml
+
 /logs/
 
 ### STS ###
