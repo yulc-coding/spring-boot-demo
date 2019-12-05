@@ -141,6 +141,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         OperationCheck.isExecute(baseMapper.deleteById(id), "删除失败");
     }
 
+    @Override
+    public void delMulti(List<Long> ids) {
+        OperationCheck.isExecute(baseMapper.deleteBatchIds(ids), "删除失败");
+    }
+
     /**
      * 更新
      * 账号重复校验

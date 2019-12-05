@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.ylc.frame.springboot.biz.dto.ChangePwdDTO;
 import org.ylc.frame.springboot.biz.dto.UserBindRoleDTO;
 import org.ylc.frame.springboot.biz.dto.UserDTO;
+import org.ylc.frame.springboot.biz.params.IdParam;
 import org.ylc.frame.springboot.biz.params.UserPageParams;
 import org.ylc.frame.springboot.biz.service.UserService;
 import org.ylc.frame.springboot.biz.vo.UserVO;
@@ -68,6 +69,14 @@ public class UserController {
     public HttpResult<Object> delInfo(@ApiParam(name = "id", value = "id")
                                       @PathVariable("id") Long id) {
         userService.delInfo(id);
+        return HttpResult.success();
+    }
+
+    @ApiOperation(value = "批量删除")
+    @PostMapping("/delMulti")
+    @Permission("user:delMulti")
+    public HttpResult<Object> delMulti(@RequestBody @Validated IdParam<Long> idParam) {
+        userService.delMulti(idParam.getIdList());
         return HttpResult.success();
     }
 

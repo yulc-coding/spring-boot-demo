@@ -48,6 +48,13 @@ public interface UserService extends IService<User> {
     void delInfo(long id);
 
     /**
+     * 批量删除
+     *
+     * @param ids ID列表
+     */
+    void delMulti(List<Long> ids);
+
+    /**
      * 更新信息
      *
      * @param dto DTO实体
