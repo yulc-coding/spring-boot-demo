@@ -9,6 +9,7 @@ import org.ylc.frame.springboot.biz.params.LoginParam;
 import org.ylc.frame.springboot.biz.params.UserPageParams;
 import org.ylc.frame.springboot.biz.vo.LoginResponseVO;
 import org.ylc.frame.springboot.biz.vo.UserVO;
+import org.ylc.frame.springboot.common.entity.SelectEntity;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -74,15 +75,23 @@ public interface UserService extends IService<User> {
      * @param id 主键
      * @return DTO实体
      */
-    UserDTO getInfoById(long id);
+    UserDTO getInfoById(Long id);
+
+    /**
+     * 获取用户的角色列表
+     *
+     * @param userId 用户ID
+     * @return id,name
+     */
+    List<SelectEntity<Long>> getUserRoles(Long userId);
 
     /**
      * 绑定角色
      *
-     * @param userId 用户ID
-     * @param roles  角色列表
+     * @param userIds 用户ID列表
+     * @param roles   角色列表
      */
-    void bindRole(long userId, List<Long> roles);
+    void bindRole(List<Long> userIds, List<Long> roles);
 
     /**
      * 修改密码

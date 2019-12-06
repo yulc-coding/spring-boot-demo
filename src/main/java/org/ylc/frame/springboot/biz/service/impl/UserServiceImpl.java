@@ -20,6 +20,7 @@ import org.ylc.frame.springboot.biz.entity.Menu;
 import org.ylc.frame.springboot.biz.entity.User;
 import org.ylc.frame.springboot.biz.entity.UserRole;
 import org.ylc.frame.springboot.biz.mapper.MenuMapper;
+import org.ylc.frame.springboot.biz.mapper.RoleMapper;
 import org.ylc.frame.springboot.biz.mapper.UserMapper;
 import org.ylc.frame.springboot.biz.params.LoginParam;
 import org.ylc.frame.springboot.biz.params.UserPageParams;
@@ -31,6 +32,7 @@ import org.ylc.frame.springboot.biz.vo.UserVO;
 import org.ylc.frame.springboot.common.constant.CacheConstants;
 import org.ylc.frame.springboot.common.constant.ConfigConstants;
 import org.ylc.frame.springboot.common.constant.EnumConstants;
+import org.ylc.frame.springboot.common.entity.SelectEntity;
 import org.ylc.frame.springboot.common.exception.OperationException;
 import org.ylc.frame.springboot.common.tree.MenuTree;
 import org.ylc.frame.springboot.common.util.*;
@@ -56,6 +58,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     private final MenuMapper menuMapper;
 
+    private final RoleMapper roleMapper;
+
     private final UserRoleService userRoleService;
 
     private final RedisUtils redisUtils;
@@ -63,11 +67,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private final CacheService cacheService;
 
     @Autowired
-    public UserServiceImpl(MenuMapper menuMapper, UserRoleService userRoleService, RedisUtils redisUtils, CacheService cacheService) {
+    public UserServiceImpl(MenuMapper menuMapper, UserRoleService userRoleService, RedisUtils redisUtils, CacheService cacheService, RoleMapper roleMapper) {
         this.menuMapper = menuMapper;
         this.userRoleService = userRoleService;
         this.redisUtils = redisUtils;
         this.cacheService = cacheService;
+        this.roleMapper = roleMapper;
     }
 
     /**
@@ -211,7 +216,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public UserDTO getInfoById(long id) {
+    public UserDTO getInfoById(Long id) {
         User entity = baseMapper.selectById(id);
         UserDTO dto = new UserDTO();
         if (entity != null) {
@@ -222,20 +227,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return dto;
     }
 
+    @Override
+    public List<SelectEntity<Long>> getUserRoles(Long userId) {
+        return roleMapper.getUserRoles(userId);
+    }
+
     /**
      * 先删除已有的，再批量新增
      *
-     * @param userId 用户ID
-     * @param roles  角色列表
+     * @param userIds 用户ID列表
+     * @param roles   角色列表
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void bindRole(long userId, List<Long> roles) {
+    public void bindRole(List<Long> userIds, List<Long> roles) {
         List<UserRole> userRoles = new ArrayList<>();
-        for (Long roleId : roles) {
-            userRoles.add(new UserRole(userId, roleId));
+        for (Long userId : userIds) {
+            for (Long roleId : roles) {
+                userRoles.add(new UserRole(userId, roleId));
+            }
         }
-        userRoleService.remove(new QueryWrapper<UserRole>().eq("user_id", userId));
+        userRoleService.remove(new QueryWrapper<UserRole>().in("user_id", userIds));
         userRoleService.saveBatch(userRoles);
     }
 

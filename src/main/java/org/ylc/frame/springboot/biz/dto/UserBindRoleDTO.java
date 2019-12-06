@@ -4,7 +4,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
@@ -22,9 +21,9 @@ import java.util.List;
 @Setter
 public class UserBindRoleDTO {
 
-    @NotBlank(message = "绑定用户不能为空")
-    @ApiModelProperty(value = "绑定用户ID")
-    private Long userId;
+    @NotEmpty(message = "绑定用户不能为空")
+    @ApiModelProperty(value = "绑定用户ID列表")
+    private List<Long> userIds;
 
     @NotEmpty(message = "绑定角色不能为空")
     @ApiModelProperty(value = "绑定角色列表")

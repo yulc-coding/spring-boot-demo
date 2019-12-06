@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.ylc.frame.springboot.biz.dto.ChangePwdDTO;
 import org.ylc.frame.springboot.biz.dto.UserBindRoleDTO;
 import org.ylc.frame.springboot.biz.dto.UserDTO;
 import org.ylc.frame.springboot.biz.params.IdParam;
@@ -17,11 +16,13 @@ import org.ylc.frame.springboot.biz.service.UserService;
 import org.ylc.frame.springboot.biz.vo.UserVO;
 import org.ylc.frame.springboot.common.annotation.Permission;
 import org.ylc.frame.springboot.common.entity.HttpResult;
+import org.ylc.frame.springboot.common.entity.SelectEntity;
 import org.ylc.frame.springboot.common.validated.InsertGroup;
 import org.ylc.frame.springboot.common.validated.UpdateGroup;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * <p>
@@ -101,20 +102,28 @@ public class UserController {
         return HttpResult.success(userService.getInfoById(id));
     }
 
+    @ApiOperation(value = "获取用户角色")
+    @PostMapping("/userRoles/{userId}")
+    @Permission("pc")
+    public HttpResult<List<SelectEntity<Long>>> getUserRoles(@ApiParam(name = "userId", value = "userId")
+                                                             @PathVariable(name = "userId") Long userId) {
+        return HttpResult.success(userService.getUserRoles(userId));
+    }
+
     @ApiOperation(value = "绑定角色")
     @PostMapping("/bindRole")
     @Permission("user:bindRole")
     public HttpResult<Object> bindRole(@RequestBody @Valid UserBindRoleDTO userBindRoleDTO) {
-        userService.bindRole(userBindRoleDTO.getUserId(), userBindRoleDTO.getRoles());
+        userService.bindRole(userBindRoleDTO.getUserIds(), userBindRoleDTO.getRoles());
         return HttpResult.success();
     }
 
-
-    @ApiOperation(value = "修改密码")
-    @PostMapping("/changePwd")
-    @Permission("pc")
-    public HttpResult<Object> changePwd(@RequestBody @Validated ChangePwdDTO pwd) {
-        userService.changePwd(pwd.getOldPwd(), pwd.getNewPwd(), pwd.getRepeatPwd());
+    @ApiOperation(value = "重置密码")
+    @GetMapping("/resetPwd/{userId}")
+    @Permission("user:resetPwd")
+    public HttpResult<Object> resetPwd(@ApiParam(name = "userId", value = "userId")
+                                       @PathVariable(name = "userId") Long userId) {
+        userService.resetPwd(userId);
         return HttpResult.success();
     }
 

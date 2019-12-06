@@ -2,8 +2,9 @@ package org.ylc.frame.springboot.biz.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.ylc.frame.springboot.biz.dto.ChangePwdDTO;
 import org.ylc.frame.springboot.biz.params.LoginParam;
 import org.ylc.frame.springboot.biz.service.UserService;
 import org.ylc.frame.springboot.biz.vo.LoginResponseVO;
@@ -47,12 +48,12 @@ public class SysController {
         return HttpResult.success();
     }
 
-    @ApiOperation(value = "重置密码")
-    @GetMapping("/resetPwd/{userId}")
-    @Permission("sys:resetPwd")
-    public HttpResult<Object> resetPwd(@ApiParam(name = "userId", value = "userId")
-                                       @PathVariable(name = "userId") Long userId) {
-        userService.resetPwd(userId);
+    @ApiOperation(value = "修改密码")
+    @PostMapping("/changePwd")
+    @Permission("pc")
+    public HttpResult<Object> changePwd(@RequestBody @Validated ChangePwdDTO pwd) {
+        userService.changePwd(pwd.getOldPwd(), pwd.getNewPwd(), pwd.getRepeatPwd());
         return HttpResult.success();
     }
+
 }
