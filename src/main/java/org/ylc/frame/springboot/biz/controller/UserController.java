@@ -44,15 +44,13 @@ public class UserController {
     }
 
 
-    @ApiOperation(value = "上传头像")
+    @ApiOperation(value = "上传头像，返回头像地址")
     @PostMapping("/uploadAvatar")
     @Permission("user:uploadAvatar")
     public HttpResult<String> submitAvatar(HttpServletRequest request,
                                            @ApiParam(name = "avatar", value = "头像")
-                                           @RequestParam(name = "avatar") MultipartFile avatar,
-                                           @ApiParam(name = "id", value = "用户ID")
-                                           @RequestParam(name = "id", required = false) Long id) {
-        return HttpResult.success(userService.uploadAvatar(request, avatar, id));
+                                           @RequestParam(name = "avatar") MultipartFile avatar) {
+        return HttpResult.success(userService.uploadAvatar(request, avatar));
     }
 
     @ApiOperation(value = "新增")

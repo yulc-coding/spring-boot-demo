@@ -72,44 +72,30 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     /**
      * 上传用户头像，返回头像路劲
-     * 当用户id存在时，
-     * 更新对应用户的头像地址
-     * 更新头像缓存
      *
      * @param request 请求
      * @param avatar  头像图片
-     * @param id      用户ID（可以为空）
      * @return 头像地址
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public String uploadAvatar(HttpServletRequest request, MultipartFile avatar, Long id) {
+    public String uploadAvatar(HttpServletRequest request, MultipartFile avatar) {
         String fileName = avatar.getOriginalFilename();
         ParamCheck.notEmptyStr(fileName, "无效文件");
         // 文件后缀
         String suffix = fileName.substring(fileName.lastIndexOf("."));
         // 上传后的文件名称
         String newFileName = IdUtil.simpleUUID() + suffix;
-        // 上传后的相对路径
-        String uploadPath = ConfigConstants.UPLOAD_AVATAR_DIR + newFileName;
-        // 修改操作
-        if (id != null) {
-            User user = baseMapper.selectById(id);
-            ParamCheck.notNull(user, "无效用户");
-            User updateUser = new User();
-            updateUser.setId(id);
-            updateUser.setAvatar(uploadPath);
-            redisUtils.set(CacheConstants.USER_AVATAR_PREFIX + id, uploadPath);
-        }
         // 对应本地磁盘路径
         String filePath = request.getServletContext().getRealPath(ConfigConstants.UPLOAD_AVATAR_DIR);
         try {
             FileUtil.uploadFile(avatar.getBytes(), filePath, newFileName);
         } catch (IOException e) {
-            logger.error("[{}]上传头像失败,{}", id, e.getMessage());
+            logger.error("上传头像失败,{}", e.getMessage());
             throw new OperationException("上传失败" + e.getMessage());
         }
-        return uploadPath;
+        // 上传后的相对路径
+        return ConfigConstants.UPLOAD_AVATAR_DIR + newFileName;
     }
 
     /**
@@ -136,14 +122,45 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
     }
 
+    /**
+     * 删除用户数据，
+     * 清除绑定的角色关系表
+     * 清除姓名缓存、头像缓存
+     *
+     * @param id 主键
+     */
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public void delInfo(long id) {
+    public void delInfo(Long id) {
         OperationCheck.isExecute(baseMapper.deleteById(id), "删除失败");
+        userRoleService.remove(
+                new QueryWrapper<UserRole>()
+                        .eq("user_id", id)
+        );
+        redisUtils.deleteAsync(CacheConstants.USER_NAME_PREFIX + id, CacheConstants.USER_AVATAR_PREFIX + id);
     }
 
+    /**
+     * 删除数据，
+     * 清除绑定的角色关系表
+     * 清除姓名缓存、头像缓存
+     * 清除姓名缓存、头像缓存
+     *
+     * @param ids ID列表
+     */
     @Override
     public void delMulti(List<Long> ids) {
-        OperationCheck.isExecute(baseMapper.deleteBatchIds(ids), "删除失败");
+        baseMapper.deleteBatchIds(ids);
+        userRoleService.remove(
+                new QueryWrapper<UserRole>()
+                        .in("user_id", ids)
+        );
+        List<String> redisKey = new ArrayList<>();
+        for (Long id : ids) {
+            redisKey.add(CacheConstants.USER_NAME_PREFIX + id);
+            redisKey.add(CacheConstants.USER_AVATAR_PREFIX + id);
+        }
+        redisUtils.deleteAsync(redisKey);
     }
 
     /**
@@ -165,7 +182,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (!user.getName().equals(dto.getName())) {
             redisUtils.set(CacheConstants.USER_NAME_PREFIX + updateUser.getId(), updateUser.getName());
         }
-        if (ParamUtils.notEmpty(dto.getAvatar()) && dto.getAvatar().equals(user.getAvatar())) {
+        if (ParamUtils.notEmpty(dto.getAvatar()) && !dto.getAvatar().equals(user.getAvatar())) {
             redisUtils.set(CacheConstants.USER_AVATAR_PREFIX + updateUser.getId(), updateUser.getAvatar());
         }
     }
@@ -369,6 +386,5 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         return vo;
     }
-
 
 }

@@ -28,10 +28,9 @@ public interface UserService extends IService<User> {
      *
      * @param request 请求
      * @param avatar  头像图片
-     * @param id      用户ID（可以为空）
      * @return 头像地址
      */
-    String uploadAvatar(HttpServletRequest request, MultipartFile avatar, Long id);
+    String uploadAvatar(HttpServletRequest request, MultipartFile avatar);
 
     /**
      * 新增
@@ -45,7 +44,7 @@ public interface UserService extends IService<User> {
      *
      * @param id 主键
      */
-    void delInfo(long id);
+    void delInfo(Long id);
 
     /**
      * 批量删除

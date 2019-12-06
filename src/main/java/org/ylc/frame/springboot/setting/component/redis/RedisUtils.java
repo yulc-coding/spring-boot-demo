@@ -96,11 +96,30 @@ public class RedisUtils {
     }
 
     /**
+     * 异步删除
+     *
+     * @param key 可以传一个值 或多个
+     */
+    @Async
+    public void deleteAsync(String... key) {
+        delete(key);
+    }
+
+    /**
      * 删除
      *
      * @param keys 集合形式
      */
     public void delete(Collection<String> keys) {
+        redisTemplate.delete(keys);
+    }
+
+    /**
+     * 异步删除
+     *
+     * @param keys keys
+     */
+    public void deleteAsync(Collection<String> keys) {
         redisTemplate.delete(keys);
     }
 
