@@ -1,6 +1,7 @@
 package org.ylc.frame.springboot.biz.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.springframework.stereotype.Component;
 import org.ylc.frame.springboot.biz.entity.RoleMenu;
 
 /**
@@ -11,6 +12,7 @@ import org.ylc.frame.springboot.biz.entity.RoleMenu;
  * @author CodeGenerator
  * @since 2019-09-26
  */
+@Component
 public interface RoleMenuMapper extends BaseMapper<RoleMenu> {
 
 }

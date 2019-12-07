@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.ylc.frame.springboot.biz.dto.MenuDTO;
 import org.ylc.frame.springboot.biz.entity.Menu;
 import org.ylc.frame.springboot.biz.vo.MenuVO;
+import org.ylc.frame.springboot.common.tree.BaseTree;
 import org.ylc.frame.springboot.common.tree.MenuTree;
 
 /**
@@ -24,7 +25,7 @@ public interface MenuService extends IService<Menu> {
     /**
      * 根据ID删除
      */
-    void delInfo(long id);
+    void delInfo(Long id);
 
     /**
      * 更新信息
@@ -34,11 +35,18 @@ public interface MenuService extends IService<Menu> {
     /**
      * 根据ID查询
      */
-    MenuVO getInfoById(long id);
+    MenuVO getInfoById(Long id);
 
     /**
      * 获取菜单树
      */
     MenuTree getMenuTree();
+
+    /**
+     * 获取基本的树形结构
+     *
+     * @return baseTree
+     */
+    BaseTree getBaseTree();
 
 }

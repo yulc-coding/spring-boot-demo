@@ -50,28 +50,10 @@ public class Menu implements Serializable {
     private String type;
 
     /**
-     * 匹配规则
-     */
-    @TableField("url")
-    private String url;
-
-    /**
      * 路径
      */
     @TableField("path")
     private String path;
-
-    /**
-     * 组件
-     */
-    @TableField("component")
-    private String component;
-
-    /**
-     * 按钮key
-     */
-    @TableField("btn_key")
-    private String btnKey;
 
     /**
      * 图标
@@ -86,7 +68,7 @@ public class Menu implements Serializable {
     private Integer seq;
 
     /**
-     * 访问方式，1PC，2APP
+     * 访问方式，1PC，2APP，3通用
      */
     @TableField("login_from")
     private String loginFrom;

@@ -9,10 +9,7 @@
         <result column="name" property="name"/>
         <result column="permission" property="permission"/>
         <result column="type" property="type"/>
-        <result column="url" property="url"/>
         <result column="path" property="path"/>
-        <result column="component" property="component"/>
-        <result column="btn_key" property="btnKey"/>
         <result column="icon" property="icon"/>
         <result column="seq" property="seq"/>
         <result column="login_from" property="loginFrom"/>
@@ -28,15 +25,26 @@
             m.id,
             m.name,
             m.pid,
+            m.permission,
             m.type,
-            m.url,
             m.path,
-            m.component,
-            m.btn_key AS btnKey,
-            m.icon
+            m.icon,
+            m.seq,
+            m.login_from AS loginFrom,
+            m.remark
         FROM
             sys_menu m
-        ORDER BY m.id
+        ORDER BY m.seq
+    </select>
+
+    <select id="getBaseTree" resultType="org.ylc.frame.springboot.common.tree.BaseTree">
+        SELECT
+            m.id,
+            m.name,
+            m.pid
+        FROM
+            sys_menu m
+        ORDER BY m.seq
     </select>
 
     <select id="getUserMenuList" resultMap="BaseResultMap">
@@ -45,10 +53,7 @@
             m.name,
             m.pid,
             m.type,
-            m.url,
             m.path,
-            m.component,
-            m.btn_key,
             m.icon,
             m.permission
         FROM

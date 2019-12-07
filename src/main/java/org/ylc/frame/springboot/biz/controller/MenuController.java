@@ -10,6 +10,7 @@ import org.ylc.frame.springboot.biz.service.MenuService;
 import org.ylc.frame.springboot.biz.vo.MenuVO;
 import org.ylc.frame.springboot.common.annotation.Permission;
 import org.ylc.frame.springboot.common.entity.HttpResult;
+import org.ylc.frame.springboot.common.tree.BaseTree;
 import org.ylc.frame.springboot.common.tree.MenuTree;
 
 import javax.validation.Valid;
@@ -64,6 +65,13 @@ public class MenuController {
     @Permission("pc")
     public HttpResult<MenuTree> tree() {
         return HttpResult.success(menuService.getMenuTree());
+    }
+
+    @ApiOperation(value = "获取基本的树形结构")
+    @GetMapping("/simpleTree")
+    @Permission("pc")
+    public HttpResult<BaseTree> simpleTree() {
+        return HttpResult.success(menuService.getBaseTree());
     }
 
     @ApiOperation(value = "根据ID查询信息")

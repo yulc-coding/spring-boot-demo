@@ -34,6 +34,18 @@ public class ParamCheck {
     }
 
     /**
+     * 不存在数据
+     *
+     * @param nu      数量
+     * @param message 错误提示
+     */
+    public static void notExists(int nu, String message) {
+        if (nu > 0) {
+            throw new CheckException(message);
+        }
+    }
+
+    /**
      * 非空字符
      *
      * @param str     str

@@ -20,22 +20,25 @@ public class MenuTree extends BaseTree {
 
     private static final long serialVersionUID = 5742943846696025578L;
 
+    @ApiModelProperty(value = "权限")
+    private String permission;
+
     @ApiModelProperty(value = "权限类别：1文件、2页面、3按钮、4权限")
     private String type;
-
-    @ApiModelProperty(value = "匹配规则")
-    private String url;
 
     @ApiModelProperty(value = "路径")
     private String path;
 
-    @ApiModelProperty(value = "组件")
-    private String component;
-
-    @ApiModelProperty(value = "按钮")
-    private String btnKey;
-
     @ApiModelProperty(value = "图标")
     private String icon;
+
+    @ApiModelProperty(value = "排序")
+    private Integer seq;
+
+    @ApiModelProperty(value = "访问方式，1PC，2APP，3通用")
+    private String loginFrom;
+
+    @ApiModelProperty(value = "备注")
+    private String remark;
 
 }

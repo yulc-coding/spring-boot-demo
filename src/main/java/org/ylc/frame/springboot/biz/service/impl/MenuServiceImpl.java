@@ -1,17 +1,22 @@
 package org.ylc.frame.springboot.biz.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.ylc.frame.springboot.biz.dto.MenuDTO;
 import org.ylc.frame.springboot.biz.entity.Menu;
+import org.ylc.frame.springboot.biz.entity.RoleMenu;
 import org.ylc.frame.springboot.biz.mapper.MenuMapper;
+import org.ylc.frame.springboot.biz.mapper.RoleMenuMapper;
 import org.ylc.frame.springboot.biz.service.MenuService;
 import org.ylc.frame.springboot.biz.vo.MenuVO;
+import org.ylc.frame.springboot.common.tree.BaseTree;
 import org.ylc.frame.springboot.common.tree.MenuTree;
 import org.ylc.frame.springboot.common.util.OperationCheck;
+import org.ylc.frame.springboot.common.util.ParamCheck;
 import org.ylc.frame.springboot.common.util.TreeBuildUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,15 +30,39 @@ import java.util.List;
 @Service
 public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements MenuService {
 
+    private final RoleMenuMapper roleMenuMapper;
+
+    public MenuServiceImpl(RoleMenuMapper roleMenuMapper) {
+        this.roleMenuMapper = roleMenuMapper;
+    }
+
     @Override
     public void addInfo(MenuDTO dto) {
         Menu entity = dto.convertToEntity();
         baseMapper.insert(entity);
     }
 
+    /**
+     * 存在子菜单的不能删除
+     * 删除菜单
+     * 删除角色菜单关系表
+     *
+     * @param id 主键
+     */
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public void delInfo(long id) {
-        OperationCheck.isExecute(baseMapper.deleteById(id), "无效的数据");
+    public void delInfo(Long id) {
+        int children = baseMapper.selectCount(
+                new QueryWrapper<Menu>()
+                        .eq("pid", id)
+        );
+        ParamCheck.notExists(children, "删除失败：存在子节点");
+
+        baseMapper.deleteById(id);
+        roleMenuMapper.delete(
+                new QueryWrapper<RoleMenu>()
+                        .eq("menu_id", id)
+        );
     }
 
     @Override
@@ -44,7 +73,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     }
 
     @Override
-    public MenuVO getInfoById(long id) {
+    public MenuVO getInfoById(Long id) {
         Menu entity = baseMapper.selectById(id);
         return MenuVO.entityConvertToVo(entity);
     }
@@ -56,8 +85,18 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         MenuTree menuTree = new MenuTree();
         menuTree.setId(0L);
         menuTree.setName("根目录");
-        menuTree.setChildren(new ArrayList<>());
         TreeBuildUtil.build(menuTree, menuTrees);
         return menuTree;
+    }
+
+    @Override
+    public BaseTree getBaseTree() {
+        List<BaseTree> baseTrees = baseMapper.getBaseTree();
+        // 首层根目录
+        BaseTree baseTree = new BaseTree();
+        baseTree.setId(0L);
+        baseTree.setName("根目录");
+        TreeBuildUtil.build(baseTree, baseTrees);
+        return baseTree;
     }
 }

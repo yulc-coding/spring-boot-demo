@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import org.ylc.frame.springboot.biz.entity.Menu;
+import org.ylc.frame.springboot.common.tree.BaseTree;
 import org.ylc.frame.springboot.common.tree.MenuTree;
 
 import java.util.List;
@@ -23,6 +24,11 @@ public interface MenuMapper extends BaseMapper<Menu> {
      * 获取菜单树形列表
      */
     List<MenuTree> getMenuList();
+
+    /**
+     * 获取基本的树形结构
+     */
+    List<BaseTree> getBaseTree();
 
     /**
      * 获取登录用户的菜单列表

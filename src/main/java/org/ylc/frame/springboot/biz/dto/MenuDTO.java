@@ -31,7 +31,6 @@ public class MenuDTO extends AbstractConverter<Menu> {
     @ApiModelProperty(value = "名称")
     private String name;
 
-    @NotBlank(message = "权限不能为空")
     @ApiModelProperty(value = "需要的权限")
     private String permission;
 
@@ -39,17 +38,8 @@ public class MenuDTO extends AbstractConverter<Menu> {
     @ApiModelProperty(value = "菜单类别：1文件、2页面、3按钮、4权限")
     private String type;
 
-    @ApiModelProperty(value = "匹配规则")
-    private String url;
-
     @ApiModelProperty(value = "路径")
     private String path;
-
-    @ApiModelProperty(value = "组件")
-    private String component;
-
-    @ApiModelProperty(value = "按钮key")
-    private String btnKey;
 
     @ApiModelProperty(value = "图标")
     private String icon;
@@ -59,8 +49,8 @@ public class MenuDTO extends AbstractConverter<Menu> {
     private Integer seq;
 
     @NotBlank(message = "访问方式不能为空")
-    @ApiModelProperty(value = "访问方式，1PC，2APP")
-    private String visitType;
+    @ApiModelProperty(value = "访问方式，1PC，2APP，3通用")
+    private String loginFrom;
 
     @ApiModelProperty(value = "备注")
     private String remark;
