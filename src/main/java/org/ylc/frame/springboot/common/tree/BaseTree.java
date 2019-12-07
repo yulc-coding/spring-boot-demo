@@ -38,6 +38,11 @@ public class BaseTree implements Serializable {
     private Long pid;
 
     /**
+     * 名称
+     */
+    private String pName;
+
+    /**
      * 子类
      */
     private List<BaseTree> children;
