@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.ylc.frame.springboot.biz.service.CacheService;
-import org.ylc.frame.springboot.setting.component.redis.RedisUtils;
+import org.ylc.frame.springboot.biz.common.service.CacheService;
+import org.ylc.frame.springboot.component.redis.RedisUtils;
 
 import java.net.InetAddress;
 import java.util.HashMap;

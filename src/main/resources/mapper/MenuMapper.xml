@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.ylc.frame.springboot.biz.mapper.MenuMapper">
+<mapper namespace="org.ylc.frame.springboot.biz.sys.mapper.MenuMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="org.ylc.frame.springboot.biz.entity.Menu">
+    <resultMap id="BaseResultMap" type="org.ylc.frame.springboot.biz.sys.entity.Menu">
         <id column="id" property="id"/>
         <result column="pid" property="pid"/>
         <result column="name" property="name"/>
@@ -20,7 +20,7 @@
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
-    <select id="getMenuList" resultType="org.ylc.frame.springboot.common.tree.MenuTree">
+    <select id="getMenuList" resultType="org.ylc.frame.springboot.biz.common.tree.MenuTree">
         SELECT
             m.id,
             m.name,
@@ -37,7 +37,7 @@
         ORDER BY m.seq
     </select>
 
-    <select id="getBaseTree" resultType="org.ylc.frame.springboot.common.tree.BaseTree">
+    <select id="getBaseTree" resultType="org.ylc.frame.springboot.biz.common.tree.BaseTree">
         SELECT
             m.id,
             m.name,

@@ -50,7 +50,7 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("org.ylc.frame.springboot.biz.controller"))
+                .apis(RequestHandlerSelectors.basePackage("org.ylc.frame.springboot.biz.sys.controller"))
                 .paths(PathSelectors.any())
                 .build()
                 .globalOperationParameters(parameters);

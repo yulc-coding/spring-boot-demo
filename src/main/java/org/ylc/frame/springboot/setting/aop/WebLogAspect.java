@@ -12,19 +12,19 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
-import org.ylc.frame.springboot.biz.mapper.MenuMapper;
-import org.ylc.frame.springboot.common.annotation.Permission;
-import org.ylc.frame.springboot.common.constant.CacheConstants;
-import org.ylc.frame.springboot.common.constant.ConfigConstants;
-import org.ylc.frame.springboot.common.entity.UserInfo;
-import org.ylc.frame.springboot.common.exception.CheckException;
-import org.ylc.frame.springboot.common.util.IpUtil;
-import org.ylc.frame.springboot.common.util.JWTUtils;
-import org.ylc.frame.springboot.common.util.ParamCheck;
-import org.ylc.frame.springboot.common.util.ThreadLocalUtils;
-import org.ylc.frame.springboot.setting.component.mongodb.dao.SystemLogDao;
-import org.ylc.frame.springboot.setting.component.mongodb.entity.SystemLog;
-import org.ylc.frame.springboot.setting.component.redis.RedisUtils;
+import org.ylc.frame.springboot.biz.common.entity.UserInfo;
+import org.ylc.frame.springboot.biz.sys.mapper.MenuMapper;
+import org.ylc.frame.springboot.component.mongodb.dao.SystemLogDao;
+import org.ylc.frame.springboot.component.mongodb.entity.SystemLog;
+import org.ylc.frame.springboot.component.redis.RedisUtils;
+import org.ylc.frame.springboot.constant.CacheConstants;
+import org.ylc.frame.springboot.constant.ConfigConstants;
+import org.ylc.frame.springboot.setting.annotation.Permission;
+import org.ylc.frame.springboot.setting.exception.CheckException;
+import org.ylc.frame.springboot.util.IpUtil;
+import org.ylc.frame.springboot.util.JWTUtils;
+import org.ylc.frame.springboot.util.ParamCheck;
+import org.ylc.frame.springboot.util.ThreadLocalUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -68,7 +68,7 @@ public class WebLogAspect {
     }
 
 
-    @Pointcut("execution(public org.ylc.frame.springboot.common.entity.HttpResult org.ylc.frame.springboot.biz.*controller..*(..))")
+    @Pointcut("execution(public org.ylc.frame.springboot.biz.common.entity.HttpResult org.ylc.frame.springboot.biz.*.controller..*(..))")
     public void webLog() {
     }
 

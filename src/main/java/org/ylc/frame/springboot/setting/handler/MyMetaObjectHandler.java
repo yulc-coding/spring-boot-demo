@@ -3,7 +3,7 @@ package org.ylc.frame.springboot.setting.handler;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.stereotype.Component;
-import org.ylc.frame.springboot.common.util.ThreadLocalUtils;
+import org.ylc.frame.springboot.util.ThreadLocalUtils;
 
 import java.time.LocalDateTime;
 

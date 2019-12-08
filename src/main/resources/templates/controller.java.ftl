@@ -6,8 +6,8 @@ import io.swagger.annotations.ApiParam;
 import ${package.Entity}.${entity};
 import ${package.Service}.${table.serviceName};
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.ylc.frame.springboot.common.annotation.Permission;
-import org.ylc.frame.springboot.common.entity.HttpResult;
+import org.ylc.frame.springboot.setting.annotation.Permission;
+import org.ylc.frame.springboot.biz.common.entity.HttpResult;
 
 <#if restControllerStyle>
 import org.springframework.web.bind.annotation.RestController;

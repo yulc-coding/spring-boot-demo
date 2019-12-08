@@ -10,9 +10,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.ylc.frame.springboot.common.entity.HttpResult;
-import org.ylc.frame.springboot.common.exception.CheckException;
-import org.ylc.frame.springboot.common.exception.OperationException;
+import org.ylc.frame.springboot.biz.common.entity.HttpResult;
+import org.ylc.frame.springboot.setting.exception.CheckException;
+import org.ylc.frame.springboot.setting.exception.OperationException;
 
 import javax.validation.ConstraintViolationException;
 

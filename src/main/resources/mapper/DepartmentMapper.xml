@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.ylc.frame.springboot.biz.mapper.DepartmentMapper">
+<mapper namespace="org.ylc.frame.springboot.biz.sys.mapper.DepartmentMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="org.ylc.frame.springboot.biz.entity.Department">
+    <resultMap id="BaseResultMap" type="org.ylc.frame.springboot.biz.sys.entity.Department">
         <id column="id" property="id"/>
         <result column="code" property="code"/>
         <result column="name" property="name"/>
@@ -15,7 +15,7 @@
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
-    <select id="depTreeList" resultType="org.ylc.frame.springboot.common.tree.DepartmentTree">
+    <select id="depTreeList" resultType="org.ylc.frame.springboot.biz.common.tree.DepartmentTree">
         SELECT id,
                code,
                name,
