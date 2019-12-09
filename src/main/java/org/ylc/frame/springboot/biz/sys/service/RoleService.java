@@ -25,7 +25,7 @@ public interface RoleService extends IService<Role> {
     /**
      * 根据ID删除
      */
-    void delInfo(long id);
+    void delInfo(Long id);
 
     /**
      * 更新信息

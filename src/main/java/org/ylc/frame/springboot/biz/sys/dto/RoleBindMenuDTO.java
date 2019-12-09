@@ -4,8 +4,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -22,7 +22,7 @@ import java.util.List;
 @Setter
 public class RoleBindMenuDTO {
 
-    @NotBlank(message = "绑定角色不能为空")
+    @NotNull(message = "绑定角色不能为空")
     @ApiModelProperty(value = "绑定角色ID")
     private Long roleId;
 

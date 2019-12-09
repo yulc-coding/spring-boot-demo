@@ -41,9 +41,20 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         baseMapper.insert(entity);
     }
 
+    /**
+     * 删除角色
+     * 删除角色菜单关联表
+     *
+     * @param id 主键
+     */
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public void delInfo(long id) {
-        OperationCheck.isExecute(baseMapper.deleteById(id), "无效数据");
+    public void delInfo(Long id) {
+        OperationCheck.isExecute(baseMapper.deleteById(id), "删除失败");
+        roleMenuService.remove(
+                new QueryWrapper<RoleMenu>()
+                        .eq("role_id", id)
+        );
     }
 
     @Override
@@ -62,6 +73,14 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         return voList;
     }
 
+    /**
+     * 绑定角色：
+     * 先删除原先的绑定关系
+     * 批量插入新的绑定关系
+     *
+     * @param roleId  角色ID
+     * @param menuIds 菜单列表
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void bindMenu(Long roleId, List<Long> menuIds) {
