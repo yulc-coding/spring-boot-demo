@@ -73,6 +73,16 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         return voList;
     }
 
+    @Override
+    public List<String> roleMenus(Long roleId) {
+        return roleMenuService.listObjs(
+                new QueryWrapper<RoleMenu>()
+                        .select("menu_id")
+                        .eq("role_id", roleId),
+                Object::toString
+        );
+    }
+
     /**
      * 绑定角色：
      * 先删除原先的绑定关系
@@ -83,7 +93,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void bindMenu(Long roleId, List<Long> menuIds) {
+    public void bindMenus(Long roleId, List<Long> menuIds) {
         List<RoleMenu> roleMenus = new ArrayList<>();
         for (Long menuId : menuIds) {
             roleMenus.add(new RoleMenu(roleId, menuId));

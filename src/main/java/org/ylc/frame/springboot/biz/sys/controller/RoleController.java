@@ -67,11 +67,19 @@ public class RoleController {
         return HttpResult.success(roleService.getList());
     }
 
+    @ApiOperation(value = "获取角色已有的的菜单列表")
+    @GetMapping("/roleMenus/{roleId}")
+    @Permission("pc")
+    public HttpResult<List<String>> roleMenus(@ApiParam(name = "roleId", value = "角色ID")
+                                              @PathVariable("roleId") Long roleId) {
+        return HttpResult.success(roleService.roleMenus(roleId));
+    }
+
     @ApiOperation(value = "角色绑定菜单")
-    @PostMapping("/bindMenu")
-    @Permission("role:bindMenu")
-    public HttpResult<Object> bindMenu(@RequestBody @Valid RoleBindMenuDTO roleBindMenuDTO) {
-        roleService.bindMenu(roleBindMenuDTO.getRoleId(), roleBindMenuDTO.getMenuIds());
+    @PostMapping("/bindMenus")
+    @Permission("role:bindMenus")
+    public HttpResult<Object> bindMenus(@RequestBody @Valid RoleBindMenuDTO roleBindMenuDTO) {
+        roleService.bindMenus(roleBindMenuDTO.getRoleId(), roleBindMenuDTO.getMenuIds());
         return HttpResult.success();
     }
 }

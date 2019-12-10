@@ -38,10 +38,18 @@ public interface RoleService extends IService<Role> {
     List<RoleVO> getList();
 
     /**
+     * 获取角色的菜单列表
+     *
+     * @param roleId 角色ID
+     * @return menus
+     */
+    List<String> roleMenus(Long roleId);
+
+    /**
      * 角色绑定菜单
      *
      * @param roleId  角色ID
      * @param menuIds 菜单列表
      */
-    void bindMenu(Long roleId, List<Long> menuIds);
+    void bindMenus(Long roleId, List<Long> menuIds);
 }
