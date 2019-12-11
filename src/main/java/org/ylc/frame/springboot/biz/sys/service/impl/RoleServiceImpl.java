@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.ylc.frame.springboot.biz.common.entity.SelectEntity;
 import org.ylc.frame.springboot.biz.sys.dto.RoleDTO;
 import org.ylc.frame.springboot.biz.sys.entity.Role;
 import org.ylc.frame.springboot.biz.sys.entity.RoleMenu;
@@ -71,6 +72,11 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
             voList.add(new RoleVO(role.getId(), role.getName(), role.getRemark()));
         }
         return voList;
+    }
+
+    @Override
+    public List<SelectEntity<Long>> getRoleSelect() {
+        return baseMapper.getRoleSelect();
     }
 
     @Override

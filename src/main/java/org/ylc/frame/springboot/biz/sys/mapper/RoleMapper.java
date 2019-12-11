@@ -19,6 +19,13 @@ import java.util.List;
 public interface RoleMapper extends BaseMapper<Role> {
 
     /**
+     * 获取所有角色下拉
+     *
+     * @return select
+     */
+    List<SelectEntity<Long>> getRoleSelect();
+
+    /**
      * 获取用户角色下拉
      *
      * @param userId 用户ID

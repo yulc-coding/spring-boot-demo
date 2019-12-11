@@ -1,6 +1,7 @@
 package org.ylc.frame.springboot.biz.sys.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.ylc.frame.springboot.biz.common.entity.SelectEntity;
 import org.ylc.frame.springboot.biz.sys.dto.RoleDTO;
 import org.ylc.frame.springboot.biz.sys.entity.Role;
 import org.ylc.frame.springboot.biz.sys.vo.RoleVO;
@@ -33,9 +34,16 @@ public interface RoleService extends IService<Role> {
     void updateInfo(RoleDTO dto);
 
     /**
-     * 获取列表
+     * 获取角色列表
      */
     List<RoleVO> getList();
+
+    /**
+     * 获取角色下拉
+     *
+     * @return select
+     */
+    List<SelectEntity<Long>> getRoleSelect();
 
     /**
      * 获取角色的菜单列表

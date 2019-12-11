@@ -73,6 +73,6 @@ doc-base:
 logging:
   level:
     # 打印SQL
-    org.ylc.frame.springboot.biz.mapper: debug
+    org.ylc.frame.springboot.biz.sys.mapper: debug
     # 这个版本swagger Bug，参数为数字类型时，打开页面会出现数字转换错误的警告，这里直接把日志级别过滤掉
     io.swagger.models.parameters.AbstractSerializableParameter: error

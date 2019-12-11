@@ -103,7 +103,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "获取用户角色")
-    @PostMapping("/userRoles/{userId}")
+    @GetMapping("/userRoles/{userId}")
     @Permission("pc")
     public HttpResult<List<SelectEntity<Long>>> getUserRoles(@ApiParam(name = "userId", value = "userId")
                                                              @PathVariable(name = "userId") Long userId) {

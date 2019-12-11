@@ -13,6 +13,15 @@
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
+    <select id="getRoleSelect" resultType="org.ylc.frame.springboot.biz.common.entity.SelectEntity">
+        SELECT
+            id AS `key`,
+	        `name` AS `value`
+        FROM
+            sys_role
+        ORDER BY id
+    </select>
+
     <select id="getUserRoles" resultType="org.ylc.frame.springboot.biz.common.entity.SelectEntity">
         SELECT
             r.id AS `key`,
@@ -22,7 +31,7 @@
             sys_user_role ur
         WHERE
             r.id = ur.role_id
-            AND ur.user_id = 1
+            AND ur.user_id = #{userId}
     </select>
 
 </mapper>

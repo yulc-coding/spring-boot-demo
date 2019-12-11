@@ -5,12 +5,13 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.ylc.frame.springboot.biz.common.entity.HttpResult;
+import org.ylc.frame.springboot.biz.common.entity.SelectEntity;
 import org.ylc.frame.springboot.biz.sys.dto.RoleBindMenuDTO;
 import org.ylc.frame.springboot.biz.sys.dto.RoleDTO;
 import org.ylc.frame.springboot.biz.sys.service.RoleService;
 import org.ylc.frame.springboot.biz.sys.vo.RoleVO;
 import org.ylc.frame.springboot.setting.annotation.Permission;
-import org.ylc.frame.springboot.biz.common.entity.HttpResult;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -65,6 +66,13 @@ public class RoleController {
     @Permission("pc")
     public HttpResult<List<RoleVO>> list() {
         return HttpResult.success(roleService.getList());
+    }
+
+    @ApiOperation(value = "获取角色下拉")
+    @GetMapping("/roleSelect")
+    @Permission("pc")
+    public HttpResult<List<SelectEntity<Long>>> roleSelect() {
+        return HttpResult.success(roleService.getRoleSelect());
     }
 
     @ApiOperation(value = "获取角色已有的的菜单列表")
