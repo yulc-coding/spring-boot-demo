@@ -187,18 +187,16 @@ public class WebLogAspect {
         }
 
         // 权限校验
-        Object redisPermissions = redisUtils.get(CacheConstants.USER_PERMISSION_PREFIX + userId + ":" + loginFrom);
-        List<String> permissions;
+        List<Object> redisPermissions = redisUtils.listGet(CacheConstants.USER_PERMISSION_PREFIX + userId + ":" + loginFrom, 0, -1);
         if (redisPermissions == null) {
             logger.info("redis没有员工权限缓存，从数据库查询 >>>>>>");
-            permissions = menuMapper.getUserPermissions(userId, loginFrom);
+            List<String> permissions = menuMapper.getUserPermissions(userId, loginFrom);
+            if (CollectionUtils.isEmpty(permissions) || !permissions.contains(permission)) {
+                throw new CheckException("非法操作", ConfigConstants.Return.ACCESS_RESTRICTED);
+            }
             // 加入缓存
-            redisUtils.set(CacheConstants.USER_PERMISSION_PREFIX + userId + ":" + loginFrom, permissions);
-        } else {
-            // noinspection unchecked
-            permissions = (List<String>) redisPermissions;
-        }
-        if (CollectionUtils.isEmpty(permissions) || !permissions.contains(permission)) {
+            redisUtils.listPushAll(CacheConstants.USER_PERMISSION_PREFIX + userId + ":" + loginFrom, permissions);
+        } else if (!redisPermissions.contains(permission)) {
             throw new CheckException("非法操作", ConfigConstants.Return.ACCESS_RESTRICTED);
         }
 

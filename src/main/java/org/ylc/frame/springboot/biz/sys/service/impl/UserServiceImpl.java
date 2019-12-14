@@ -1,6 +1,9 @@
 package org.ylc.frame.springboot.biz.sys.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -15,6 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.ylc.frame.springboot.biz.common.entity.SelectEntity;
+import org.ylc.frame.springboot.biz.common.service.CacheService;
+import org.ylc.frame.springboot.biz.common.tree.MenuTree;
 import org.ylc.frame.springboot.biz.sys.dto.UserDTO;
 import org.ylc.frame.springboot.biz.sys.entity.Menu;
 import org.ylc.frame.springboot.biz.sys.entity.User;
@@ -24,19 +30,16 @@ import org.ylc.frame.springboot.biz.sys.mapper.RoleMapper;
 import org.ylc.frame.springboot.biz.sys.mapper.UserMapper;
 import org.ylc.frame.springboot.biz.sys.params.LoginParam;
 import org.ylc.frame.springboot.biz.sys.params.UserPageParams;
-import org.ylc.frame.springboot.biz.common.service.CacheService;
 import org.ylc.frame.springboot.biz.sys.service.UserRoleService;
 import org.ylc.frame.springboot.biz.sys.service.UserService;
 import org.ylc.frame.springboot.biz.sys.vo.LoginResponseVO;
 import org.ylc.frame.springboot.biz.sys.vo.UserVO;
+import org.ylc.frame.springboot.component.redis.RedisUtils;
 import org.ylc.frame.springboot.constant.CacheConstants;
 import org.ylc.frame.springboot.constant.ConfigConstants;
 import org.ylc.frame.springboot.constant.EnumConstants;
-import org.ylc.frame.springboot.biz.common.entity.SelectEntity;
 import org.ylc.frame.springboot.setting.exception.OperationException;
-import org.ylc.frame.springboot.biz.common.tree.MenuTree;
 import org.ylc.frame.springboot.util.*;
-import org.ylc.frame.springboot.component.redis.RedisUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -122,7 +125,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         baseMapper.insert(entity);
 
         redisUtils.setAsync(CacheConstants.USER_NAME_PREFIX + entity.getId(), entity.getName());
-        if (ParamUtils.notEmpty(entity.getAvatar())) {
+        if (StrUtil.isNotBlank(entity.getAvatar())) {
             redisUtils.setAsync(CacheConstants.USER_AVATAR_PREFIX + entity.getId(), entity.getAvatar());
         }
     }
@@ -187,7 +190,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (!user.getName().equals(dto.getName())) {
             redisUtils.set(CacheConstants.USER_NAME_PREFIX + updateUser.getId(), updateUser.getName());
         }
-        if (ParamUtils.notEmpty(dto.getAvatar()) && !dto.getAvatar().equals(user.getAvatar())) {
+        if (StrUtil.isNotBlank(dto.getAvatar()) && !dto.getAvatar().equals(user.getAvatar())) {
             redisUtils.set(CacheConstants.USER_AVATAR_PREFIX + updateUser.getId(), updateUser.getAvatar());
         }
     }
@@ -197,13 +200,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         IPage<User> entityPage = super.page(
                 new Page<>(page.getPage(), page.getSize()),
                 new QueryWrapper<User>()
-                        .like(ParamUtils.notEmpty(page.getName()), "name", page.getName())
-                        .eq(ParamUtils.notEmpty(page.getUsername()), "username", page.getUsername())
-                        .eq(ParamUtils.notEmpty(page.getDepId()), "dep_id", page.getDepId())
-                        .eq(ParamUtils.notEmpty(page.getState()), "state", page.getState())
+                        .like(StrUtil.isNotBlank(page.getName()), "name", page.getName())
+                        .eq(StrUtil.isNotBlank(page.getUsername()), "username", page.getUsername())
+                        .eq(ObjectUtil.isNotNull(page.getDepId()), "dep_id", page.getDepId())
+                        .eq(ObjectUtil.isNotNull(page.getState()), "state", page.getState())
         );
         List<User> entityList = entityPage.getRecords();
-        if (ParamUtils.isEmpty(entityList)) {
+        if (CollectionUtil.isEmpty(entityList)) {
             return new Page<>(page.getPage(), page.getSize());
         }
         IPage<UserVO> voPage = new Page<>();
@@ -379,7 +382,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private void usernameRepeat(String username, Long id) {
         int count = baseMapper.selectCount(
                 new QueryWrapper<User>()
-                        .ne(ParamUtils.notEmpty(id), "id", id)
+                        .ne(ObjectUtil.isNotNull(id), "id", id)
                         .eq("username", username)
         );
         ParamCheck.assertTrue(count <= 0, "已存在相同的账号");

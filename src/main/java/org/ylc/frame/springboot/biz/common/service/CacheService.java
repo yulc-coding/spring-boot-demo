@@ -1,5 +1,8 @@
 package org.ylc.frame.springboot.biz.common.service;
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,9 +12,8 @@ import org.ylc.frame.springboot.biz.sys.entity.Department;
 import org.ylc.frame.springboot.biz.sys.entity.User;
 import org.ylc.frame.springboot.biz.sys.mapper.DepartmentMapper;
 import org.ylc.frame.springboot.biz.sys.mapper.UserMapper;
-import org.ylc.frame.springboot.constant.CacheConstants;
-import org.ylc.frame.springboot.util.ParamUtils;
 import org.ylc.frame.springboot.component.redis.RedisUtils;
+import org.ylc.frame.springboot.constant.CacheConstants;
 
 import java.util.List;
 import java.util.Set;
@@ -61,15 +63,15 @@ public class CacheService {
      * @return name
      */
     public String getDepNameByCode(String code) {
-        if (ParamUtils.isEmpty(code)) {
+        if (StrUtil.isBlank(code)) {
             return null;
         }
         String key = CacheConstants.DEP_NAME_CODE_PREFIX + code;
-        Object value = redisUtils.get(key);
+        String value = redisUtils.get(key);
         if (value == null) {
             return dataSourceReturn(key, departmentMapper.selectNameByCode(code));
         }
-        return value.toString();
+        return value;
     }
 
 
@@ -80,15 +82,15 @@ public class CacheService {
      * @return name
      */
     public String getUserName(Long userId) {
-        if (ParamUtils.isEmpty(userId)) {
+        if (ObjectUtil.isNull(userId)) {
             return null;
         }
         String key = CacheConstants.USER_NAME_PREFIX + userId;
-        Object value = redisUtils.get(key);
+        String value = redisUtils.get(key);
         if (value == null) {
             return dataSourceReturn(key, userMapper.selectNameById(userId));
         }
-        return value.toString();
+        return value;
     }
 
 
@@ -99,15 +101,15 @@ public class CacheService {
      * @return 头像地址
      */
     public String getUserAvatar(Long userId) {
-        if (ParamUtils.isEmpty(userId)) {
+        if (ObjectUtil.isNull(userId)) {
             return null;
         }
         String key = CacheConstants.USER_AVATAR_PREFIX + userId;
-        Object value = redisUtils.get(key);
+        String value = redisUtils.get(key);
         if (value == null) {
             return dataSourceReturn(key, userMapper.selectAvatarById(userId));
         }
-        return value.toString();
+        return value;
     }
 
 
@@ -148,7 +150,7 @@ public class CacheService {
                 new QueryWrapper<Department>()
                         .select("code,name")
         );
-        if (ParamUtils.notEmpty(depList)) {
+        if (CollectionUtil.isNotEmpty(depList)) {
             depList.forEach(o -> redisUtils.set(keyPrefix + o.getCode(), o.getName()));
         }
         logger.info("=============================  完成部门名称更新[{}]  =============================", depList.size());
@@ -170,10 +172,10 @@ public class CacheService {
                         .select("id,name,avatar")
         );
         AtomicInteger i = new AtomicInteger();
-        if (ParamUtils.notEmpty(userList)) {
+        if (CollectionUtil.isNotEmpty(userList)) {
             userList.forEach(o -> {
                 redisUtils.set(nameKeyPrefix + o.getId(), o.getName());
-                if (ParamUtils.notEmpty(o.getAvatar())) {
+                if (StrUtil.isNotBlank(o.getAvatar())) {
                     i.getAndIncrement();
                     redisUtils.set(avatarKeyPrefix + o.getId(), o.getAvatar());
                 }

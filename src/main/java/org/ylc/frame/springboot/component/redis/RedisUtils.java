@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -23,13 +24,21 @@ public class RedisUtils {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    /**
+     * 处理 Map, Set, List 类型
+     */
     private final RedisTemplate<String, Object> redisTemplate;
 
-    @Autowired
-    public RedisUtils(RedisTemplate<String, Object> redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
+    /**
+     * 处理String 类型
+     */
+    private final StringRedisTemplate stringRedisTemplate;
 
+    @Autowired
+    public RedisUtils(RedisTemplate<String, Object> redisTemplate, StringRedisTemplate stringRedisTemplate) {
+        this.redisTemplate = redisTemplate;
+        this.stringRedisTemplate = stringRedisTemplate;
+    }
 
     //=============================common============================
 
@@ -131,8 +140,8 @@ public class RedisUtils {
      * @param key 键
      * @return 值
      */
-    public Object get(String key) {
-        return key == null ? null : redisTemplate.opsForValue().get(key);
+    public String get(String key) {
+        return key == null ? null : stringRedisTemplate.opsForValue().get(key);
     }
 
     /**
@@ -141,8 +150,8 @@ public class RedisUtils {
      * @param key   键
      * @param value 值
      */
-    public void set(String key, Object value) {
-        redisTemplate.opsForValue().set(key, value);
+    public void set(String key, String value) {
+        stringRedisTemplate.opsForValue().set(key, value);
     }
 
     /**
@@ -152,8 +161,8 @@ public class RedisUtils {
      * @param value 值
      */
     @Async
-    public void setAsync(String key, Object value) {
-        redisTemplate.opsForValue().set(key, value);
+    public void setAsync(String key, String value) {
+        stringRedisTemplate.opsForValue().set(key, value);
     }
 
     /**
@@ -163,7 +172,7 @@ public class RedisUtils {
      * @param value 值
      * @param time  时间(毫秒) time要大于0 如果time小于等于0 将设置无限期
      */
-    public void set(String key, Object value, long time) {
+    public void set(String key, String value, long time) {
         if (time > 0) {
             redisTemplate.opsForValue().set(key, value, time, TimeUnit.MILLISECONDS);
         } else {
