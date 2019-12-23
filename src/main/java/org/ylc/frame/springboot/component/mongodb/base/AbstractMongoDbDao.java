@@ -106,6 +106,10 @@ public abstract class AbstractMongoDbDao<T> {
      */
     public Pagination<T> getPage(T entity, int curPage, int pageSize) {
         Query query = getQueryByObject(entity);
+        return getPage(query, curPage, pageSize);
+    }
+
+    public Pagination<T> getPage(Query query, int curPage, int pageSize) {
         // 获取总条数
         long totalCount = getCount(query);
         Pagination<T> pagination = new Pagination<>(curPage, pageSize, totalCount);
