@@ -41,10 +41,8 @@ public class HousePageArg {
     /**
      * 统计日期
      */
-    @NotNull(message = "开始日期不能为空")
-    private Integer beginDate;
-
-    private Integer endDate;
+    @NotNull(message = "统计日期不能为空")
+    private Integer reportDate;
 
     /**
      * 生成查询条件
@@ -60,15 +58,8 @@ public class HousePageArg {
         if (StrUtil.isNotBlank(this.name)) {
             criteria.and("name").is(this.name);
         }
-        if (this.endDate != null) {
-            criteria.andOperator(
-                    Criteria.where("reportDate").gte(this.beginDate),
-                    Criteria.where("reportDate").lte(this.endDate)
-            );
-        } else {
-            if (this.beginDate != null) {
-                criteria.and("reportDate").gte(this.beginDate);
-            }
+        if (this.reportDate != null) {
+            criteria.and("reportDate").is(this.reportDate);
         }
         query.addCriteria(criteria);
         return query;

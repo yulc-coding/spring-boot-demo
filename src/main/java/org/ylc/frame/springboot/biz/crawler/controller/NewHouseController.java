@@ -1,5 +1,6 @@
 package org.ylc.frame.springboot.biz.crawler.controller;
 
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.ylc.frame.springboot.biz.common.entity.HttpResult;
@@ -25,7 +26,7 @@ import javax.validation.Valid;
  * @date 2019-12-23
  */
 @RestController
-@RequestMapping("/new-house")
+@RequestMapping("/crawler/new-house")
 public class NewHouseController {
 
     private final NewHouseService newHouseService;
@@ -38,22 +39,19 @@ public class NewHouseController {
         this.newHouseDao = newHouseDao;
     }
 
-    /**
-     * 分页
-     *
-     * @param args 分页条件
-     * @return page
-     */
+    @ApiOperation(value = "查询指定日期的列表，默认当天")
     @PostMapping("/page")
     public HttpResult<Pagination<NewHouseMongo>> page(@RequestBody @Valid HousePageArg args) {
         return HttpResult.success(newHouseService.page(args));
     }
 
+    @ApiOperation(value = "查询单条数据的明细")
     @GetMapping("/findById/{id}")
     public HttpResult<NewHouseMongo> findById(@PathVariable(value = "id") String id) {
         return HttpResult.success(newHouseDao.findById(id));
     }
 
+    @ApiOperation(value = "某个楼盘的房价趋势，默认显示30天的数据")
     @PostMapping("/trend")
     public HttpResult<NewTrendVO> priceTrend(@RequestBody @Valid PriceTrendArg args) {
         return HttpResult.success(newHouseService.priceTrend(args));
