@@ -1,8 +1,11 @@
 package org.ylc.frame.springboot.setting.config;
 
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import springfox.documentation.RequestHandler;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -47,10 +50,12 @@ public class SwaggerConfig {
 
         parameters.add(tokenPar);
 
+        Predicate<RequestHandler> sys = RequestHandlerSelectors.basePackage("org.ylc.frame.springboot.biz.sys.controller");
+        Predicate<RequestHandler> crawler = RequestHandlerSelectors.basePackage("org.ylc.frame.springboot.biz.crawler.controller");
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("org.ylc.frame.springboot.biz.sys.controller"))
+                .apis(Predicates.or(sys, crawler))
                 .paths(PathSelectors.any())
                 .build()
                 .globalOperationParameters(parameters);
