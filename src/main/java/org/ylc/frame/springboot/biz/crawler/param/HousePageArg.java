@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
 import javax.validation.constraints.NotNull;
+import java.util.regex.Pattern;
 
 /**
  * 代码千万行，注释第一行，
@@ -56,7 +57,9 @@ public class HousePageArg {
             criteria.and("city").is(this.city);
         }
         if (StrUtil.isNotBlank(this.name)) {
-            criteria.and("name").is(this.name);
+            Pattern pattern = Pattern.compile("^.*" + this.name + ".*$", Pattern.CASE_INSENSITIVE);
+            // 名称，模糊查询
+            criteria.and("name").regex(pattern);
         }
         if (this.reportDate != null) {
             criteria.and("reportDate").is(this.reportDate);

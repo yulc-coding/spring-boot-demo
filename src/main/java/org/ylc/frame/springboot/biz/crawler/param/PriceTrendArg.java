@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
  * 代码千万行，注释第一行，
  * 注释不规范，同事泪两行。
  * <p>
- * 房价趋势
+ * 具体某个楼盘的房价趋势
  *
  * @author YuLc
  * @version 1.0.0
@@ -42,7 +42,7 @@ public class PriceTrendArg {
     public Query generatePageQuery() {
         Query query = new Query();
         Criteria criteria = new Criteria();
-
+        // 这里精确查询
         criteria.and("name").is(this.name);
         if (this.endDate != null) {
             criteria.andOperator(
