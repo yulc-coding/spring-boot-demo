@@ -47,6 +47,15 @@ public class Pagination<T> {
     private List<T> records = Collections.emptyList();
 
     /**
+     * 开始查询的位置
+     *
+     * @return index
+     */
+    public int getSkip() {
+        return (this.curPage - 1) * this.pageSize;
+    }
+
+    /**
      * 获取第一条记录位置
      *
      * @return index

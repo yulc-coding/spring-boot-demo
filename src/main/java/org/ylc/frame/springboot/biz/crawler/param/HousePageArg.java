@@ -7,7 +7,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
 import javax.validation.constraints.NotNull;
-import java.util.regex.Pattern;
 
 /**
  * 代码千万行，注释第一行，
@@ -53,16 +52,15 @@ public class HousePageArg {
     public Query generatePageQuery() {
         Query query = new Query();
         Criteria criteria = new Criteria();
+        if (this.reportDate != null) {
+            criteria.and("reportDate").is(this.reportDate);
+        }
         if (StrUtil.isNotBlank(this.city)) {
             criteria.and("city").is(this.city);
         }
         if (StrUtil.isNotBlank(this.name)) {
-            Pattern pattern = Pattern.compile("^.*" + this.name + ".*$", Pattern.CASE_INSENSITIVE);
             // 名称，模糊查询
-            criteria.and("name").regex(pattern);
-        }
-        if (this.reportDate != null) {
-            criteria.and("reportDate").is(this.reportDate);
+            criteria.and("name").regex("^.*" + this.name + ".*$");
         }
         query.addCriteria(criteria);
         return query;

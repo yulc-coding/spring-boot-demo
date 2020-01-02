@@ -115,7 +115,7 @@ public abstract class AbstractMongoDbDao<T> {
         Pagination<T> pagination = new Pagination<>(curPage, pageSize, totalCount);
         if (totalCount > 0) {
             // skip相当于从那条记录开始
-            query.skip(pagination.getFirstResult());
+            query.skip(pagination.getSkip());
             // 从skip开始,取多少条记录
             query.limit(pageSize);
             List<T> records = this.find(query);
