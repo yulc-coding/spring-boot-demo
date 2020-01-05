@@ -1,7 +1,7 @@
 package org.ylc.frame.springboot.biz.crawler.dao;
 
 import org.springframework.stereotype.Repository;
-import org.ylc.frame.springboot.biz.crawler.entity.SaleHouseMongo;
+import org.ylc.frame.springboot.biz.crawler.entity.SaleHouse;
 import org.ylc.frame.springboot.component.mongodb.base.AbstractMongoDbDao;
 
 /**
@@ -13,10 +13,10 @@ import org.ylc.frame.springboot.component.mongodb.base.AbstractMongoDbDao;
  * @date 2019-12-23
  */
 @Repository
-public class SaleHouseDao extends AbstractMongoDbDao<SaleHouseMongo> {
+public class SaleHouseDao extends AbstractMongoDbDao<SaleHouse> {
 
     @Override
-    protected Class<SaleHouseMongo> getEntityClass() {
-        return SaleHouseMongo.class;
+    protected Class<SaleHouse> getEntityClass() {
+        return SaleHouse.class;
     }
 }

@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Document(collection = "sale_house")
-public class SaleHouseMongo {
+public class SaleHouse {
 
     @Id
     private String id;
@@ -33,26 +33,27 @@ public class SaleHouseMongo {
     @Field("house_type")
     private String houseType;
 
+    private String address;
+
+    private String tags;
+
     @Field("all_price")
     private String allPrice;
 
     @Field("all_price_nu")
     private BigDecimal allPriceNu;
 
-    @Field("unit_price")
+    @Field("unit-price")
     private String unitPrice;
 
-    @Field("unit_price_nu")
+    @Field("unit-price_nu")
     private BigDecimal unitPriceNu;
+
+    private String pic;
+
+    private String authenticity;
 
     @Field("report_date")
     private Integer reportDate;
-
-    public SaleHouseMongo() {
-    }
-
-    public SaleHouseMongo(int reportDate) {
-        this.reportDate = reportDate;
-    }
 
 }

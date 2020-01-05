@@ -1,16 +1,20 @@
 package org.ylc.frame.springboot.biz.crawler.service;
 
+import cn.hutool.core.collection.CollectionUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.ylc.frame.springboot.biz.crawler.dao.SaleHouseDao;
-import org.ylc.frame.springboot.biz.crawler.entity.SaleHouseMongo;
+import org.ylc.frame.springboot.biz.crawler.entity.SaleHouse;
 import org.ylc.frame.springboot.biz.crawler.param.HousePageArg;
 import org.ylc.frame.springboot.biz.crawler.param.PriceTrendArg;
+import org.ylc.frame.springboot.biz.crawler.vo.SaleHouseVO;
 import org.ylc.frame.springboot.biz.crawler.vo.SaleTrendVO;
 import org.ylc.frame.springboot.component.mongodb.base.Pagination;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,15 +38,29 @@ public class SaleHouseService {
     /**
      * 分页查询
      */
-    public Pagination<SaleHouseMongo> page(HousePageArg args) {
-        return saleHouseDao.getPage(args.generatePageQuery(), args.getCurPage(), args.getPageSize());
+    public Pagination<SaleHouseVO> page(HousePageArg args) {
+        Pagination<SaleHouse> entityPage = saleHouseDao.getPage(args.generatePageQuery(), args.getCurPage(), args.getPageSize());
+        Pagination<SaleHouseVO> voPage = new Pagination<>(args.getCurPage(), args.getPageSize(), 0);
+        List<SaleHouse> entityList = entityPage.getRecords();
+        if (CollectionUtil.isNotEmpty(entityList)) {
+            List<SaleHouseVO> voList = new ArrayList<>();
+            SaleHouseVO vo;
+            for (SaleHouse entity : entityList) {
+                vo = new SaleHouseVO();
+                BeanUtils.copyProperties(entity, vo);
+                voList.add(vo);
+            }
+            BeanUtils.copyProperties(entityPage, voPage);
+            voPage.setRecords(voList);
+        }
+        return voPage;
     }
 
     /**
      * 房价趋势
      */
     public SaleTrendVO priceTrend(PriceTrendArg args) {
-        List<SaleHouseMongo> saleList = saleHouseDao.find(args.generatePageQuery());
+        List<SaleHouse> saleList = saleHouseDao.find(args.generatePageQuery());
         SaleTrendVO vo = new SaleTrendVO();
         if (CollectionUtils.isEmpty(saleList)) {
             return vo;

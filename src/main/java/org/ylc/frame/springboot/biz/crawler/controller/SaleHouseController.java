@@ -5,10 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.ylc.frame.springboot.biz.common.entity.HttpResult;
 import org.ylc.frame.springboot.biz.crawler.dao.SaleHouseDao;
-import org.ylc.frame.springboot.biz.crawler.entity.SaleHouseMongo;
+import org.ylc.frame.springboot.biz.crawler.entity.SaleHouse;
 import org.ylc.frame.springboot.biz.crawler.param.HousePageArg;
 import org.ylc.frame.springboot.biz.crawler.param.PriceTrendArg;
 import org.ylc.frame.springboot.biz.crawler.service.SaleHouseService;
+import org.ylc.frame.springboot.biz.crawler.vo.SaleHouseVO;
 import org.ylc.frame.springboot.biz.crawler.vo.SaleTrendVO;
 import org.ylc.frame.springboot.component.mongodb.base.Pagination;
 
@@ -40,13 +41,13 @@ public class SaleHouseController {
 
     @ApiOperation(value = "查询指定日期的列表")
     @PostMapping("/page")
-    public HttpResult<Pagination<SaleHouseMongo>> page(@RequestBody @Valid HousePageArg args) {
+    public HttpResult<Pagination<SaleHouseVO>> page(@RequestBody @Valid HousePageArg args) {
         return HttpResult.success(saleHouseService.page(args));
     }
 
     @ApiOperation(value = "查询单条数据的明细")
     @GetMapping("/findById/{id}")
-    public HttpResult<SaleHouseMongo> findById(@PathVariable(value = "id") String id) {
+    public HttpResult<SaleHouse> findById(@PathVariable(value = "id") String id) {
         return HttpResult.success(saleHouseDao.findById(id));
     }
 
