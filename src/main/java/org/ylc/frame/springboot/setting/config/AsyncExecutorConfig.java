@@ -12,8 +12,13 @@ import java.lang.reflect.Method;
 import java.util.concurrent.Executor;
 
 /**
- * 配置异步线程池
+ * 配置异步执行
+ * 注解 @EnableAsync 启用Spring的异步方法执行功能
  * 在需要异步的方法加上@Async注解可以实现异步
+ * <p>
+ * 注意：
+ * 1. 异步方法不能是private 修饰的
+ * 2. 同一个类中调用另一个@Async注解 的类不会异步执行
  *
  * @author YuLc
  * @version 1.0.0
@@ -21,7 +26,7 @@ import java.util.concurrent.Executor;
  */
 @Configuration
 @EnableAsync
-public class TaskExecutorConfig implements AsyncConfigurer {
+public class AsyncExecutorConfig implements AsyncConfigurer {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -37,6 +42,8 @@ public class TaskExecutorConfig implements AsyncConfigurer {
         taskExecutor.setMaxPoolSize(10);
         // 队列大小
         taskExecutor.setQueueCapacity(15);
+        // 线程名的前缀
+        taskExecutor.setThreadNamePrefix("async-thread-");
         taskExecutor.initialize();
         return taskExecutor;
     }

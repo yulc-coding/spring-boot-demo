@@ -8,6 +8,8 @@ import org.springframework.context.ApplicationEvent;
 /**
  * 事件demo
  *
+ * 通过 ApplicationEventPublisher.publishEvent() 发布事件
+ *
  * @author YuLc
  * @version 1.0.0
  * @date 2019/3/30 16:06
