@@ -25,7 +25,7 @@ public class RedisUtils {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
-     * 处理 Map, Set, List 类型
+     * 处理 Object 类型
      */
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -369,7 +369,6 @@ public class RedisUtils {
      *
      * @param key    键
      * @param values 值 可以是多个
-     * @return 移除的个数
      */
     public void setRemove(String key, Object... values) {
         try {
@@ -388,9 +387,9 @@ public class RedisUtils {
      * @param start 开始
      * @param end   结束 0 到 -1代表所有值
      */
-    public List<Object> listGet(String key, long start, long end) {
+    public List<String> strListGet(String key, long start, long end) {
         try {
-            return redisTemplate.opsForList().range(key, start, end);
+            return stringRedisTemplate.opsForList().range(key, start, end);
         } catch (Exception e) {
             logger.error(e.getMessage());
             return null;
@@ -401,7 +400,7 @@ public class RedisUtils {
      * 获取list缓存的长度
      *
      * @param key 键
-     * @return
+     * @return long
      */
     public long getListSize(String key) {
         try {
@@ -422,9 +421,9 @@ public class RedisUtils {
      * @param key   键
      * @param value 值
      */
-    public boolean listPushOne(String key, Object value) {
+    public boolean strListPushOne(String key, String value) {
         try {
-            redisTemplate.opsForList().rightPush(key, value);
+            stringRedisTemplate.opsForList().rightPush(key, value);
             return true;
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -439,9 +438,9 @@ public class RedisUtils {
      * @param value 值
      * @param time  时间(毫秒)
      */
-    public boolean listPushOne(String key, Object value, long time) {
+    public boolean strListPushOne(String key, String value, long time) {
         try {
-            redisTemplate.opsForList().rightPush(key, value);
+            stringRedisTemplate.opsForList().rightPush(key, value);
             if (time > 0) {
                 expire(key, time);
             }
@@ -455,25 +454,24 @@ public class RedisUtils {
     /**
      * 将整个list存入缓存
      *
-     * @param key  键
-     * @param list 值
+     * @param key     键
+     * @param strList 值
      */
-    public void listPushAll(String key, Object list) {
-        redisTemplate.opsForList().rightPushAll(key, list);
+    public void strListPushAll(String key, List<String> strList) {
+        stringRedisTemplate.opsForList().rightPushAll(key, strList);
     }
 
     /**
      * 将整个list存入缓存
      *
-     * @param key  键
-     * @param list 值
+     * @param key     键
+     * @param strList 值
      */
-    public void listPushAll(String key, Object list, long time) {
-        redisTemplate.opsForList().rightPushAll(key, list);
+    public void strListPushAll(String key, List<String> strList, long time) {
+        stringRedisTemplate.opsForList().rightPushAll(key, strList);
         if (time > 0) {
             expire(key, time);
         }
     }
-
 
 }

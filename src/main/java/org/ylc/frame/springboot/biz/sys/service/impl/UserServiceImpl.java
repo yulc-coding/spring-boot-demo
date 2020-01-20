@@ -326,7 +326,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         redisUtils.set(CacheConstants.USER_TOKEN_PREFIX + user.getId() + ":" + args.getLoginFrom(), token, expireTime);
         redisUtils.delete(CacheConstants.USER_PERMISSION_PREFIX + user.getId() + ":" + args.getLoginFrom());
-        redisUtils.listPushAll(CacheConstants.USER_PERMISSION_PREFIX + user.getId() + ":" + args.getLoginFrom(), permissions, expireTime);
+        redisUtils.strListPushAll(CacheConstants.USER_PERMISSION_PREFIX + user.getId() + ":" + args.getLoginFrom(), permissions, expireTime);
 
         LoginResponseVO vo = new LoginResponseVO();
         vo.setName(user.getName());

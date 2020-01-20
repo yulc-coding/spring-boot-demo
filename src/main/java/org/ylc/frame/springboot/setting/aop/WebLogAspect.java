@@ -2,11 +2,13 @@ package org.ylc.frame.springboot.setting.aop;
 
 import com.alibaba.fastjson.JSONObject;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -49,8 +51,8 @@ import java.util.stream.Collectors;
  * @version 1.0.0
  * @date 2019/9/24
  */
-@Aspect
-@Component
+// @Aspect
+// @Component
 public class WebLogAspect {
 
     private final static Logger logger = LoggerFactory.getLogger(WebLogAspect.class);
@@ -187,18 +189,17 @@ public class WebLogAspect {
         }
 
         // 权限校验
-        List<Object> redisPermissions = redisUtils.listGet(CacheConstants.USER_PERMISSION_PREFIX + userId + ":" + loginFrom, 0, -1);
-        if (redisPermissions == null) {
+        List<String> userPermissions = redisUtils.strListGet(CacheConstants.USER_PERMISSION_PREFIX + userId + ":" + loginFrom, 0, -1);
+        if (userPermissions == null) {
             logger.info("redis没有员工权限缓存，从数据库查询 >>>>>>");
-            List<String> permissions = menuMapper.getUserPermissions(userId, loginFrom);
-            if (CollectionUtils.isEmpty(permissions) || !permissions.contains(permission)) {
-                throw new CheckException("非法操作", ConfigConstants.Return.ACCESS_RESTRICTED);
-            }
+            userPermissions = menuMapper.getUserPermissions(userId, loginFrom);
             // 加入缓存
-            redisUtils.listPushAll(CacheConstants.USER_PERMISSION_PREFIX + userId + ":" + loginFrom, permissions);
-        } else if (!redisPermissions.contains(permission)) {
+            redisUtils.strListPushAll(CacheConstants.USER_PERMISSION_PREFIX + userId + ":" + loginFrom, userPermissions);
+        }
+        if (CollectionUtils.isEmpty(userPermissions) || !userPermissions.contains(permission)) {
             throw new CheckException("非法操作", ConfigConstants.Return.ACCESS_RESTRICTED);
         }
+
 
         // 保存用户信息
         String account = redisMap.get("account") == null ? null : String.valueOf(redisMap.get("account"));
