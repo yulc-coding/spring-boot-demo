@@ -2,20 +2,16 @@ package org.ylc.frame.springboot.setting.aop;
 
 import com.alibaba.fastjson.JSONObject;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.CollectionUtils;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import org.ylc.frame.springboot.biz.common.entity.UserInfo;
-import org.ylc.frame.springboot.biz.sys.mapper.MenuMapper;
 import org.ylc.frame.springboot.component.mongodb.dao.SystemLogDao;
 import org.ylc.frame.springboot.component.mongodb.entity.SystemLog;
 import org.ylc.frame.springboot.component.redis.RedisUtils;
@@ -34,7 +30,6 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -51,24 +46,20 @@ import java.util.stream.Collectors;
  * @version 1.0.0
  * @date 2019/9/24
  */
-// @Aspect
-// @Component
+@Aspect
+@Component
 public class WebLogAspect {
 
     private final static Logger logger = LoggerFactory.getLogger(WebLogAspect.class);
-
-    private final MenuMapper menuMapper;
 
     private final SystemLogDao systemLogDao;
 
     private final RedisUtils redisUtils;
 
-    public WebLogAspect(MenuMapper menuMapper, SystemLogDao systemLogDao, RedisUtils redisUtils) {
-        this.menuMapper = menuMapper;
+    public WebLogAspect(SystemLogDao systemLogDao, RedisUtils redisUtils) {
         this.systemLogDao = systemLogDao;
         this.redisUtils = redisUtils;
     }
-
 
     @Pointcut("execution(public org.ylc.frame.springboot.biz.common.entity.HttpResult org.ylc.frame.springboot.biz.*.controller..*(..))")
     public void webLog() {
@@ -97,7 +88,6 @@ public class WebLogAspect {
     }
 
     /**
-     * 环绕
      * 权限验证
      */
     @Around("webLog()")
@@ -111,13 +101,25 @@ public class WebLogAspect {
         // 查看是否有注解
         Method method = ((MethodSignature) proceedingJoinPoint.getSignature()).getMethod();
         Permission userPermission = method.getAnnotation(Permission.class);
+
+        Long userId = null;
+        String loginFrom = null;
         // 权限验证
         if (userPermission != null && !StringUtils.isEmpty(userPermission.value())) {
             String token = request.getHeader("token");
             if (token == null) {
                 throw new CheckException("非法操作", ConfigConstants.Return.ACCESS_RESTRICTED);
             }
-            checkTokenAndPermission(token, userPermission.value());
+            // 1 校验 Token
+            JSONObject tokenJson = checkToken(token);
+            userId = tokenJson.getLong("userId");
+            loginFrom = tokenJson.getString("loginFrom");
+            // 2 校验权限
+            checkPermission(userPermission.value(), userId, loginFrom);
+            // 3 保存用户信息
+            saveThreadLocal(tokenJson);
+            // 4 更新Token和权限缓存时间
+            updateTokenAndPermissionExpireTime(userId, loginFrom);
         }
 
         long methodStart = System.currentTimeMillis();
@@ -127,7 +129,8 @@ public class WebLogAspect {
 
         // MongoDB 保存请求信息
         SystemLog systemLog = new SystemLog();
-        systemLog.setUserId(ThreadLocalUtils.getUserIdDefaultNull());
+        systemLog.setUserId(userId);
+        systemLog.setLoginFrom(loginFrom);
         systemLog.setUrl(request.getRequestURL().toString());
         systemLog.setHttpMethod(request.getMethod());
         systemLog.setController(proceedingJoinPoint.getSignature().getDeclaringTypeName());
@@ -159,57 +162,58 @@ public class WebLogAspect {
         return result;
     }
 
-
     /**
-     * 校验token 和权限
-     * 1、解析token:
+     * 校验Token
+     * <p>
      * token是否合法；
      * token是否还未过期；
-     * <p>
-     * 2、权限校验
-     * 从redis 中获取权限列表
-     * 没有查到，再从数据库查询权限列表，并放入缓存
-     * 判断当前权限是否在权限列表中
-     * 更新token过期时间
      *
-     * @param token      token
-     * @param permission 访问权限
+     * @param token 传入token
+     * @return json
      */
-    private void checkTokenAndPermission(String token, String permission) {
+    private JSONObject checkToken(String token) {
         // 解密token
         JSONObject tokenJson = JWTUtils.parseJWT(token);
         if (tokenJson == null) {
             throw new CheckException("非法操作", ConfigConstants.Return.ACCESS_RESTRICTED);
         }
-        Long userId = tokenJson.getLong("userId");
-        String loginFrom = tokenJson.getString("loginFrom");
-        Map<Object, Object> redisMap = redisUtils.hashEntries(CacheConstants.USER_TOKEN_PREFIX + userId + ":" + loginFrom);
-        if (redisMap == null) {
+        // Redis是否过期
+        String redisToken = redisUtils.get(CacheConstants.USER_TOKEN_PREFIX + tokenJson.getLong("userId") + ":" + tokenJson.getString("loginFrom"));
+        if (redisToken == null) {
             throw new CheckException("长时间未使用，登录已过期，请重新登录", ConfigConstants.Return.TOKEN_EXPIRED);
         }
+        return tokenJson;
+    }
 
-        // 权限校验
-        List<String> userPermissions = redisUtils.strListGet(CacheConstants.USER_PERMISSION_PREFIX + userId + ":" + loginFrom, 0, -1);
-        if (userPermissions == null) {
-            logger.info("redis没有员工权限缓存，从数据库查询 >>>>>>");
-            userPermissions = menuMapper.getUserPermissions(userId, loginFrom);
-            // 加入缓存
-            redisUtils.strListPushAll(CacheConstants.USER_PERMISSION_PREFIX + userId + ":" + loginFrom, userPermissions);
-        }
-        if (CollectionUtils.isEmpty(userPermissions) || !userPermissions.contains(permission)) {
+    /**
+     * 校验权限
+     * <p>
+     * 从redis权限集合中查询是否存在对应的权限
+     *
+     * @param permission 接口权限值
+     * @param userId     用户ID
+     * @param loginFrom  登录方式
+     */
+    private void checkPermission(String permission, Long userId, String loginFrom) {
+        if (!redisUtils.memberInSet(CacheConstants.USER_PERMISSION_PREFIX + userId + ":" + loginFrom, permission)) {
             throw new CheckException("非法操作", ConfigConstants.Return.ACCESS_RESTRICTED);
         }
+    }
 
-
+    /**
+     * 将用户信息保存到本地线程变量中
+     *
+     * @param tokenJson userInfo
+     */
+    private void saveThreadLocal(JSONObject tokenJson) {
         // 保存用户信息
-        String account = redisMap.get("account") == null ? null : String.valueOf(redisMap.get("account"));
-        String userName = redisMap.get("userName") == null ? null : String.valueOf(redisMap.get("userName"));
-        String depId = redisMap.get("depId") == null ? null : String.valueOf(redisMap.get("depId"));
-        UserInfo userInfo = new UserInfo(userId, account, userName, depId);
+        UserInfo userInfo = new UserInfo(
+                tokenJson.getLong("userId"),
+                tokenJson.getString("username"),
+                tokenJson.getString("name"),
+                tokenJson.getString("depCode")
+        );
         ThreadLocalUtils.setUser(userInfo);
-
-        // 更新token过期时间
-        updateTokenAndPermissionExpireTime(userId, loginFrom);
     }
 
     /**
@@ -228,7 +232,6 @@ public class WebLogAspect {
         redisUtils.expire(CacheConstants.USER_TOKEN_PREFIX + userId + ":" + loginFrom, expireTime);
         redisUtils.expire(CacheConstants.USER_PERMISSION_PREFIX + userId + ":" + loginFrom, expireTime);
     }
-
 
     /**
      * 序列化时过滤掉request、response和文件类型

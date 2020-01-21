@@ -1,7 +1,5 @@
 package org.ylc.frame.springboot.component.redis;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -13,7 +11,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * redisTemplate配置类
- * 参考：https://www.cnblogs.com/zeng1994/p/03303c805731afc9aa9c60dbbd32a323.html
  *
  * @author YuLc
  * @version 1.0.0
@@ -21,8 +18,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Component
 public class RedisUtils {
-
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * 处理 Object 类型
@@ -40,7 +35,7 @@ public class RedisUtils {
         this.stringRedisTemplate = stringRedisTemplate;
     }
 
-    //=============================common============================
+    //============================= common（通用） ============================
 
     /**
      * 指定缓存失效时间
@@ -180,7 +175,7 @@ public class RedisUtils {
         }
     }
 
-    //================================Map=================================
+    //================================ Map （字典）=================================
 
     /**
      * HashGet
@@ -275,110 +270,38 @@ public class RedisUtils {
     }
 
 
-    // ============================set=============================
+    // ============================ set（集合） =============================
 
     /**
-     * 根据key获取Set中的所有值
+     * 已set集合方式缓存
      *
-     * @param key 键
-     * @return set
+     * @param key    键
+     * @param time   时间(秒)
+     * @param values 值 可以是多个
      */
-    public Set<Object> setMembers(String key) {
-        return redisTemplate.opsForSet().members(key);
+    public void strSetAdd(String key, long time, String... values) {
+        stringRedisTemplate.opsForSet().add(key, values);
+        if (time > 0) {
+            expire(key, time);
+        }
     }
 
     /**
-     * 根据value从一个set中查询,是否存在
+     * 查询set中是否存在指定值
      *
      * @param key   键
      * @param value 值
      * @return true 存在 false不存在
      */
-    public boolean setHasKey(String key, Object value) {
-        try {
-            Boolean hasKey = redisTemplate.opsForSet().isMember(key, value);
-            if (hasKey == null) {
-                return false;
-            }
-            return hasKey;
-        } catch (Exception e) {
-            logger.error(e.getMessage());
+    public boolean memberInSet(String key, String value) {
+        Boolean hasKey = stringRedisTemplate.opsForSet().isMember(key, value);
+        if (hasKey == null) {
             return false;
         }
+        return hasKey;
     }
 
-    /**
-     * 获取set缓存的长度
-     *
-     * @param key 键
-     * @return size
-     */
-    public long getSetSize(String key) {
-        try {
-            Long size = redisTemplate.opsForSet().size(key);
-            if (size == null) {
-                return 0;
-            }
-            return size;
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return 0;
-        }
-    }
-
-    /**
-     * 将数据放入set缓存
-     *
-     * @param key    键
-     * @param values 值 可以是多个
-     */
-    public void setAdd(String key, Object... values) {
-        try {
-            redisTemplate.opsForSet().add(key, values);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    /**
-     * 将set数据放入缓存
-     *
-     * @param key    键
-     * @param time   时间(秒)
-     * @param values 值 可以是多个
-     * @return 成功个数
-     */
-    public long setAdd(String key, long time, Object... values) {
-        try {
-            Long count = redisTemplate.opsForSet().add(key, values);
-            if (count == null) {
-                return 0;
-            }
-            if (time > 0) {
-                expire(key, time);
-            }
-            return count;
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return 0;
-        }
-    }
-
-    /**
-     * 移除值为value的
-     *
-     * @param key    键
-     * @param values 值 可以是多个
-     */
-    public void setRemove(String key, Object... values) {
-        try {
-            redisTemplate.opsForSet().remove(key, values);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    // ===============================list=================================
+    // =============================== list （列表）=================================
 
     /**
      * 获取list缓存的内容
@@ -388,12 +311,7 @@ public class RedisUtils {
      * @param end   结束 0 到 -1代表所有值
      */
     public List<String> strListGet(String key, long start, long end) {
-        try {
-            return stringRedisTemplate.opsForList().range(key, start, end);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return null;
-        }
+        return stringRedisTemplate.opsForList().range(key, start, end);
     }
 
     /**
@@ -403,16 +321,11 @@ public class RedisUtils {
      * @return long
      */
     public long getListSize(String key) {
-        try {
-            Long size = redisTemplate.opsForList().size(key);
-            if (size == null) {
-                return 0;
-            }
-            return size;
-        } catch (Exception e) {
-            logger.error(e.getMessage());
+        Long size = redisTemplate.opsForList().size(key);
+        if (size == null) {
             return 0;
         }
+        return size;
     }
 
     /**
@@ -421,14 +334,8 @@ public class RedisUtils {
      * @param key   键
      * @param value 值
      */
-    public boolean strListPushOne(String key, String value) {
-        try {
-            stringRedisTemplate.opsForList().rightPush(key, value);
-            return true;
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return false;
-        }
+    public void strListPushOne(String key, String value) {
+        stringRedisTemplate.opsForList().rightPush(key, value);
     }
 
     /**
@@ -438,16 +345,10 @@ public class RedisUtils {
      * @param value 值
      * @param time  时间(毫秒)
      */
-    public boolean strListPushOne(String key, String value, long time) {
-        try {
-            stringRedisTemplate.opsForList().rightPush(key, value);
-            if (time > 0) {
-                expire(key, time);
-            }
-            return true;
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return false;
+    public void strListPushOne(String key, String value, long time) {
+        stringRedisTemplate.opsForList().rightPush(key, value);
+        if (time > 0) {
+            expire(key, time);
         }
     }
 

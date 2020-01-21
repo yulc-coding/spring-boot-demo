@@ -1,8 +1,8 @@
 package org.ylc.frame.springboot.component.mongodb.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -17,21 +17,27 @@ import java.util.Date;
  * @version 1.0.0
  * @date 2019/9/24
  */
-@Data
-@Document(collection = "system_log")
+@Getter
+@Setter
+@Document(collection = "systemLog")
 public class SystemLog implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -5944358835830751073L;
 
     /**
      * 唯一ID
      */
     private String id;
+
     /**
      * 用户ID
      */
-    @Field("user_id")
     private Long userId;
+
+    /**
+     * 登录方式：1PC，2APP
+     */
+    private String loginFrom;
 
     /**
      * 访问路径
@@ -41,7 +47,6 @@ public class SystemLog implements Serializable {
     /**
      * 请求方式 post、get
      */
-    @Field("http_method")
     private String httpMethod;
 
     /**
@@ -64,13 +69,11 @@ public class SystemLog implements Serializable {
     /**
      * 方法耗时
      */
-    @Field("method_time")
     private long methodTime;
 
     /**
      * 总耗时
      */
-    @Field("all_time")
     private long allTime;
 
     /**

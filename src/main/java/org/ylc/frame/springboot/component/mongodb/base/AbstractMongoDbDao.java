@@ -47,7 +47,7 @@ public abstract class AbstractMongoDbDao<T> {
     }
 
     /**
-     * 异步把偶才能
+     * 异步保存
      *
      * @param entity 实体
      * @return 实体

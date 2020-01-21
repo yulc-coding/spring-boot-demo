@@ -1,6 +1,7 @@
 package org.ylc.frame.springboot.biz.common.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 
@@ -11,11 +12,11 @@ import java.io.Serializable;
  * @version 1.0.0
  * @date 2019/4/14 10:52
  */
-@Data
+@Getter
+@Setter
 public class UserInfo implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
+    private static final long serialVersionUID = 7655679675008142448L;
     /**
      * 用户ID
      */
@@ -24,25 +25,22 @@ public class UserInfo implements Serializable {
     /**
      * 用户账号
      */
-    private String account;
+    private String username;
 
     /**
      * 用户名称
      */
-    private String userName;
+    private String name;
 
     /**
      * 部门ID
      */
-    private String depId;
+    private String depCode;
 
-    public UserInfo() {
-    }
-
-    public UserInfo(Long userId, String account, String userName, String depId) {
+    public UserInfo(Long userId, String username, String name, String depCode) {
         this.userId = userId;
-        this.account = account;
-        this.userName = userName;
-        this.depId = depId;
+        this.username = username;
+        this.name = name;
+        this.depCode = depCode;
     }
 }

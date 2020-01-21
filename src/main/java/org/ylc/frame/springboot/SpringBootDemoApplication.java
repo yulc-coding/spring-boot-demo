@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +40,7 @@ public class SpringBootDemoApplication {
         fastMediaTypes.add(MediaType.APPLICATION_JSON);
         fastConverter.setSupportedMediaTypes(fastMediaTypes);
         fastConverter.setFastJsonConfig(fastJsonConfig);
-        return new HttpMessageConverters((HttpMessageConverter<?>) fastConverter);
+        return new HttpMessageConverters(fastConverter);
     }
 
 }

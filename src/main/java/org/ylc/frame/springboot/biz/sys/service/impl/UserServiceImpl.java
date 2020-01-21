@@ -274,9 +274,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     /**
      * 登录
      * 1、校验账号密码
-     * 2、生成token
-     * 3、获取用户权限
-     * 4、生成权限树
+     * 2、获取用户权限
+     * 3、生成权限树
+     * 4、生成token
      * 5、缓存token和权限列表
      */
     @Override
@@ -289,33 +289,37 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         ParamCheck.notNull(user, "账号或密码错误");
         ParamCheck.assertTrue(PBKDF2.verify(args.getPassword(), user.getPassword(), user.getSalt()), "账号或密码错误");
 
-        // 生成token
-        JSONObject tokenJson = new JSONObject();
-        tokenJson.put("userId", user.getId());
-        tokenJson.put("loginFrom", args.getLoginFrom());
-        String token = JWTUtils.createJWT(tokenJson);
-
         // 获取权限列表
         List<Menu> menuList = menuMapper.getUserMenuList(user.getId(), args.getLoginFrom());
         ParamCheck.notEmptyCollection(menuList, "当前账号未授权");
+
+        MenuTree menuTree;
         // 树结构
         List<MenuTree> menuTrees = new ArrayList<>();
         // 权限值列表
-        List<String> permissions = new ArrayList<>();
-        MenuTree menuTree;
+        String[] permissions = new String[menuList.size()];
+        int index = 0;
         for (Menu menu : menuList) {
-            permissions.add(menu.getPermission());
+            permissions[index++] = menu.getPermission();
             menuTree = new MenuTree();
             BeanUtils.copyProperties(menu, menuTree);
             menuTrees.add(menuTree);
         }
-
         // 生成树
         MenuTree menuRootTree = new MenuTree();
         menuRootTree.setChildren(new ArrayList<>());
         menuRootTree.setName("根目录");
         menuRootTree.setId(0L);
         TreeBuildUtil.build(menuRootTree, menuTrees);
+
+        // 生成token
+        JSONObject tokenJson = new JSONObject();
+        tokenJson.put("userId", user.getId());
+        tokenJson.put("username", user.getUsername());
+        tokenJson.put("name", user.getName());
+        tokenJson.put("depCode", user.getDepCode());
+        tokenJson.put("loginFrom", args.getLoginFrom());
+        String token = JWTUtils.createJWT(tokenJson);
 
         // 将token 和 权限列表 存入redis 缓存
         Long expireTime;
@@ -326,7 +330,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         redisUtils.set(CacheConstants.USER_TOKEN_PREFIX + user.getId() + ":" + args.getLoginFrom(), token, expireTime);
         redisUtils.delete(CacheConstants.USER_PERMISSION_PREFIX + user.getId() + ":" + args.getLoginFrom());
-        redisUtils.strListPushAll(CacheConstants.USER_PERMISSION_PREFIX + user.getId() + ":" + args.getLoginFrom(), permissions, expireTime);
+        redisUtils.strSetAdd(CacheConstants.USER_PERMISSION_PREFIX + user.getId() + ":" + args.getLoginFrom(), expireTime, permissions);
 
         LoginResponseVO vo = new LoginResponseVO();
         vo.setName(user.getName());
