@@ -16,7 +16,7 @@
         </Console>
 
         <!-- 常规info -->
-        <RollingFile name="RollingFileInfo" fileName="${LOG_HOME}/info.log" filePattern="${LOG_HOME}/info-%d{MM-dd-yyyy}-%i.log">
+        <RollingFile name="RollingFileInfo" fileName="${LOG_HOME}/info.log" filePattern="${LOG_HOME}/info-%d{yyyy-MM-dd}-%i.log">
             <!-- 只打印info级别日志 -->
             <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="${LOG_PATTERN}" />
@@ -30,7 +30,7 @@
         </RollingFile>
 
         <!-- 常规error -->
-        <RollingFile name="RollingFileError" fileName="${LOG_HOME}/error.log" filePattern="${LOG_HOME}/error-%d{MM-dd-yyyy}-%i.log">
+        <RollingFile name="RollingFileError" fileName="${LOG_HOME}/error.log" filePattern="${LOG_HOME}/error-%d{yyyy-MM-dd}-%i.log">
             <!-- 只打印error级别日志 -->
             <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="${LOG_PATTERN}" />
