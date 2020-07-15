@@ -19,7 +19,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, info, loggers, threaddump, heapdump, metrics
+        include: info, health, beans, loggers, threaddump, heapdump, metrics
   endpoint:
     health:
       show-details: always

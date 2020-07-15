@@ -156,6 +156,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      *
      * @param ids ID列表
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void delMulti(List<Long> ids) {
         baseMapper.deleteBatchIds(ids);
