@@ -67,6 +67,7 @@
             WHERE
             rm.role_id IN ( SELECT role_id FROM sys_user_role ur WHERE ur.user_id = #{userId} ))
             AND m.login_from = #{loginFrom}
+        ORDER BY m.seq
     </select>
 
     <select id="getUserPermissions" resultType="java.lang.String">
