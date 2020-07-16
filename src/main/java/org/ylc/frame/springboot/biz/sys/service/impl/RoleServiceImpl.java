@@ -9,9 +9,11 @@ import org.ylc.frame.springboot.biz.common.entity.SelectEntity;
 import org.ylc.frame.springboot.biz.sys.dto.RoleDTO;
 import org.ylc.frame.springboot.biz.sys.entity.Role;
 import org.ylc.frame.springboot.biz.sys.entity.RoleMenu;
+import org.ylc.frame.springboot.biz.sys.entity.UserRole;
 import org.ylc.frame.springboot.biz.sys.mapper.RoleMapper;
 import org.ylc.frame.springboot.biz.sys.service.RoleMenuService;
 import org.ylc.frame.springboot.biz.sys.service.RoleService;
+import org.ylc.frame.springboot.biz.sys.service.UserRoleService;
 import org.ylc.frame.springboot.biz.sys.vo.RoleVO;
 import org.ylc.frame.springboot.util.OperationCheck;
 
@@ -31,9 +33,12 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
 
     private final RoleMenuService roleMenuService;
 
+    private final UserRoleService userRoleService;
+
     @Autowired
-    public RoleServiceImpl(RoleMenuService roleMenuService) {
+    public RoleServiceImpl(RoleMenuService roleMenuService, UserRoleService userRoleService) {
         this.roleMenuService = roleMenuService;
+        this.userRoleService = userRoleService;
     }
 
     @Override
@@ -44,6 +49,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
 
     /**
      * 删除角色
+     * 删除用户角色关联表
      * 删除角色菜单关联表
      *
      * @param id 主键
@@ -52,10 +58,8 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     @Override
     public void delInfo(Long id) {
         OperationCheck.isExecute(baseMapper.deleteById(id), "删除失败");
-        roleMenuService.remove(
-                new QueryWrapper<RoleMenu>()
-                        .eq("role_id", id)
-        );
+        roleMenuService.remove(new QueryWrapper<RoleMenu>().eq("role_id", id));
+        userRoleService.remove(new QueryWrapper<UserRole>().eq("role_id", id));
     }
 
     @Override
@@ -107,4 +111,5 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         roleMenuService.remove(new QueryWrapper<RoleMenu>().eq("role_id", roleId));
         roleMenuService.saveBatch(roleMenus);
     }
+
 }
