@@ -124,6 +124,12 @@
             <artifactId>lombok</artifactId>
         </dependency>
 
+        <!-- 任务调度 -->
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+        </dependency>
+
         <!-- Swagger2 begin -->
         <dependency>
             <groupId>io.springfox</groupId>
