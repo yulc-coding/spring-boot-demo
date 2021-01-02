@@ -1,4 +1,4 @@
-package org.ylc.frame.springboot.biz.message;
+package org.ylc.frame.springboot.component.message;
 
 /**
  * 代码全万行，注释第一行
