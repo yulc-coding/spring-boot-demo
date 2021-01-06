@@ -22,6 +22,8 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <skipTests>true</skipTests>
+        <!-- 指定容器前缀 -->
+        <docker.image.prefix>docker</docker.image.prefix>
     </properties>
 
     <dependencies>
@@ -166,6 +168,7 @@
     </dependencies>
 
     <build>
+        <finalName>springBoot-server</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -181,6 +184,22 @@
                     </execution>
                 </executions>
             </plugin>
+            <!--Docker打包镜像 插件-->
+            <plugin>
+                <!--三个坐标定位dockerfile插件-->
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>1.4.13</version>
+                <configuration>
+                    <!--这里指定打包镜像的名称-->
+                    <repository>${docker.image.prefix}/${project.artifactId}</repository>
+                    <!-- 这里是复制 jar 包到 docker 容器指定目录配置 -->
+                    <buildArgs>
+                        <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+                    </buildArgs>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
